@@ -267,7 +267,7 @@
                   </div>
                   <span style="font-size:14px;font-weight:500;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">지훈님 패턴에 합리적인 요금제를 찾았어요.</span>
                 </div>
-                <button id="btn-data" onclick="document.getElementById('section-data').scrollIntoView({behavior:'smooth'})" style="width:28px;height:28px;border-radius:14px;background:white;box-shadow:0 6px 5px rgba(0,0,0,0.15);border:none;padding:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                <button id="btn-move-1" style="width:28px;height:28px;border-radius:14px;background:white;box-shadow:0 6px 5px rgba(0,0,0,0.15);border:none;padding:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
                   <img src="assets/scenario1/ico_scroll_btn.svg" style="width:18px;height:18px;" alt="">
                 </button>
               </div>
@@ -618,6 +618,15 @@
       inp.addEventListener('keydown', e => {
         if (e.key === 'Enter') document.getElementById('apply-btn').click();
       });
+    });
+
+    // btn-move-1: data 섹션으로 스크롤
+    document.getElementById('btn-move-1').addEventListener('click', () => {
+      const scrollEl = document.getElementById('scroll');
+      const target   = document.getElementById('section-data');
+      if (!scrollEl || !target) return;
+      const top = target.offsetTop - scrollEl.offsetTop;
+      scrollEl.scrollTo({ top, behavior: 'smooth' });
     });
   </script>
 
