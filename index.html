@@ -449,7 +449,7 @@
                 </div><!-- /추천 요금제 카드 -->
 
                 <!-- T에이전트 분석 카드 (purple) / 피그마 노드 8530:14304 -->
-                <div style="background:#ece8ff;border-radius:12px;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+                <div id="agent-card-data" style="background:#ece8ff;border-radius:12px;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px;align-items:center;">
 
                   <!-- 상단: AI아이콘 + 그라디언트 텍스트 + 칩 -->
                   <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
@@ -578,6 +578,39 @@
 
       </div><!-- /screen -->
     </div><!-- /scroll -->
+
+    <!-- BottomGroup  /  피그마 노드 8839:9362
+         기본: translateY(100%) 숨김 → section-data 진입 시 translateY(0) 슬라이드업 -->
+    <div id="bottom-bar" style="
+      position:absolute; bottom:0; left:0; right:0; z-index:300;
+      background:white;
+      border-radius:28px 28px 0 0;
+      box-shadow:0 -5px 30px rgba(0,0,0,0.3);
+      padding:16px 20px 32px;
+      display:flex; flex-direction:column; align-items:center;
+      transform:translateY(100%);
+      transition:transform 0.42s cubic-bezier(0.32,0.72,0,1);
+    ">
+      <!-- 상단 텍스트 행  gap:4 pb:16 px:24 -->
+      <div style="display:flex;gap:4px;align-items:center;padding:0 4px 16px;width:100%;">
+        <img src="assets/scenario1/ico_navigate.svg" style="width:16px;height:16px;flex-shrink:0;" alt="">
+        <p style="margin:0;flex:1 0 0;font-size:14px;font-weight:500;color:#101010;letter-spacing:-0.56px;line-height:1.5;">
+          기존 요금제 대비 어떤 혜택이 있는지 비교해 드릴게요.
+        </p>
+      </div>
+      <!-- 버튼 행  gap:10 -->
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <!-- T Agent 원형 버튼 (52×52) -->
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,0.06);box-shadow:0 0 20px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <img src="assets/scenario1/ico_tagent.svg" style="width:24px;height:24px;" alt="">
+        </div>
+        <!-- CTA 버튼 -->
+        <button style="flex:1 0 0;background:#222;border-radius:20px;padding:16px 32px;border:none;cursor:pointer;box-shadow:0 8px 8px rgba(106,106,106,0.16);">
+          <p style="margin:0;font-size:16px;font-weight:600;color:white;letter-spacing:-0.64px;line-height:1.3;text-align:center;">한 눈에 비교하기</p>
+        </button>
+      </div>
+    </div>
+
   </div><!-- /frame -->
 
 
@@ -628,6 +661,34 @@
       const top = target.offsetTop - scrollEl.offsetTop;
       scrollEl.scrollTo({ top, behavior: 'smooth' });
     });
+
+    // BottomGroup: agent 카드 진입(30%) → 슬라이드업 / 완전히 벗어남(0%) → 슬라이드다운
+    const bottomBar = document.getElementById('bottom-bar');
+    const agentCard = document.getElementById('agent-card-data');
+    if (bottomBar && agentCard) {
+      const scrollEl = document.getElementById('scroll');
+
+      // 진입 감지: 카드가 30% 이상 보일 때 올라옴
+      const showObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            bottomBar.style.transform = 'translateY(0)';
+          }
+        });
+      }, { root: scrollEl, threshold: 0.3 });
+
+      // 이탈 감지: 카드가 완전히 사라지면 내려감
+      const hideObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) {
+            bottomBar.style.transform = 'translateY(100%)';
+          }
+        });
+      }, { root: scrollEl, threshold: 0 });
+
+      showObserver.observe(agentCard);
+      hideObserver.observe(agentCard);
+    }
   </script>
 
 </body>
