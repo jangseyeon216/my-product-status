@@ -589,7 +589,8 @@
       padding:16px 20px 32px;
       display:flex; flex-direction:column; align-items:center;
       transform:translateY(100%);
-      transition:transform 0.42s cubic-bezier(0.32,0.72,0,1);
+      opacity:0;
+      transition:transform 0.42s cubic-bezier(0.32,0.72,0,1), opacity 0.42s cubic-bezier(0.32,0.72,0,1);
     ">
       <!-- 상단 텍스트 행  gap:4 pb:16 px:24 -->
       <div style="display:flex;gap:4px;align-items:center;padding:0 4px 16px;width:100%;">
@@ -668,20 +669,22 @@
     if (bottomBar && agentCard) {
       const scrollEl = document.getElementById('scroll');
 
-      // 진입 감지: 카드가 30% 이상 보일 때 올라옴
+      // 진입 감지: 카드가 30% 이상 보일 때 슬라이드업 + 페이드인
       const showObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             bottomBar.style.transform = 'translateY(0)';
+            bottomBar.style.opacity   = '1';
           }
         });
       }, { root: scrollEl, threshold: 0.3 });
 
-      // 이탈 감지: 카드가 완전히 사라지면 내려감
+      // 이탈 감지: 카드가 완전히 사라지면 슬라이드다운 + 페이드아웃
       const hideObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) {
             bottomBar.style.transform = 'translateY(100%)';
+            bottomBar.style.opacity   = '0';
           }
         });
       }, { root: scrollEl, threshold: 0 });
