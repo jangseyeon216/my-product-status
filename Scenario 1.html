@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 상품 현황</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      plugins: [
+        function({ matchUtilities }) {
+          matchUtilities({ 'mask-size':     v => ({'mask-size':v,    '-webkit-mask-size':v}) });
+          matchUtilities({ 'mask-position': v => ({'mask-position':v,'-webkit-mask-position':v}) });
+        }
+      ]
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .mask-alpha       { mask-mode: alpha;            -webkit-mask-mode: alpha; }
+      .mask-intersect   { mask-composite: intersect;   -webkit-mask-composite: source-in; }
+      .mask-no-clip     { mask-clip: no-clip;           -webkit-mask-clip: no-clip; }
+      .mask-no-repeat   { mask-repeat: no-repeat;       -webkit-mask-repeat: no-repeat; }
+      .content-stretch  { align-content: stretch; }
+      .font-['Pretendard\:Regular']           { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:400; }
+      .font-['Pretendard\:Medium']             { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:500; }
+      .font-['Pretendard\:SemiBold']           { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:600; }
+      .font-['Pretendard\:Bold']               { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:700; }
+    }
+  </style>
+  <style>
+    #phone  { width:375px; height:812px; position:relative; overflow:hidden; background:#f7f8fa; }
+    #status-bar { position:absolute; top:0; width:375px; height:54px; z-index:500; background:transparent; pointer-events:none; }
+    #scroll { position:absolute; top:54px; left:0; right:0; bottom:0; overflow-y:auto; scrollbar-width:none; }
+    #scroll::-webkit-scrollbar { display:none; }
+    #content { position:relative; width:375px; min-height:2900px; background:#f7f8fa; padding-bottom:120px; }
+    .sticky-hd { position:sticky; top:0; z-index:50; background:#f7f8fa; width:375px; }
+    #bs-dimmer { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.4); z-index:510; transition:opacity 0.3s; opacity:0; }
+    #bs-sheet { display:none; position:absolute; bottom:0; left:0; width:375px; z-index:520; background:#fff; border-radius:20px 20px 0 0; transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); padding-bottom:24px; }
+  </style>
+  <style>
+    .font-\[\'Pretendard\:Regular\'\]           { font-family:'Pretendard Variable',Pretendard,sans-serif!important; font-weight:400!important; }
+    .font-\[\'Pretendard\:Medium\'\]             { font-family:'Pretendard Variable',Pretendard,sans-serif!important; font-weight:500!important; }
+    .font-\[\'Pretendard\:SemiBold\'\]           { font-family:'Pretendard Variable',Pretendard,sans-serif!important; font-weight:600!important; }
+    .font-\[\'Pretendard\:Bold\'\]               { font-family:'Pretendard Variable',Pretendard,sans-serif!important; font-weight:700!important; }
+  </style>
+</head>
+<body class="bg-gray-300 flex items-center justify-center min-h-screen p-8">
+  <div class="flex flex-col items-center gap-3">
+    <div id="phone">
+
+      <!-- status bar -->
+      <div id="status-bar" class="flex items-center justify-between pt-[14px] px-[24px]">
+        <span class="font-['Pretendard:Bold'] text-[15px] text-[#1c1c1e] leading-normal whitespace-nowrap">9:41</span>
+        <div class="flex gap-[5px] items-center">
+          <div class="flex-none"><div class="h-[22px] relative w-[18px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMjIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJJY29uIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTMuNzUgNVY5LjVINlY1SDMuNzVaTTguMjUgNVYxMy4yNUgxMC41VjVIOC4yNVpNMTIuNzUgNVYxN0gxNVY1SDEyLjc1WiIgZmlsbD0iIzFDMUMxRSIvPgo8L2c+Cjwvc3ZnPgo="></div></div>
+          <div class="flex-none"><div class="h-[22px] relative w-[18px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMjIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJJY29uIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTkgNC4yNUM5IDQuMjUgOC44Njg3NSA0LjI1IDguNjA2MjUgNC4yNUM4LjM0Mzc1IDQuMjUgOC4wMzEyNSA0LjQzMTI1IDcuNjY4NzUgNC43OTM3NUM3LjMwNjI1IDUuMTU2MjUgNy4xMjUgNS42IDcuMTI1IDYuMTI1QzcuMTI1IDYuNjUgNy4zMDYyNSA3LjA5Mzc1IDcuNjY4NzUgNy40NTYyNUM4LjAzMTI1IDcuODE4NzUgOC40NzUgOCA5IDhDOS41MjUgOCA5Ljk2ODc1IDcuODE4NzUgMTAuMzMxMyA3LjQ1NjI1QzEwLjY5MzggNy4wOTM3NSAxMC44NzUgNi42NSAxMC44NzUgNi4xMjVDMTAuODc1IDUuNiAxMC42OTM4IDUuMTU2MjUgMTAuMzMxMyA0Ljc5Mzc1QzkuOTY4NzUgNC40MzEyNSA5LjUyNSA0LjI1IDkgNC4yNVpNNC43NjI1IDguNDg3NUwzLjE4NzUgMTAuMUMzLjkyNSAxMC44Mzc1IDQuNzkwNjMgMTEuNDIxOSA1Ljc4NDM4IDExLjg1MzFDNi43NzgxMyAxMi4yODQ0IDcuODUgMTIuNSA5IDEyLjVDMTAuMTUgMTIuNSAxMS4yMjE5IDEyLjI4MTIgMTIuMjE1NiAxMS44NDM3QzEzLjIwOTQgMTEuNDA2MiAxNC4wNzUgMTAuODEyNSAxNC44MTI1IDEwLjA2MjVMMTMuMjM3NSA4LjQ4NzVDMTIuNjg3NSA5LjAzNzUgMTIuMDUgOS40Njg3NSAxMS4zMjUgOS43ODEyNUMxMC42IDEwLjA5MzcgOS44MjUgMTAuMjUgOSAxMC4yNUM4LjE3NSAxMC4yNSA3LjQgMTAuMDkzNyA2LjY3NSA5Ljc4MTI1QzUuOTUgOS40Njg3NSA1LjMxMjUgOS4wMzc1IDQuNzYyNSA4LjQ4NzVaTTEuNTc1IDExLjY3NUwwIDEzLjI1QzEuMTUgMTQuNDI1IDIuNDkzNzUgMTUuMzQzNyA0LjAzMTI1IDE2LjAwNjJDNS41Njg3NSAxNi42Njg3IDcuMjI1IDE3IDkgMTdDMTAuNzc1IDE3IDEyLjQzMTMgMTYuNjY4NyAxMy45Njg4IDE2LjAwNjJDMTUuNTA2MyAxNS4zNDM3IDE2Ljg1IDE0LjQyNSAxOCAxMy4yNUwxNi40MjUgMTEuNjc1QzE1LjQ2MjUgMTIuNjM3NSAxNC4zNDY5IDEzLjM5MDYgMTMuMDc4MSAxMy45MzQ0QzExLjgwOTQgMTQuNDc4MSAxMC40NSAxNC43NSA5IDE0Ljc1QzcuNTUgMTQuNzUgNi4xOTA2MyAxNC40NzgxIDQuOTIxODggMTMuOTM0NEMzLjY1MzEzIDEzLjM5MDYgMi41Mzc1IDEyLjYzNzUgMS41NzUgMTEuNjc1WiIgZmlsbD0iIzFDMUMxRSIvPgo8L2c+Cjwvc3ZnPgo="></div></div>
+          <div class="flex-none"><div class="h-[22px] relative w-[18px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMjIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJJY29uIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTYgMy41QzUuNzg3NSAzLjUgNS42MDkzOCAzLjU3MTg3IDUuNDY1NjMgMy43MTU2MkM1LjMyMTg4IDMuODU5MzcgNS4yNSA0LjAzNzUgNS4yNSA0LjI1VjE2LjI1QzUuMjUgMTYuNDYyNSA1LjMyMTg4IDE2LjY0MDYgNS40NjU2MyAxNi43ODQ0QzUuNjA5MzggMTYuOTI4MSA1Ljc4NzUgMTcgNiAxN0g3LjVWMTguNUgxMC41VjE3SDEyQzEyLjIxMjUgMTcgMTIuMzkwNiAxNi45MjgxIDEyLjUzNDQgMTYuNzg0NEMxMi42NzgxIDE2LjY0MDYgMTIuNzUgMTYuNDYyNSAxMi43NSAxNi4yNVY0LjI1QzEyLjc1IDQuMDM3NSAxMi42NzgxIDMuODU5MzcgMTIuNTM0NCAzLjcxNTYyQzEyLjM5MDYgMy41NzE4NyAxMi4yMTI1IDMuNSAxMiAzLjVINlpNNi43NSAxMUgxMS4yNVYxNS41SDYuNzVWMTFaIiBmaWxsPSIjMUMxQzFFIi8+CjwvZz4KPC9zdmc+Cg=="></div></div>
+        </div>
+      </div>
+
+      <div id="scroll">
+        <div id="content">
+
+          <!-- sticky header -->
+          <div class="sticky-hd">
+            <div class="flex h-[54px] items-center px-[20px] gap-[8px] w-full">
+              <button onclick="headerBack()" class="relative shrink-0 size-[24px] bg-transparent border-none cursor-pointer p-0">
+                <div class="absolute inset-[-5%_-9.38%]"><img alt="" class="block max-w-none size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iOS41IiBoZWlnaHQ9IjE2LjUiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgOS41IDE2LjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJpY28iPgo8cGF0aCBpZD0iVmVjdG9yIDQyMzMiIGQ9Ik04Ljc1IDAuNzUwMDAyTDAuNzUgOC4yNUw4Ljc1IDE1Ljc1IiBzdHJva2U9IiM0MDQwNDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9nPgo8L3N2Zz4K"></div>
+              </button>
+              <span class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[26px]">나의 상품 현황</span>
+            </div>
+          </div>
+          <!-- end sticky header -->
+
+          <!-- ① AI 진단 카드 -->
+          <div class="px-[16px] pt-[8px] pb-[0px]">
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] flex flex-col gap-[0px] overflow-hidden w-full">
+
+              <!-- 요금제 행 -->
+              <div class="flex items-center justify-between px-[20px] pt-[20px] pb-[16px]">
+                <div class="flex flex-col gap-[2px]">
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">현재 요금제</p>
+                  <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">6GX 프레스티지</p>
+                </div>
+                <div class="flex flex-col gap-[2px] items-end">
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">월 청구 예정</p>
+                  <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">89,000원</p>
+                </div>
+              </div>
+
+              <!-- 레벨바 -->
+              <div class="px-[20px] pb-[16px] flex flex-col gap-[8px]">
+                <div class="flex items-center justify-between">
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">데이터 사용량</p>
+                  <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.6px] leading-[18px]">3.2GB / 무제한</p>
+                </div>
+                <div class="relative h-[11px] w-full">
+                  <img alt="" class="absolute inset-0 w-full h-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMzAzIiBoZWlnaHQ9IjExIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgdmlld0JveD0iMCAwIDMwMyAxMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgaWQ9IlJlY3RhbmdsZSAxOTU0MTMwNzE4IiB3aWR0aD0iMzAzIiBoZWlnaHQ9IjExIiByeD0iNS41IiBmaWxsPSIjNTk0MERGIi8+Cjwvc3ZnPgo=" style="object-fit:fill;opacity:0.12;">
+                  <div class="absolute inset-0 rounded-[5.5px] overflow-hidden bg-[#e7e7e7]">
+                    <div class="h-full rounded-[5.5px] bg-gradient-to-r from-[#5940df] to-[#8b6fff]" style="width:18%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMzAzIiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMzAzIDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIzMDMiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- AI 인사이트 -->
+              <div class="px-[20px] pt-[16px] pb-[16px] flex gap-[8px] items-start">
+                <div class="shrink-0 size-[18px] mt-[1px]"><img alt="" class="size-full block" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo="></div>
+                <div class="flex flex-col gap-[4px]">
+                  <p class="font-['Pretendard:SemiBold'] text-[13px] tracking-[-0.8px] leading-[18px]" style="background:linear-gradient(to right,#5940df,#0d0052);-webkit-background-clip:text;background-clip:text;color:transparent;">지훈님은 무제한 데이터를 거의 쓰지 않아요.</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">지난 3개월 평균 <span class="font-['Pretendard:SemiBold'] text-[#1c1c1e] opacity-100">3.8GB</span> 사용</p>
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMzAzIiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMzAzIDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIzMDMiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- 데이터 insight row -->
+              <div class="px-[20px] pt-[16px] pb-[12px] flex items-center justify-between">
+                <div class="flex gap-[8px] items-center">
+                  <div class="shrink-0 size-[32px] flex items-center justify-center"><img alt="" class="size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMzIgMzIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJHcm91cCAyMTQ3MjQ1MTkxIj4KPHBhdGggaWQ9IkVsbGlwc2UgODE3OCIgZD0iTTMyIDE2QzMyIDI0LjgzNjYgMjQuODM2NiAzMiAxNiAzMkM3LjE2MzQ0IDMyIDAgMjQuODM2NiAwIDE2QzAgNy4xNjM0NCA3LjE2MzQ0IDAgMTYgMEMyNC44MzY2IDAgMzIgNy4xNjM0NCAzMiAxNlpNMy4yIDE2QzMuMiAyMy4wNjkyIDguOTMwNzYgMjguOCAxNiAyOC44QzIzLjA2OTIgMjguOCAyOC44IDIzLjA2OTIgMjguOCAxNkMyOC44IDguOTMwNzYgMjMuMDY5MiAzLjIgMTYgMy4yQzguOTMwNzYgMy4yIDMuMiA4LjkzMDc2IDMuMiAxNloiIGZpbGw9IiNFN0U3RTciLz4KPHBhdGggaWQ9IkVsbGlwc2UgODE3OSIgZD0iTTMyIDE2QzMyIDI0LjgzNjYgMjQuODM2NiAzMiAxNiAzMkM3LjE2MzQ0IDMyIDAgMjQuODM2NiAwIDE2QzAgNy4xNjM0NCA3LjE2MzQ0IDAgMTYgMEMyNC44MzY2IDAgMzIgNy4xNjM0NCAzMiAxNlpNMy4yIDE2QzMuMiAyMy4wNjkyIDguOTMwNzYgMjguOCAxNiAyOC44QzIzLjA2OTIgMjguOCAyOC44IDIzLjA2OTIgMjguOCAxNkMyOC44IDguOTMwNzYgMjMuMDY5MiAzLjIgMTYgMy4yQzguOTMwNzYgMy4yIDMuMiA4LjkzMDc2IDMuMiAxNloiIGZpbGw9IiNDMkMyQzIiLz4KPHBhdGggaWQ9IkVsbGlwc2UgODE4MiIgZD0iTTMyIDE2QzMyIDI0LjgzNjYgMjQuODM2NiAzMiAxNiAzMkM3LjE2MzQ0IDMyIDAgMjQuODM2NiAwIDE2QzAgNy4xNjM0NCA3LjE2MzQ0IDAgMTYgMEMyNC44MzY2IDAgMzIgNy4xNjM0NCAzMiAxNlpNMy4yIDE2QzMuMiAyMy4wNjkyIDguOTMwNzYgMjguOCAxNiAyOC44QzIzLjA2OTIgMjguOCAyOC44IDIzLjA2OTIgMjguOCAxNkMyOC44IDguOTMwNzYgMjMuMDY5MiAzLjIgMTYgMy4yQzguOTMwNzYgMy4yIDMuMiA4LjkzMDc2IDMuMiAxNloiIGZpbGw9IiNGRkQ5RDkiLz4KPHBhdGggaWQ9IkVsbGlwc2UgODE4MCIgZD0iTTE2IDBDMTguNTY1IDMuMDU4NjhlLTA4IDIxLjA5MjMgMC42MTY2NTYgMjMuMzY5IDEuNzk3OTlDMjUuNjQ1OCAyLjk3OTMxIDI3LjYwNTEgNC42OTA2OSAyOS4wODE5IDYuNzg3ODVDMzAuNTU4NyA4Ljg4NSAzMS41MDk3IDExLjMwNjUgMzEuODU0NiAxMy44NDgxQzMyLjE5OTYgMTYuMzg5OCAzMS45Mjg1IDE4Ljk3NzEgMzEuMDY0MSAyMS4zOTJDMzAuMTk5NyAyMy44MDY5IDI4Ljc2NzQgMjUuOTc4NyAyNi44ODc5IDI3LjcyNDFDMjUuMDA4NCAyOS40Njk1IDIyLjczNjggMzAuNzM3NSAyMC4yNjQ3IDMxLjQyMTJDMTcuNzkyNSAzMi4xMDQ4IDE1LjE5MjIgMzIuMTg0MSAxMi42ODMgMzEuNjUyNEMxMC4xNzM3IDMxLjEyMDYgNy44MjkxMiAyOS45OTM0IDUuODQ2NzcgMjguMzY1OEw3Ljg3NzQxIDI1Ljg5MjZDOS40NjMyOSAyNy4xOTQ3IDExLjMzOSAyOC4wOTY1IDEzLjM0NjQgMjguNTIxOUMxNS4zNTM4IDI4Ljk0NzMgMTcuNDM0IDI4Ljg4MzkgMTkuNDExNyAyOC4zMzY5QzIxLjM4OTUgMjcuNzkgMjMuMjA2NyAyNi43NzU2IDI0LjcxMDMgMjUuMzc5M0MyNi4yMTM5IDIzLjk4MjkgMjcuMzU5NyAyMi4yNDU2IDI4LjA1MTMgMjAuMzEzNkMyOC43NDI4IDE4LjM4MTcgMjguOTU5NyAxNi4zMTE4IDI4LjY4MzcgMTQuMjc4NUMyOC40MDc3IDEyLjI0NTIgMjcuNjQ3IDEwLjMwOCAyNi40NjU1IDguNjMwMjhDMjUuMjg0MSA2Ljk1MjU1IDIzLjcxNjYgNS41ODM0NSAyMS44OTUyIDQuNjM4MzlDMjAuMDczOSAzLjY5MzMyIDE4LjA1MiAzLjIgMTYgMy4yTDE2IDBaIiBmaWxsPSIjRkY1RDVEIi8+CjwvZz4KPC9zdmc+Cg=="></div>
+                  <div class="flex flex-col gap-[2px]">
+                    <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">데이터/통화</p>
+                    <p class="font-['Pretendard:SemiBold'] text-[13px] text-[#1c1c1e] tracking-[-0.8px] leading-[18px]">월 3.8GB 평균 사용</p>
+                  </div>
+                </div>
+                <button id="btn-scroll" class="flex items-center gap-[4px] bg-[rgba(89,64,223,0.06)] rounded-[999px] px-[10px] py-[6px] border-none cursor-pointer">
+                  <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.6px] leading-[18px] whitespace-nowrap">결합 분석 보기</p>
+                  <img alt="" class="size-[14px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzBfMjkpIj4KPGcgaWQ9IlZlY3RvciI+CjwvZz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNiA2LjA3NDIyTDkgOS4wNzQyMkwxMiA2LjA3NDIyIiBzdHJva2U9IiNBN0E3QTciLz4KPHBhdGggaWQ9IlZlY3Rvcl8zIiBkPSJNNiA5LjY3NTc4TDkgMTIuNjc1OEwxMiA5LjY3NTc4IiBzdHJva2U9IiNBN0E3QTciLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8wXzI5Ij4KPHJlY3Qgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=">
+                </button>
+              </div>
+
+              <!-- 결합 insight row -->
+              <div class="px-[20px] pb-[20px] flex items-center justify-between">
+                <div class="flex gap-[8px] items-center">
+                  <div class="shrink-0 size-[32px] flex items-center justify-center"><img alt="" class="w-[16px] h-[16px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzBfNzQpIj4KPGcgaWQ9IlZlY3RvciI+CjwvZz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNCAzLjMzMzMzQzQgMi45Nzk3MSA0LjE0MDQ4IDIuNjQwNTcgNC4zOTA1MiAyLjM5MDUyQzQuNjQwNTcgMi4xNDA0OCA0Ljk3OTcxIDIgNS4zMzMzMyAySDEwLjY2NjdDMTEuMDIwMyAyIDExLjM1OTQgMi4xNDA0OCAxMS42MDk1IDIuMzkwNTJDMTEuODU5NSAyLjY0MDU3IDEyIDIuOTc5NzEgMTIgMy4zMzMzM1YxMi42NjY3QzEyIDEzLjAyMDMgMTEuODU5NSAxMy4zNTk0IDExLjYwOTUgMTMuNjA5NUMxMS4zNTk0IDEzLjg1OTUgMTEuMDIwMyAxNCAxMC42NjY3IDE0SDUuMzMzMzNDNC45Nzk3MSAxNCA0LjY0MDU3IDEzLjg1OTUgNC4zOTA1MiAxMy42MDk1QzQuMTQwNDggMTMuMzU5NCA0IDEzLjAyMDMgNCAxMi42NjY3VjMuMzMzMzNaIiBzdHJva2U9IiM4RThFOTMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBpZD0iVmVjdG9yXzMiIGQ9Ik03LjMyODEyIDIuNjY3OTdIOC42NjE0NiIgc3Ryb2tlPSIjOEU4RTkzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggaWQ9IlZlY3Rvcl80IiBkPSJNOCAxMS4zMzJWMTEuMzM4NyIgc3Ryb2tlPSIjOEU4RTkzIiBzdHJva2Utd2lkdGg9IjEuMzMzMzMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzBfNzQiPgo8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg=="></div>
+                  <div class="flex flex-col gap-[2px]">
+                    <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">결합 상품</p>
+                    <p class="font-['Pretendard:SemiBold'] text-[13px] text-[#1c1c1e] tracking-[-0.8px] leading-[18px]">디즈니+ 월 2회 미만 시청</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-[4px]">
+                  <div class="shrink-0 size-[18px]"><img alt="" class="size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo="></div>
+                  <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.6px] leading-[18px] whitespace-nowrap">AI 추천 있음</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end AI 진단 카드 -->
+
+          <!-- ② 나의 데이터/통화 섹션 -->
+          <div class="px-[16px] pt-[16px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">나의 데이터/통화</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+
+            <!-- 패턴 카드 -->
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+
+              <!-- 패턴 헤더 -->
+              <div class="px-[20px] pt-[20px] pb-[16px] flex items-center gap-[8px]">
+                <div class="shrink-0 size-[10px] rounded-full bg-[#5940df]"></div>
+                <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">이번 달 사용 패턴</p>
+              </div>
+
+              <!-- 도넛 차트 영역 -->
+              <div class="px-[20px] pb-[20px] flex gap-[16px] items-center">
+                <!-- 도넛 -->
+                <div class="relative shrink-0" style="width:90px;height:90px;">
+                  <img alt="" class="absolute inset-0 size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iODkuOTk4NCIgaGVpZ2h0PSI4OS45OTg0IiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgdmlld0JveD0iMCAwIDg5Ljk5ODQgODkuOTk4NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgaWQ9IlByb2dyZXNzIHdoZWVsIj4KPGNpcmNsZSBpZD0iZ3Jvb3ZlIiBjeD0iNDQuOTk2OCIgY3k9IjQ0Ljk5ODYiIHI9IjQ0LjY2MjUiIGZpbGw9IiNGRkREREQiLz4KPHBhdGggaWQ9InByb2dyZXNzIiBkPSJNOS43MzcxOSAxNy41ODg4QzUuMzc0MzQgMjMuMjAxNCAyLjQxNDI2IDI5Ljc3NDMgMS4xMDMwMyAzNi43NjEyQy0wLjIwODE5NSA0My43NDggMC4xNjczMDkgNTAuOTQ2OSAyLjE5ODMzIDU3Ljc1OTRDNC4yMjkzNSA2NC41NzIgNy44NTcyMSA3MC44MDEyIDEyLjc4MDMgNzUuOTI5NUMxNy43MDM0IDgxLjA1NzcgMjMuNzc5NSA4NC45MzY2IDMwLjUwMzUgODcuMjQzOUMzNy4yMjc1IDg5LjU1MTEgNDQuNDA1MSA5MC4yMiA1MS40Mzk2IDg5LjE5NDlDNTguNDc0MSA4OC4xNjk3IDY1LjE2MjQgODUuNDgwMyA3MC45NDgyIDgxLjM1Qzc2LjczNDEgNzcuMjE5OCA4MS40NTA1IDcxLjc2ODEgODQuNzA1MyA2NS40NDgxQzg3Ljk2MDEgNTkuMTI4MiA4OS42NTkzIDUyLjEyMjYgODkuNjYxNiA0NS4wMTM4TDQ0Ljk5OTIgNDQuOTk5Mkw5LjczNzE5IDE3LjU4ODhaIiBmaWxsPSIjRkZCRkJGIi8+CjxwYXRoIGlkPSJwcm9ncmVzc18yIiBkPSJNMTcuODU0IDgwLjQ2NzFDMjMuNDk5NSA4NC43ODczIDMwLjA5NDYgODcuNjk3NSAzNy4wOTEyIDg4Ljk1NTlDNDQuMDg3OCA5MC4yMTQyIDUxLjI4MzYgODkuNzg0MiA1OC4wODA2IDg3LjcwMTdDNjQuODc3NSA4NS42MTkyIDcxLjA3OTIgODEuOTQ0MyA3Ni4xNyA3Ni45ODI1QzgxLjI2MDggNzIuMDIwNyA4NS4wOTM2IDY1LjkxNTQgODcuMzQ5OSA1OS4xNzQyQzg5LjYwNjIgNTIuNDMyOSA5MC4yMjA3IDQ1LjI1MDUgODkuMTQyNCAzOC4yMjM5Qzg4LjA2NDEgMzEuMTk3MyA4NS4zMjQxIDI0LjUyOTcgODEuMTUwMiAxOC43NzUyQzc2Ljk3NjIgMTMuMDIwOCA3MS40ODkgOC4zNDU3NyA2NS4xNDQ2IDUuMTM4ODhDNTguODAwMiAxLjkzMiA1MS43ODIgMC4yODU4NjkgNDQuNjczMyAwLjMzNzM0OEw0NC45OTY4IDQ0Ljk5ODZMMTcuODU0IDgwLjQ2NzFaIiBmaWxsPSIjRkY3NTc1Ii8+CjwvZz4KPC9zdmc+Cg==">
+                  <!-- Netflix badge -->
+                  <div class="absolute" style="bottom:-2px;right:-2px;">
+                    <img alt="" style="width:25px;height:25px;" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjUuMDkwOSIgaGVpZ2h0PSIyNS4wOTA5IiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgdmlld0JveD0iMCAwIDI1LjA5MDkgMjUuMDkwOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgaWQ9Ikdyb3VwIDIxNDcyNDYxMTMiPgo8Y2lyY2xlIGlkPSJFbGxpcHNlIDE2IiBjeD0iMTIuNTQ0NyIgY3k9IjEyLjU0NDciIHI9IjExLjUiIGZpbGw9IiM1OTQwREYiIGZpbGwtb3BhY2l0eT0iMC4yIi8+CjxnIGlkPSJsb2dvX25ldGZsaXggMiIgZmlsdGVyPSJ1cmwoI2ZpbHRlcjBfZF8wXzYxKSI+CjxyZWN0IHg9IjcuMzE4MTgiIHk9IjcuMzE4MTgiIHdpZHRoPSIxMC40NTQ1IiBoZWlnaHQ9IjEwLjQ1NDUiIHJ4PSI1LjIyNzI3IiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSI2Ljc5NTQ2IiB5PSI2Ljc5NTQ2IiB3aWR0aD0iMTEuNSIgaGVpZ2h0PSIxMS41IiByeD0iNS43NSIgc3Ryb2tlPSIjNTk0MERGIiBzdHJva2Utd2lkdGg9IjEuMDQ1NDUiLz4KPC9nPgo8L2c+CjxkZWZzPgo8ZmlsdGVyIGlkPSJmaWx0ZXIwX2RfMF82MSIgeD0iMS4xOTIwOWUtMDciIHk9IjEuMTkyMDllLTA3IiB3aWR0aD0iMjUuMDkwOSIgaGVpZ2h0PSIyNS4wOTA5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzLjEzNjM2Ii8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzBfNjEiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3dfMF82MSIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPC9kZWZzPgo8L3N2Zz4K">
+                  </div>
+                </div>
+                <!-- 우측 정보 -->
+                <div class="flex flex-col gap-[8px] flex-1">
+                  <div class="flex items-center justify-between">
+                    <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">이번 달 사용</p>
+                    <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">3.2 GB</p>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">스트리밍 비율</p>
+                    <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#ff5d5d] tracking-[-0.8px] leading-[20px]">72%</p>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">주 사용 앱</p>
+                    <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">넷플릭스</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjc5IiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMjc5IDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIyNzkiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- 플랜 추천 -->
+              <div class="px-[20px] pt-[16px] pb-[16px] flex items-center justify-between">
+                <div class="flex gap-[8px] items-center">
+                  <div class="shrink-0 size-[16px]"><img alt="" class="size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzBfNzQpIj4KPGcgaWQ9IlZlY3RvciI+CjwvZz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNCAzLjMzMzMzQzQgMi45Nzk3MSA0LjE0MDQ4IDIuNjQwNTcgNC4zOTA1MiAyLjM5MDUyQzQuNjQwNTcgMi4xNDA0OCA0Ljk3OTcxIDIgNS4zMzMzMyAySDEwLjY2NjdDMTEuMDIwMyAyIDExLjM1OTQgMi4xNDA0OCAxMS42MDk1IDIuMzkwNTJDMTEuODU5NSAyLjY0MDU3IDEyIDIuOTc5NzEgMTIgMy4zMzMzM1YxMi42NjY3QzEyIDEzLjAyMDMgMTEuODU5NSAxMy4zNTk0IDExLjYwOTUgMTMuNjA5NUMxMS4zNTk0IDEzLjg1OTUgMTEuMDIwMyAxNCAxMC42NjY3IDE0SDUuMzMzMzNDNC45Nzk3MSAxNCA0LjY0MDU3IDEzLjg1OTUgNC4zOTA1MiAxMy42MDk1QzQuMTQwNDggMTMuMzU5NCA0IDEzLjAyMDMgNCAxMi42NjY3VjMuMzMzMzNaIiBzdHJva2U9IiM4RThFOTMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBpZD0iVmVjdG9yXzMiIGQ9Ik03LjMyODEyIDIuNjY3OTdIOC42NjE0NiIgc3Ryb2tlPSIjOEU4RTkzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggaWQ9IlZlY3Rvcl80IiBkPSJNOCAxMS4zMzJWMTEuMzM4NyIgc3Ryb2tlPSIjOEU4RTkzIiBzdHJva2Utd2lkdGg9IjEuMzMzMzMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzBfNzQiPgo8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg=="></div>
+                  <p class="font-['Pretendard:Medium'] text-[13px] text-[#1c1c1e] tracking-[-0.8px] leading-[18px]">0 청년 109 요금제 추천</p>
+                </div>
+                <div class="flex items-center gap-[4px]">
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">월 109,000원</p>
+                  <img alt="" class="size-[14px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzBfMjkpIj4KPGcgaWQ9IlZlY3RvciI+CjwvZz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNiA2LjA3NDIyTDkgOS4wNzQyMkwxMiA2LjA3NDIyIiBzdHJva2U9IiNBN0E3QTciLz4KPHBhdGggaWQ9IlZlY3Rvcl8zIiBkPSJNNiA5LjY3NTc4TDkgMTIuNjc1OEwxMiA5LjY3NTc4IiBzdHJva2U9IiNBN0E3QTciLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8wXzI5Ij4KPHJlY3Qgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=">
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjc5IiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMjc5IDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIyNzkiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- T 에이전트 분석 (데이터/통화) -->
+              <div class="px-[16px] pt-[16px] pb-[20px]">
+                <div class="bg-[#ece8ff] rounded-[12px] flex flex-col gap-[16px] items-center pt-[16px] px-[16px] pb-[20px] w-full">
+                  <div class="flex flex-col gap-[8px] items-start w-full">
+                    <div class="flex flex-col gap-[4px] items-start w-full">
+                      <div class="relative shrink-0 size-[18px]"><img alt="" class="size-full block" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo="></div>
+                      <p style="background:linear-gradient(to right,#5940df,#0d0052);-webkit-background-clip:text;background-clip:text;color:transparent;" class="font-['Pretendard:SemiBold'] text-[14px] tracking-[-0.796px] leading-[1.4]">자주 쓰는 넷플릭스에 커피·영화·로밍 할인까지 더해 훨씬 합리적인 구성이에요.</p>
+                    </div>
+                    <div class="flex gap-[4px] items-start">
+                      <div class="bg-[rgba(255,255,255,0.8)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                        <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.4px] leading-[18px] whitespace-nowrap">넷플릭스 무료</p>
+                      </div>
+                      <div class="bg-[rgba(255,255,255,0.8)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                        <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.4px] leading-[18px] whitespace-nowrap">주요 혜택 50% 할인</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-white h-px opacity-80 w-full shrink-0"></div>
+                  <div class="flex flex-col gap-[16px] items-start w-full">
+                    <p class="font-['Pretendard:SemiBold'] text-[13px] text-[#5940df] tracking-[-0.8px] leading-[18px] whitespace-nowrap">지훈님의 패턴에 맞게 최적 옵션을 설정했어요.</p>
+                    <div class="flex flex-col gap-[8px] items-start w-full">
+                      <div class="flex items-center justify-between w-full">
+                        <p class="font-['Pretendard:Regular'] text-[13px] text-[#1c1c1e] opacity-60 tracking-[-0.8px] leading-[18px] whitespace-nowrap shrink-0">변경 전</p>
+                        <div class="bg-[rgba(255,255,255,0.5)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                          <p class="font-['Pretendard:Medium'] text-[12px] text-[rgba(64,64,64,0.8)] text-center tracking-[-0.4px] leading-[18px] whitespace-nowrap">6GX 프레스티지</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between w-full">
+                        <p class="font-['Pretendard:Regular'] text-[13px] text-[#5940df] tracking-[-0.8px] leading-[18px] whitespace-nowrap shrink-0">변경 후</p>
+                        <div class="bg-[rgba(255,255,255,0.8)] border border-[#5940df] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                          <p class="font-['Pretendard:SemiBold'] text-[12px] text-[#5940df] text-center tracking-[-0.4px] leading-[18px] whitespace-nowrap">0 청년 109</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="font-['Pretendard:Regular'] text-[13px] text-[#5940df] opacity-50 tracking-[-0.8px] leading-[18px] text-center underline whitespace-nowrap w-full">직접 고르기</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end 데이터/통화 섹션 -->
+
+          <!-- ③ 인터넷 섹션 -->
+          <div class="px-[16px] pt-[16px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">인터넷</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+              <div class="px-[20px] pt-[20px] pb-[20px] flex items-center gap-[16px]">
+                <div class="shrink-0 size-[40px] rounded-[12px] bg-[#f0f0f0] flex items-center justify-center">
+                  <img alt="" class="size-[24px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtYXRlcmlhbC1zeW1ib2xzOndpZmkiIG9wYWNpdHk9IjAuNSI+CjxwYXRoIGlkPSJWZWN0b3IiIGQ9Ik0xMC4yMjUgMjAuMjc1QzkuNzQxNjcgMTkuNzkxNyA5LjUgMTkuMiA5LjUgMTguNUM5LjUgMTcuOCA5Ljc0MTY3IDE3LjIwODMgMTAuMjI1IDE2LjcyNUMxMC43MDgzIDE2LjI0MTcgMTEuMyAxNiAxMiAxNkMxMi43IDE2IDEzLjI5MTcgMTYuMjQxNyAxMy43NzUgMTYuNzI1QzE0LjI1ODMgMTcuMjA4MyAxNC41IDE3LjggMTQuNSAxOC41QzE0LjUgMTkuMiAxNC4yNTgzIDE5Ljc5MTcgMTMuNzc1IDIwLjI3NUMxMy4yOTE3IDIwLjc1ODMgMTIuNyAyMSAxMiAyMUMxMS4zIDIxIDEwLjcwODMgMjAuNzU4MyAxMC4yMjUgMjAuMjc1Wk02LjM1IDE1LjM1TDQuMjUgMTMuMkM1LjIzMzMzIDEyLjIxNjcgNi4zODc2NyAxMS40Mzc3IDcuNzEzIDEwLjg2M0M5LjAzODMzIDEwLjI4ODMgMTAuNDY3MyAxMC4wMDA3IDEyIDEwQzEzLjUzMjcgOS45OTkzMyAxNC45NjIgMTAuMjkxIDE2LjI4OCAxMC44NzVDMTcuNjE0IDExLjQ1OSAxOC43NjggMTIuMjUwNyAxOS43NSAxMy4yNUwxNy42NSAxNS4zNUMxNi45MTY3IDE0LjYxNjcgMTYuMDY2NyAxNC4wNDE3IDE1LjEgMTMuNjI1QzE0LjEzMzMgMTMuMjA4MyAxMy4xIDEzIDEyIDEzQzEwLjkgMTMgOS44NjY2NyAxMy4yMDgzIDguOSAxMy42MjVDNy45MzMzMyAxNC4wNDE3IDcuMDgzMzMgMTQuNjE2NyA2LjM1IDE1LjM1Wk0yLjEgMTEuMUwwIDlDMS41MzMzMyA3LjQzMzMzIDMuMzI1IDYuMjA4MzMgNS4zNzUgNS4zMjVDNy40MjUgNC40NDE2NyA5LjYzMzMzIDQgMTIgNEMxNC4zNjY3IDQgMTYuNTc1IDQuNDQxNjcgMTguNjI1IDUuMzI1QzIwLjY3NSA2LjIwODMzIDIyLjQ2NjcgNy40MzMzMyAyNCA5TDIxLjkgMTEuMUMyMC42MTY3IDkuODE2NjcgMTkuMTI5MyA4LjgxMjY3IDE3LjQzOCA4LjA4OEMxNS43NDY3IDcuMzYzMzMgMTMuOTM0IDcuMDAwNjcgMTIgN0MxMC4wNjYgNi45OTkzMyA4LjI1MzY3IDcuMzYyIDYuNTYzIDguMDg4QzQuODcyMzMgOC44MTQgMy4zODQ2NyA5LjgxOCAyLjEgMTEuMVoiIGZpbGw9IiMxQzFDMUUiLz4KPC9nPgo8L3N2Zz4K">
+                </div>
+                <div class="flex flex-col gap-[2px] flex-1">
+                  <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">T 인터넷 500M</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">월 33,000원</p>
+                </div>
+                <div class="flex items-center gap-[4px]">
+                  <div class="shrink-0 size-[14px]"><img alt="" class="size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTQgMTQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzBfMTIpIj4KPGcgaWQ9IlZlY3RvciI+CjwvZz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMF8wXzEyIj4KPHJlY3Qgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo="></div>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-40 tracking-[-0.6px] leading-[18px]">상세보기</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ④ 단말기 섹션 -->
+          <div class="px-[16px] pt-[16px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">단말기</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+              <div class="px-[20px] pt-[20px] pb-[20px] flex items-center gap-[16px]">
+                <div class="shrink-0" style="width:48px;height:64px;">
+                  <img alt="" class="w-full h-full object-contain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAk4AAAJOCAYAAABBWYj1AAAACXBIWXMAAAAnAAAAJwEqCZFPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABVxJREFUeAHtwDEBAAAAwqD1T20GfygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAzQpkAAVAQF98AAAAASUVORK5CYII=">
+                </div>
+                <div class="flex flex-col gap-[2px] flex-1">
+                  <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">갤럭시 S25</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">잔여 할부 24개월 · 월 55,000원</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ⑤ 결합 상품 섹션 -->
+          <div id="section-combo" class="px-[16px] pt-[16px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">결합 상품</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+
+              <!-- 헤더: Disney+ -->
+              <div class="px-[20px] pt-[20px] pb-[16px] flex items-center gap-[10px]">
+                <div class="shrink-0 size-[40px] rounded-[12px] overflow-hidden bg-[#001f5f] flex items-center justify-center">
+                  <img alt="" class="size-[30px] object-contain" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iNjgiIGhlaWdodD0iNjgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgNjggNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ2NjgxIj4KPGNpcmNsZSBpZD0iRWxsaXBzZSA4MjY1IiBjeD0iMzQiIGN5PSIzNCIgcj0iMzQiIGZpbGw9IiNGRkREREQiLz4KPC9nPgo8L3N2Zz4K">
+                </div>
+                <div class="flex flex-col gap-[2px] flex-1">
+                  <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">디즈니 플러스 스탠다드</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">월 13,900원</p>
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjc5IiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMjc5IDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIyNzkiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- 버블 차트 영역 -->
+              <div class="px-[20px] pt-[16px] pb-[16px] relative" style="height:140px;">
+                <!-- Gemini 버블 (large) -->
+                <div class="absolute" style="left:20px;top:10px;width:80px;height:80px;">
+                  <div class="size-full rounded-full bg-[#8872ff] opacity-80 flex items-center justify-center">
+                    <img alt="" class="w-[40px] h-[40px] object-contain" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJkaXNwbGF5OiBibG9jazsiIHZpZXdCb3g9IjAgMCAxMjAgMTIwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBpZD0iRnJhbWUgMjE0NzI0NjY3NiI+CjxjaXJjbGUgaWQ9IkVsbGlwc2UgODI2MiIgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSIjODg3MkZGIi8+CjwvZz4KPC9zdmc+Cg==">
+                  </div>
+                  <p class="font-['Pretendard:Medium'] text-[10px] text-[#1c1c1e] text-center mt-[4px] tracking-[-0.4px]">Gemini</p>
+                </div>
+                <!-- Google Drive 버블 (medium) -->
+                <div class="absolute" style="left:110px;top:20px;width:60px;height:60px;">
+                  <div class="size-full rounded-full bg-[#cec4ff] flex items-center justify-center">
+                    <img alt="" class="w-[32px] h-[32px] object-contain" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJkaXNwbGF5OiBibG9jazsiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8Y2lyY2xlIGlkPSJFbGxpcHNlIDgyNjMiIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI0NFQzRGRiIvPgo8L3N2Zz4K">
+                  </div>
+                  <p class="font-['Pretendard:Medium'] text-[10px] text-[#1c1c1e] text-center mt-[4px] tracking-[-0.4px]">Google Drive</p>
+                </div>
+                <!-- Disney+ 버블 (small) -->
+                <div class="absolute" style="left:190px;top:30px;width:50px;height:50px;">
+                  <div class="size-full rounded-full bg-[#ffdddd] flex items-center justify-center">
+                    <img alt="" class="w-[28px] h-[28px] object-contain" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iNjgiIGhlaWdodD0iNjgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgNjggNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ2NjgxIj4KPGNpcmNsZSBpZD0iRWxsaXBzZSA4MjY1IiBjeD0iMzQiIGN5PSIzNCIgcj0iMzQiIGZpbGw9IiNGRkREREQiLz4KPC9nPgo8L3N2Zz4K">
+                  </div>
+                  <p class="font-['Pretendard:Medium'] text-[10px] text-[#1c1c1e] text-center mt-[4px] tracking-[-0.4px]">Disney+</p>
+                </div>
+                <!-- tooltip bubble -->
+                <div class="absolute" style="left:8px;bottom:4px;width:147px;">
+                  <div class="relative">
+                    <img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTQ3IiBoZWlnaHQ9IjU5LjAwMSIgb3ZlcmZsb3c9InZpc2libGUiIHN0eWxlPSJkaXNwbGF5OiBibG9jazsiIHZpZXdCb3g9IjAgMCAxNDcgNTkuMDAxIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBpZD0iQ29tYmluZWQgU2hhcGUiIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMF81MykiPgo8cGF0aCBkPSJNMTIzIDE0QzEyNy40MTggMTQgMTMxIDE3LjU4MTcgMTMxIDIyVjI5QzEzMSAzMy40MTgzIDEyNy40MTggMzcgMTIzIDM3SDc3LjQ0MTRMNzMuNTAxIDQxLjAwMUw2OS41NjA1IDM3SDI0QzE5LjU4MTcgMzcgMTYgMzMuNDE4MyAxNiAyOVYyMkMxNiAxNy41ODE3IDE5LjU4MTcgMTQgMjQgMTRIMTIzWiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzBfNTMiIHg9IjAiIHk9IjAiIHdpZHRoPSIxNDciIGhlaWdodD0iNTkuMDAxIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjI5MzMzMyAwIDAgMCAwIDAuMzMzMjExIDAgMCAwIDAgMC40MzEzNzMgMCAwIDAgMC4yIDAiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3dfMF81MyIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18wXzUzIiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8L2RlZnM+Cjwvc3ZnPgo=">
+                    <div class="absolute inset-0 flex items-center justify-center" style="padding:0 16px;top:-4px;">
+                      <p class="font-['Pretendard:Medium'] text-[11px] text-[#5940df] tracking-[-0.4px] leading-[16px] whitespace-nowrap text-center">Google AI Pro +20GB 추천</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 구분선 -->
+              <div class="px-[20px]"><img alt="" class="w-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMjc5IiBoZWlnaHQ9IjEiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMjc5IDEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxsaW5lIGlkPSJMaW5lIDE3MTQiIHkxPSIwLjUiIHgyPSIyNzkiIHkyPSIwLjUiIHN0cm9rZT0iIzQwNDA0MCIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K"></div>
+
+              <!-- T 에이전트 분석 (결합 상품) -->
+              <div class="px-[16px] pt-[16px] pb-[20px]">
+                <div class="bg-[#ece8ff] rounded-[12px] flex flex-col gap-[16px] items-center pt-[16px] px-[16px] pb-[20px] w-full">
+                  <div class="flex flex-col gap-[8px] items-start w-full">
+                    <div class="flex flex-col gap-[4px] items-start w-full">
+                      <div class="relative shrink-0 size-[18px]"><img alt="" class="size-full block" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo="></div>
+                      <p style="background:linear-gradient(to right,#5940df,#0d0052);-webkit-background-clip:text;background-clip:text;color:transparent;" class="font-['Pretendard:SemiBold'] text-[14px] tracking-[-0.796px] leading-[1.4]">잘 안 보는 디즈니 플러스 대신, 자주 사용하는 Google AI Pro를 결합해 보세요.</p>
+                    </div>
+                    <div class="flex gap-[4px] items-start">
+                      <div class="bg-[rgba(255,255,255,0.8)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                        <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.4px] leading-[18px] whitespace-nowrap">디즈니 플러스 해지</p>
+                      </div>
+                      <div class="bg-[rgba(255,255,255,0.8)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                        <p class="font-['Pretendard:Medium'] text-[12px] text-[#5940df] tracking-[-0.4px] leading-[18px] whitespace-nowrap">Google AI Pro 무료 교체</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-white h-px opacity-80 w-full shrink-0"></div>
+                  <div class="flex flex-col gap-[16px] items-start w-full">
+                    <p class="font-['Pretendard:SemiBold'] text-[13px] text-[#5940df] tracking-[-0.8px] leading-[18px] whitespace-nowrap">지훈님의 패턴에 맞게 최적 옵션을 설정했어요.</p>
+                    <div class="flex flex-col gap-[8px] items-start w-full">
+                      <div class="flex items-center justify-between w-full">
+                        <p class="font-['Pretendard:Regular'] text-[13px] text-[#1c1c1e] opacity-60 tracking-[-0.8px] leading-[18px] whitespace-nowrap shrink-0">변경 전</p>
+                        <div class="bg-[rgba(255,255,255,0.5)] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                          <p class="font-['Pretendard:Medium'] text-[12px] text-[rgba(64,64,64,0.8)] text-center tracking-[-0.4px] leading-[18px] whitespace-nowrap">디즈니 플러스 스탠다드</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between w-full">
+                        <p class="font-['Pretendard:Regular'] text-[13px] text-[#5940df] tracking-[-0.8px] leading-[18px] whitespace-nowrap shrink-0">변경 후</p>
+                        <div class="bg-[rgba(255,255,255,0.8)] border border-[#5940df] rounded-[4px] flex items-center px-[8px] py-[4px] shrink-0">
+                          <p class="font-['Pretendard:SemiBold'] text-[12px] text-[#5940df] text-center tracking-[-0.4px] leading-[18px] whitespace-nowrap">Google AI Pro</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="font-['Pretendard:Regular'] text-[13px] text-[#5940df] opacity-50 tracking-[-0.8px] leading-[18px] text-center underline whitespace-nowrap w-full">직접 고르기</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end 결합 상품 섹션 -->
+
+          <!-- ⑥ 구독 상품 섹션 -->
+          <div class="px-[16px] pt-[16px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">구독 상품</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+              <!-- T Pass -->
+              <div class="px-[20px] pt-[20px] pb-[20px] flex items-center gap-[16px]">
+                <div class="shrink-0 size-[40px] rounded-[12px] overflow-hidden flex items-center justify-center bg-[#f0f0f0]">
+                  <img alt="" class="size-[26px] object-contain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAvAAAAI0CAYAAAB73x3YAAAACXBIWXMAAAAnAAAAJwEqCZFPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABoNJREFUeAHtwAENAAAAwqD3T20PBwUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMCbAearAAEmcw42AAAAAElFTkSuQmCC">
+                </div>
+                <div class="flex flex-col gap-[2px] flex-1">
+                  <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">T 멤버십 VIP</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">무료 제공</p>
+                </div>
+                <div class="shrink-0 size-[16px]">
+                  <img alt="" class="size-full" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTIuNDcwMyIgaGVpZ2h0PSIxMi40NjU3IiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgdmlld0JveD0iMCAwIDEyLjQ3MDMgMTIuNDY1NyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgaWQ9Ikdyb3VwIDIxNDcyNDY2MzkiPgo8cGF0aCBpZD0iVmVjdG9yIiBkPSJNMS40ODU1NSA0LjI1ODg3QzEuNDAwNCAzLjg3NTM1IDEuNDEzNDggMy40NzY1MyAxLjUyMzU1IDMuMDk5NDFDMS42MzM2MyAyLjcyMjI4IDEuODM3MTUgMi4zNzkwNSAyLjExNTI0IDIuMTAxNTVDMi4zOTMzMiAxLjgyNDA0IDIuNzM2OTggMS42MjEyNCAzLjExNDMzIDEuNTExOTZDMy40OTE2OSAxLjQwMjY3IDMuODkwNTMgMS4zOTA0MyA0LjI3Mzg4IDEuNDc2MzhDNC40ODQ4OCAxLjE0NjM4IDQuNzc1NTUgMC44NzQ4MTggNS4xMTkxIDAuNjg2NzA5QzUuNDYyNjUgMC40OTg1OTkgNS44NDgwMyAwLjQgNi4yMzk3MSAwLjRDNi42MzEzOSAwLjQgNy4wMTY3NyAwLjQ5ODU5OSA3LjM2MDMyIDAuNjg2NzA5QzcuNzAzODggMC44NzQ4MTggNy45OTQ1NSAxLjE0NjM4IDguMjA1NTQgMS40NzYzOEM4LjU4OTQ4IDEuMzkwMDYgOC45ODkgMS40MDIyNCA5LjM2Njk2IDEuNTExNzlDOS43NDQ5MiAxLjYyMTM0IDEwLjA4OSAxLjgyNDcxIDEwLjM2NzMgMi4xMDI5NkMxMC42NDU1IDIuMzgxMjIgMTAuODQ4OSAyLjcyNTMzIDEwLjk1ODUgMy4xMDMyOUMxMS4wNjggMy40ODEyNSAxMS4wODAyIDMuODgwNzggMTAuOTkzOSA0LjI2NDcxQzExLjMyMzkgNC40NzU3MSAxMS41OTU0IDQuNzY2MzggMTEuNzgzNSA1LjEwOTkzQzExLjk3MTcgNS40NTM0OCAxMi4wNzAzIDUuODM4ODYgMTIuMDcwMyA2LjIzMDU0QzEyLjA3MDMgNi42MjIyMiAxMS45NzE3IDcuMDA3NiAxMS43ODM1IDcuMzUxMTVDMTEuNTk1NCA3LjY5NDcxIDExLjMyMzkgNy45ODUzOCAxMC45OTM5IDguMTk2MzdDMTEuMDc5OCA4LjU3OTcyIDExLjA2NzYgOC45Nzg1NiAxMC45NTgzIDkuMzU1OTJDMTAuODQ5IDkuNzMzMjggMTAuNjQ2MiAxMC4wNzY5IDEwLjM2ODcgMTAuMzU1QzEwLjA5MTIgMTAuNjMzMSA5Ljc0Nzk3IDEwLjgzNjYgOS4zNzA4NSAxMC45NDY3QzguOTkzNzIgMTEuMDU2OCA4LjU5NDkgMTEuMDY5OSA4LjIxMTM4IDEwLjk4NDdDOC4wMDA2NiAxMS4zMTYgNy43MDk3NiAxMS41ODg3IDcuMzY1NjIgMTEuNzc3NkM3LjAyMTQ4IDExLjk2NjYgNi42MzUyMyAxMi4wNjU3IDYuMjQyNjMgMTIuMDY1N0M1Ljg1MDAzIDEyLjA2NTcgNS40NjM3OCAxMS45NjY2IDUuMTE5NjQgMTEuNzc3NkM0Ljc3NTUgMTEuNTg4NyA0LjQ4NDYgMTEuMzE2IDQuMjczODggMTAuOTg0N0MzLjg5MDUzIDExLjA3MDcgMy40OTE2OSAxMS4wNTg0IDMuMTE0MzMgMTAuOTQ5MUMyLjczNjk4IDEwLjgzOTggMi4zOTMzMiAxMC42MzcgMi4xMTUyNCAxMC4zNTk1QzEuODM3MTUgMTAuMDgyIDEuNjMzNjMgOS43Mzg4IDEuNTIzNTUgOS4zNjE2OEMxLjQxMzQ4IDguOTg0NTUgMS40MDA0IDguNTg1NzMgMS40ODU1NSA4LjIwMjIxQzEuMTUzMDIgNy45OTE3NyAwLjg3OTEyIDcuNzAwNjQgMC42ODkzMjQgNy4zNTU5MkMwLjQ5OTUyNyA3LjAxMTE5IDAuNCA2LjYyNDA2IDAuNCA2LjIzMDU0QzAuNCA1LjgzNzAyIDAuNDk5NTI3IDUuNDQ5ODkgMC42ODkzMjQgNS4xMDUxN0MwLjg3OTEyIDQuNzYwNDQgMS4xNTMwMiA0LjQ2OTMyIDEuNDg1NTUgNC4yNTg4N1oiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBpZD0iVmVjdG9yXzIiIGQ9Ik02LjI0Mzc1IDMuODk4MDVWOC41NjQ3MSIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGlkPSJWZWN0b3JfMyIgZD0iTTMuOTA3ODEgNi4yMzAwOEg4LjU3NDQ4IiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9nPgo8L3N2Zz4K">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ⑦ 부가서비스 섹션 -->
+          <div class="px-[16px] pt-[16px] pb-[40px]">
+            <div class="flex items-center justify-between pb-[12px]">
+              <p class="font-['Pretendard:SemiBold'] text-[16px] text-[#1c1c1e] tracking-[-1px] leading-[22px]">부가서비스</p>
+              <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJGcmFtZSAyMTQ3MjQ1NDQwIj4KPHBhdGggaWQ9IlZlY3RvciA5IiBkPSJNMTIgOEw5IDExTDYgOCIgc3Ryb2tlPSIjNDA0MDQwIiBzdHJva2Utb3BhY2l0eT0iMC41Ii8+CjwvZz4KPC9zdmc+Cg==">
+            </div>
+            <div class="bg-white border border-[#e7e7e7] rounded-[24px] overflow-hidden w-full">
+              <div class="px-[20px] pt-[20px] pb-[20px] flex items-center gap-[16px]">
+                <div class="shrink-0 size-[32px] flex items-center justify-center">
+                  <img alt="" class="size-[10px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTAuNzQ5OSIgaGVpZ2h0PSIxMC43NDk5IiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgdmlld0JveD0iMCAwIDEwLjc0OTkgMTAuNzQ5OSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgaWQ9Ikdyb3VwIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTEwLjM3NDkgMi4xMjVWOC44NzQ5NkMxMC4zNzQ5IDkuNzAzNDUgOC4xMzY0NSAxMC4zNzQ5IDUuMzc0OTcgMTAuMzc0OUMyLjYxMzQ5IDEwLjM3NDkgMC4zNzUgOS43MDM0NSAwLjM3NSA4Ljg3NDk2VjIuMTI1IiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMC43NSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGlkPSJWZWN0b3JfMiIgZD0iTTEwLjM3NDkgNi42MjQ5OUMxMC4zNzQ5IDcuNDUzNDggOC4xMzY0NSA4LjEyNDk4IDUuMzc0OTcgOC4xMjQ5OEMyLjYxMzQ5IDguMTI0OTggMC4zNzUgNy40NTM0OCAwLjM3NSA2LjYyNDk5TTEwLjM3NDkgNC4zNzVDMTAuMzc0OSA1LjIwMzQ5IDguMTM2NDUgNS44NzQ5OSA1LjM3NDk3IDUuODc0OTlDMi42MTM0OSA1Ljg3NDk5IDAuMzc1IDUuMjAzNDkgMC4zNzUgNC4zNzUiIHN0cm9rZT0iIzgwODA4MCIgc3Ryb2tlLXdpZHRoPSIwLjc1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggaWQ9IlZlY3Rvcl8zIiBkPSJNNS4zNzQ5NyAzLjM3NDk4QzguMTM2MzcgMy4zNzQ5OCAxMC4zNzQ5IDIuNzAzNDEgMTAuMzc0OSAxLjg3NDk5QzEwLjM3NDkgMS4wNDY1NyA4LjEzNjM3IDAuMzc1IDUuMzc0OTcgMC4zNzVDMi42MTM1NiAwLjM3NSAwLjM3NSAxLjA0NjU3IDAuMzc1IDEuODc0OTlDMC4zNzUgMi43MDM0MSAyLjYxMzU2IDMuMzc0OTggNS4zNzQ5NyAzLjM3NDk4WiIgc3Ryb2tlPSIjODA4MDgwIiBzdHJva2Utd2lkdGg9IjAuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+Cjwvc3ZnPgo=">
+                </div>
+                <div class="flex flex-col gap-[2px] flex-1">
+                  <p class="font-['Pretendard:SemiBold'] text-[14px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px]">데이터 안심 옵션</p>
+                  <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">월 3,300원</p>
+                </div>
+                <div class="flex items-center gap-[4px]">
+                  <img alt="" class="size-[13px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTMgMTMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJpY28iPgo8cmVjdCBpZD0iUmVjdGFuZ2xlIiB3aWR0aD0iMS4wMDAxIiBoZWlnaHQ9IjQiIHJ4PSIwLjUwMDA1IiB0cmFuc2Zvcm09Im1hdHJpeCgtMSAwIDAgMSA3IDUuNSkiIGZpbGw9IiM0MDQwNDAiIGZpbGwtb3BhY2l0eT0iMC4yIi8+CjxyZWN0IGlkPSJSZWN0YW5nbGVfMiIgd2lkdGg9IjEuMyIgaGVpZ2h0PSIxLjMiIHJ4PSIwLjY1IiB0cmFuc2Zvcm09Im1hdHJpeCgtMSAwIDAgMSA3LjE0ODQ0IDMuNSkiIGZpbGw9IiM0MDQwNDAiIGZpbGwtb3BhY2l0eT0iMC4yIi8+CjxwYXRoIGlkPSJ2ZWN0b3IiIGQ9Ik0wLjUgNi41QzAuNSA5LjgxMzk1IDMuMTg2MDUgMTIuNSA2LjUgMTIuNUM5LjgxMzk1IDEyLjUgMTIuNSA5LjgxMzk1IDEyLjUgNi41QzEyLjUgMy4xODYwNSA5LjgxMzk1IDAuNSA2LjUgMC41QzMuMTg2MDUgMC41IDAuNSAzLjE4NjA1IDAuNSA2LjVaIiBzdHJva2U9IiM0MDQwNDAiIHN0cm9rZS1vcGFjaXR5PSIwLjIiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIvPgo8L2c+Cjwvc3ZnPgo=">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end #content -->
+
+        <!-- bottom overlay -->
+        <div id="bottom-overlay" style="position:absolute;bottom:0;width:375px;z-index:50;background:rgba(255,255,255,0.8);border-radius:30px 30px 0 0;box-shadow:0px -5px 60px 0px rgba(0,0,0,0.1);padding:20px 16px 32px;">
+          <p class="font-['Pretendard:Regular'] text-[13px] text-[#1c1c1e] tracking-[-0.8px] leading-[20px] text-center opacity-60 mb-[12px]">요금제와 결합 상품을 함께 바꾸면, 훨씬 잘 맞는 조합으로<br>비교해 볼 수 있어요.</p>
+          <button onclick="openScreen4()" class="w-full flex items-center justify-center gap-[8px] h-[52px] rounded-[999px] cursor-pointer border-none" style="background:linear-gradient(to right,#5940df,#7b5fff);">
+            <img alt="" class="size-[18px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo=">
+            <div class="w-px h-[16px] bg-white opacity-40"></div>
+            <p class="font-['Pretendard:SemiBold'] text-[15px] text-white tracking-[-0.8px] leading-[22px]">한 눈에 비교하기</p>
+          </button>
+        </div>
+
+      </div><!-- end #scroll -->
+
+      <!-- bottom sheet dimmer -->
+      <div id="bs-dimmer" onclick="closeSheet()"></div>
+
+      <!-- bottom sheet -->
+      <div id="bs-sheet">
+        <!-- handle -->
+        <div class="flex justify-center pt-[12px] pb-[8px]">
+          <div class="w-[36px] h-[4px] rounded-full bg-[#e0e0e0]"></div>
+        </div>
+        <!-- title -->
+        <div class="px-[20px] pt-[8px] pb-[20px]">
+          <p class="font-['Pretendard:SemiBold'] text-[18px] text-[#1c1c1e] tracking-[-1px] leading-[26px]">적용 시점을 선택해 주세요.</p>
+        </div>
+        <!-- radio options -->
+        <div class="flex flex-col gap-[0px] px-[20px]">
+          <!-- option 1: default -->
+          <div class="flex items-start gap-[12px] py-[14px] border-b border-[#f0f0f0]">
+            <div class="shrink-0 mt-[2px] size-[20px] rounded-full border-2 border-[#e0e0e0] bg-white"></div>
+            <div class="flex flex-col gap-[4px]">
+              <p class="font-['Pretendard:Medium'] text-[15px] text-[#1c1c1e] tracking-[-0.8px] leading-[22px]">오늘부터 바로 적용</p>
+              <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">월 중 변경 시 요금과 데이터가 일할 계산돼요.</p>
+            </div>
+          </div>
+          <!-- option 2: active (AI 추천) -->
+          <div class="flex items-start gap-[12px] py-[14px] border-b border-[#f0f0f0]">
+            <div class="shrink-0 mt-[2px] size-[20px] rounded-full border-2 border-[#5940df] bg-[#5940df] flex items-center justify-center">
+              <div class="size-[8px] rounded-full bg-white"></div>
+            </div>
+            <div class="flex flex-col gap-[4px] flex-1">
+              <div class="flex items-center gap-[6px]">
+                <p class="font-['Pretendard:Medium'] text-[15px] text-[#1c1c1e] tracking-[-0.8px] leading-[22px]">다음 달 1일부터 적용</p>
+                <div class="flex items-center gap-[3px] bg-[#ece8ff] rounded-[4px] px-[6px] py-[2px]">
+                  <img alt="" class="size-[10px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo=">
+                  <p class="font-['Pretendard:Medium'] text-[10px] text-[#5940df] tracking-[-0.4px] leading-[14px] whitespace-nowrap">AI 추천</p>
+                </div>
+              </div>
+              <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">4월 1일부터 변경돼요.</p>
+            </div>
+          </div>
+          <!-- option 3: default -->
+          <div class="flex items-start gap-[12px] py-[14px]">
+            <div class="shrink-0 mt-[2px] size-[20px] rounded-full border-2 border-[#e0e0e0] bg-white"></div>
+            <div class="flex flex-col gap-[4px]">
+              <p class="font-['Pretendard:Medium'] text-[15px] text-[#1c1c1e] tracking-[-0.8px] leading-[22px]">변경 날짜 직접 선택</p>
+              <p class="font-['Pretendard:Regular'] text-[12px] text-[#1c1c1e] opacity-60 tracking-[-0.6px] leading-[18px]">원하는 날짜에 적용해요.</p>
+            </div>
+          </div>
+        </div>
+        <!-- T 에이전트 분석 in sheet -->
+        <div class="px-[16px] pt-[4px] pb-[16px]">
+          <div class="bg-[#ece8ff] rounded-[12px] px-[14px] py-[12px] flex gap-[8px] items-start">
+            <img alt="" class="size-[16px] shrink-0 mt-[1px]" src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIG92ZXJmbG93PSJ2aXNpYmxlIiBzdHlsZT0iZGlzcGxheTogYmxvY2s7IiB2aWV3Qm94PSIwIDAgMTggMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJtaW5nY3V0ZTphaS1maWxsIj4KPHBhdGggaWQ9IlN0YXIgMTYiIGQ9Ik04LjgwNjg4IDIuNzE3MjZDOC44NjAwMSAyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA5LjE5MzEyIDIuNzE3MjZMOS41NTY4OCA0LjA2ODI3QzEwLjEzMTQgNi4yMDE5NiAxMS43OTggNy44Njg2MyAxMy45MzE3IDguNDQzMTJMMTUuMjgyNyA4LjgwNjg4QzE1LjQ4MDEgOC44NjAwMSAxNS40ODAxIDkuMTM5OTkgMTUuMjgyNyA5LjE5MzEyTDEzLjkzMTcgOS41NTY4OEMxMS43OTggMTAuMTMxNCAxMC4xMzE0IDExLjc5OCA5LjU1Njg4IDEzLjkzMTdMOS4xOTMxMiAxNS4yODI3QzkuMTM5OTkgMTUuNDgwMSA4Ljg2MDAxIDE1LjQ4MDEgOC44MDY4OCAxNS4yODI3TDguNDQzMTIgMTMuOTMxN0M3Ljg2ODYzIDExLjc5OCA2LjIwMTk2IDEwLjEzMTQgNC4wNjgyNyA5LjU1Njg4TDIuNzE3MjYgOS4xOTMxMkMyLjUxOTkzIDkuMTM5OTkgMi41MTk5MyA4Ljg2MDAxIDIuNzE3MjYgOC44MDY4OEw0LjA2ODI3IDguNDQzMTJDNi4yMDE5NiA3Ljg2ODYzIDcuODY4NjMgNi4yMDE5NiA4LjQ0MzEyIDQuMDY4MjdMOC44MDY4OCAyLjcxNzI2WiIgZmlsbD0iIzU5NDBERiIvPgo8L2c+Cjwvc3ZnPgo=">
+            <p class="font-['Pretendard:Regular'] text-[12px] tracking-[-0.6px] leading-[18px]" style="background:linear-gradient(to right,#5940df,#0d0052);-webkit-background-clip:text;background-clip:text;color:transparent;">이번 달은 이미 청구 금액이 확정되었기 때문에 다음 달 1일부터 적용하는 것을 추천드려요.</p>
+          </div>
+        </div>
+        <!-- CTA button -->
+        <div class="px-[16px] pb-[8px]">
+          <button onclick="goToCompletion()" class="w-full h-[52px] rounded-[999px] border-none cursor-pointer flex items-center justify-center" style="background:linear-gradient(to right,#5940df,#7b5fff);">
+            <p class="font-['Pretendard:SemiBold'] text-[15px] text-white tracking-[-0.8px] leading-[22px]">요금제 변경하기</p>
+          </button>
+        </div>
+      </div>
+      <!-- end bottom sheet -->
+
+    </div><!-- end #phone -->
+  </div>
+
+  <script>
+    document.getElementById('btn-scroll').addEventListener('click', function() {
+      var scrollEl = document.getElementById('scroll');
+      var target = document.getElementById('section-combo');
+      var headerH = document.querySelector('.sticky-hd').offsetHeight;
+      var targetTop = target.offsetTop - headerH;
+      scrollEl.scrollTo({ top: targetTop, behavior: 'smooth' });
+    });
+
+    function openScreen4() {
+      if (document.getElementById('slide-screen4')) return;
+      var phone = document.getElementById('phone');
+      var wrap = document.createElement('div');
+      wrap.id = 'slide-screen4';
+      wrap.style.cssText = 'position:absolute;top:54px;left:375px;width:375px;height:758px;z-index:200;transition:left 0.38s cubic-bezier(0.25,0.46,0.45,0.94);will-change:left;overflow:hidden;';
+      var iframe = document.createElement('iframe');
+      iframe.src = 'screen4.html';
+      iframe.style.cssText = 'width:375px;height:758px;border:none;display:block;';
+      wrap.appendChild(iframe);
+      phone.appendChild(wrap);
+      requestAnimationFrame(function() { requestAnimationFrame(function() { wrap.style.left = '0'; }); });
+    }
+
+    function goToCompletion() {
+      var dimmer = document.getElementById('bs-dimmer');
+      var sheet = document.getElementById('bs-sheet');
+      if (dimmer) { dimmer.style.opacity='0'; dimmer.style.display='none'; }
+      if (sheet) { sheet.style.transform='translateY(100%)'; sheet.style.display='none'; }
+      if (document.getElementById('slide-screen5')) return;
+      var phone = document.getElementById('phone');
+      var wrap = document.createElement('div');
+      wrap.id = 'slide-screen5';
+      wrap.style.cssText = 'position:absolute;top:54px;left:375px;width:375px;height:758px;z-index:300;transition:left 0.38s cubic-bezier(0.25,0.46,0.45,0.94);will-change:left;overflow:hidden;';
+      var iframe = document.createElement('iframe');
+      iframe.src = 'screen5.html';
+      iframe.style.cssText = 'width:375px;height:758px;border:none;display:block;';
+      wrap.appendChild(iframe);
+      phone.appendChild(wrap);
+      requestAnimationFrame(function() { requestAnimationFrame(function() { wrap.style.left = '0'; }); });
+    }
+
+    window.addEventListener('message', function(e) {
+      if (e.data === 'slideBack') {
+        var wrap = document.getElementById('slide-screen4');
+        if (!wrap) return;
+        wrap.style.left = '375px';
+        wrap.addEventListener('transitionend', function() { wrap.remove(); }, { once: true });
+      }
+      if (e.data === 'goHome') {
+        ['slide-screen5','slide-screen4'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.style.left='375px'; setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },400); }
+        });
+      }
+      if (e.data === 'openSheet') { if(typeof openSheet === 'function') openSheet(); }
+      if (e.data === 'closeSheet') { if(typeof closeSheet === 'function') closeSheet(); }
+    });
+
+    function headerBack() {
+      var slide = document.getElementById('slide-screen4');
+      if (slide) {
+        slide.style.left = '375px';
+        slide.addEventListener('transitionend', function() { slide.remove(); }, { once: true });
+      }
+    }
+
+    function openSheet() {
+      var dimmer = document.getElementById('bs-dimmer');
+      var sheet = document.getElementById('bs-sheet');
+      dimmer.style.display = 'block';
+      sheet.style.display = 'block';
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        dimmer.style.opacity = '1';
+        sheet.style.transform = 'translateY(0)';
+      }); });
+    }
+
+    function closeSheet() {
+      var dimmer = document.getElementById('bs-dimmer');
+      var sheet = document.getElementById('bs-sheet');
+      dimmer.style.opacity = '0';
+      sheet.style.transform = 'translateY(100%)';
+      setTimeout(function() {
+        dimmer.style.display = 'none';
+        sheet.style.display = 'none';
+      }, 350);
+    }
+  </script>
+</body>
+</html>

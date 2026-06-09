@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" width="16" height="16" overflow="visible" style="display: block;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="mingcute:ai-fill">
+<path id="Star 16" d="M7.82834 13.5847C7.87556 13.7601 8.12444 13.7601 8.17166 13.5847L8.495 12.3838C9.00566 10.4872 10.4871 9.00566 12.3838 8.495L13.5847 8.17166C13.7601 8.12444 13.7601 7.87556 13.5847 7.82834L12.3838 7.505C10.4871 6.99434 9.00566 5.51285 8.495 3.61624L8.17166 2.41535C8.12444 2.23994 7.87556 2.23994 7.82834 2.41535L7.505 3.61624C6.99434 5.51285 5.51285 6.99434 3.61624 7.505L2.41535 7.82834C2.23994 7.87556 2.23994 8.12444 2.41535 8.17166L3.61623 8.495C5.51285 9.00566 6.99434 10.4871 7.505 12.3838L7.82834 13.5847Z" fill="url(#paint0_linear_0_81)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_81" x1="8" y1="14.2222" x2="8" y2="1.77778" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7661E5"/>
+<stop offset="1" stop-color="#BFB4FF"/>
+</linearGradient>
+</defs>
+</svg>

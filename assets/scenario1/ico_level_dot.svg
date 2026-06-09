@@ -1,0 +1,21 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 25.0909 25.0909" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 2147246113">
+<circle id="Ellipse 16" cx="12.5447" cy="12.5447" r="11.5" fill="var(--fill-0, #5940DF)" fill-opacity="0.2"/>
+<g id="logo_netflix 2" filter="url(#filter0_d_0_57)">
+<rect x="7.31818" y="7.31818" width="10.4545" height="10.4545" rx="5.22727" fill="var(--fill-0, white)"/>
+<rect x="6.79546" y="6.79546" width="11.5" height="11.5" rx="5.75" stroke="var(--stroke-0, #5940DF)" stroke-width="1.04545"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_0_57" x="1.19209e-07" y="1.19209e-07" width="25.0909" height="25.0909" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="3.13636"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_57"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_57" result="shape"/>
+</filter>
+</defs>
+</svg>
