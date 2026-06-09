@@ -2,585 +2,624 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=393">
-  <title>SKT Next UX - 상단</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 상품 현황</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      plugins: [
-        function({ matchUtilities }) {
-          matchUtilities({ 'mask-size': v => ({'mask-size':v,'-webkit-mask-size':v}) });
-          matchUtilities({ 'mask-position': v => ({'mask-position':v,'-webkit-mask-position':v}) });
-        }
-      ]
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer utilities {
-      .mask-alpha       { mask-mode: alpha; -webkit-mask-mode: alpha; }
-      .mask-intersect   { mask-composite: intersect; -webkit-mask-composite: source-in; }
-      .mask-no-clip     { mask-clip: no-clip; -webkit-mask-clip: no-clip; }
-      .mask-no-repeat   { mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat; }
-      .content-stretch  { align-content: stretch; }
-      .font-\[\'Pretendard_Variable\:Regular\'\]  { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:400; }
-      .font-\[\'Pretendard_Variable\:Medium\'\]   { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:500; }
-      .font-\[\'Pretendard_Variable\:SemiBold\'\] { font-family:'Pretendard Variable',Pretendard,sans-serif; font-weight:600; }
-      .font-\[\'SF_Pro_Text\:Semibold\'\]         { font-family:-apple-system,'SF Pro Text',sans-serif; font-weight:600; }
-    }
-  </style>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
   <style>
-    body { background:#b8c4d8; display:flex; justify-content:center; min-height:100vh; }
-    #phone { width:393px; height:852px; position:relative; overflow:hidden; }
-    #scroll { position:absolute; inset:0; overflow-y:auto; scrollbar-width:none; }
-    #scroll::-webkit-scrollbar { display:none; }
-    #content { position:relative; width:393px; min-height:2800px; }
-    #bottom-overlay { position:absolute; bottom:0; left:0; width:393px; z-index:50; pointer-events:none; }
-    #dl-btn {
-      position:fixed; top:16px; right:16px; z-index:9999;
-      background:#3617ce; color:#fff; border:none;
-      padding:8px 18px; border-radius:20px; font-size:13px;
-      font-family:'Pretendard Variable',sans-serif; cursor:pointer;
-      box-shadow:0 4px 12px rgba(54,23,206,.3);
+    *, *::before, *::after {
+      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #frame {
+      position: relative;
+      background: #f7f8fa;
+      overflow: hidden;
+    }
+    #scroll {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    #scroll::-webkit-scrollbar { display: none; }
+    .screen { width: 100%; background: #f7f8fa; }
+
+    #controls .preset {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    #controls .preset:hover { background: #ede9fe; border-color: #8b5cf6; color: #5940df; }
+    #controls .preset.active { background: #ede9fe; border-color: #5940df; color: #5940df; }
+    #controls .divider { width: 1px; height: 20px; background: #e5e7eb; }
+    #controls input[type=number] {
+      width: 52px; padding: 3px 6px;
+      border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 13px; font-weight: 500; text-align: center;
+      color: #374151; background: #f9fafb; outline: none;
+    }
+    #controls input[type=number]:focus { border-color: #5940df; }
+    #controls input[type=number]::-webkit-inner-spin-button,
+    #controls input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    #controls label { color: #6b7280; font-size: 12px; }
+    #apply-btn {
+      padding: 4px 12px; border-radius: 6px; border: none;
+      background: #5940df; color: #fff;
+      font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    }
+    #apply-btn:hover { opacity: 0.85; }
+
+    @media (max-width: 767px) {
+      body {
+        margin: 0; padding: 0;
+        background: #f7f8fa;
+        display: block;
+      }
+      #controls { display: none !important; }
+      #frame {
+        width: 100vw !important;
+        height: 100dvh !important;
+        box-shadow: none !important;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        margin: 0;
+        padding: 24px 0 48px;
+        background: #d1d5db;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        min-height: 100vh;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 13px; font-weight: 500; color: #374151;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      #frame {
+        flex-shrink: 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
+      }
     }
   </style>
 </head>
+
 <body>
-<button id="dl-btn" onclick="downloadPage()">HTML 다운로드</button>
 
-<div id="phone">
-  <div id="scroll">
-    <div id="content">
+  <!-- ── 컨트롤 바 ── -->
+  <div id="controls">
+    <span style="font-weight:600;color:#111827;">프레임</span>
+    <div class="divider"></div>
 
-      <!-- ── Background ── -->
-      <div class="absolute h-[852px] left-0 mask-alpha mask-intersect mask-no-clip mask-no-repeat top-0 w-[393px] mask-size-[393px_852px]"
-           style="mask-image:url('https://www.figma.com/api/mcp/asset/36631b88-5363-49e6-bbaa-a8c9bc7f72c7');-webkit-mask-image:url('https://www.figma.com/api/mcp/asset/36631b88-5363-49e6-bbaa-a8c9bc7f72c7')">
-        <img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/e68e0f3d-3481-4d61-b921-cefe56a1187f">
-      </div>
+    <!-- 프리셋 -->
+    <button class="preset active" data-w="375" data-h="812">iPhone SE  375×812</button>
+    <button class="preset" data-w="390" data-h="844">iPhone 14  390×844</button>
+    <button class="preset" data-w="393" data-h="852">iPhone 15 Pro  393×852</button>
+    <button class="preset" data-w="430" data-h="932">iPhone 15 Plus  430×932</button>
+    <button class="preset" data-w="360" data-h="800">Android  360×800</button>
 
-      <!-- ── Status bar ── -->
-      <div class="-translate-x-1/2 absolute h-[58px] left-1/2 top-0 w-[393px]" style="z-index:10">
-        <img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/168228de-6033-4c14-aa7e-04eb903af600">
-        <div class="absolute aspect-[196.5/31.9] left-0 right-[50.13%] top-[15px]">
-          <p class="[word-break:break-word] absolute font-['SF_Pro_Text:Semibold'] leading-[normal] left-[45px] not-italic text-[#101010] text-[17px] top-[calc(50%-10px)] tracking-[-0.165px] whitespace-nowrap">7:28</p>
-        </div>
-        <div class="absolute inset-[43.1%_8.91%_34.48%_71.25%]">
-          <img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/4e30f3de-0cb2-4154-8c6a-fc5ec3b8d17f">
-        </div>
-      </div>
+    <div class="divider"></div>
 
-      <!-- ── Header ── -->
-      <div class="absolute content-stretch flex items-center justify-between left-0 px-[20px] py-[12px] top-[58px] w-[393px]" style="z-index:10">
-        <div class="content-stretch flex items-center relative shrink-0"></div>
-        <div class="content-stretch flex gap-[6px] items-center justify-end relative shrink-0">
-
-          <!-- Barcode btn -->
-          <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex items-center justify-center relative rounded-[999px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] shrink-0 size-[48px]">
-            <div class="relative shrink-0 size-[24px]">
-              <div class="absolute h-[3px] left-[3px] top-[4px] w-[4px]"><div class="absolute inset-[-33.33%_-25%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/8d397ba4-c14c-43a5-a409-cec262c76888"></div></div>
-              <div class="absolute flex h-[3px] items-center justify-center left-[17px] top-[17px] w-[4px]"><div class="flex-none rotate-180"><div class="h-[3px] relative w-[4px]"><div class="absolute inset-[-33.33%_-25%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/38069731-0478-4d80-b3ba-b6fc8b7ef274"></div></div></div></div>
-              <div class="absolute flex h-[3px] items-center justify-center left-[17px] top-[4px] w-[4px]"><div class="flex-none rotate-90"><div class="h-[4px] relative w-[3px]"><div class="absolute inset-[-25%_-33.33%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/49b30ae3-dea6-4a13-9783-06a36580abf5"></div></div></div></div>
-              <div class="absolute flex h-[3px] items-center justify-center left-[3px] top-[17px] w-[4px]"><div class="-rotate-90 flex-none"><div class="h-[4px] relative w-[3px]"><div class="absolute inset-[-25%_-33.33%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/18fda951-fe77-4386-94e5-788f64952cb5"></div></div></div></div>
-              <div class="absolute bg-[#101010] border border-[#101010] border-solid h-[2px] left-[5px] rounded-[999px] top-[11px] w-[14px]"></div>
-            </div>
-          </div>
-
-          <!-- Cart btn -->
-          <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex items-center justify-center relative rounded-[999px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] shrink-0 size-[48px]">
-            <div class="relative shrink-0 size-[24px]">
-              <div class="-translate-x-1/2 absolute h-[12px] left-1/2 top-[9px] w-[18px]"><div class="absolute inset-[-8.33%_-4.82%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/dea649ea-bc49-40c6-aa2c-1c95ad239966"></div></div>
-              <div class="absolute h-[8.5px] left-[8px] top-[3px] w-[8px]"><div class="absolute inset-[-11.76%_-12.5%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/89b9dbb9-9617-498e-b578-373d82ce3527"></div></div>
-            </div>
-          </div>
-
-          <!-- Menu btn -->
-          <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex items-center justify-center relative rounded-[999px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] shrink-0 size-[48px]">
-            <div class="relative size-[24px]">
-              <div class="absolute h-0 left-[3px] top-[7px] w-[18px]"><div class="absolute inset-[-2px_0_0_0]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/bc0f6b4b-cf06-4596-87e6-10d15defcfbe"></div></div>
-              <div class="absolute h-0 left-[3px] top-[13px] w-[18px]"><div class="absolute inset-[-2px_0_0_0]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/bc0f6b4b-cf06-4596-87e6-10d15defcfbe"></div></div>
-              <div class="absolute h-0 left-[3px] top-[19px] w-[18px]"><div class="absolute inset-[-2px_0_0_0]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/bc0f6b4b-cf06-4596-87e6-10d15defcfbe"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Greeting ── -->
-      <p class="[word-break:break-word] absolute font-['Pretendard_Variable:Regular'] leading-[1.25] left-[30px] not-italic text-[#3617ce] text-[26px] top-[170px] tracking-[-1.56px] whitespace-nowrap" style="z-index:5">
-        안녕하세요 지훈님,<br>오랜만이에요
-      </p>
-
-      <!-- ── Card section ── -->
-      <div class="absolute content-stretch flex flex-col gap-[10px] items-start left-[20px] top-[256px]" style="z-index:5">
-
-        <!-- iPhone order card -->
-        <div class="border border-[rgba(255,255,255,0.3)] border-solid content-stretch flex gap-[24px] items-start justify-center overflow-clip p-[28px] relative rounded-[28px] shrink-0 w-[353px]"
-             style="background-image:url('data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D%220%200%20353%20148%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20height%3D%22100%25%22%20width%3D%22100%25%22%20fill%3D%22url(%23grad)%22%20opacity%3D%220.7%22%2F%3E%3Cdefs%3E%3CradialGradient%20id%3D%22grad%22%20gradientUnits%3D%22userSpaceOnUse%22%20cx%3D%220%22%20cy%3D%220%22%20r%3D%2210%22%20gradientTransform%3D%22matrix(-3.85%2015.3%20-22.983%20-5.7833%20283.5%2022)%22%3E%3Cstop%20stop-color%3D%22rgba(186%2C206%2C255%2C1)%22%20offset%3D%220%22%2F%3E%3Cstop%20stop-color%3D%22rgba(186%2C206%2C255%2C0)%22%20offset%3D%221%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3C%2Fsvg%3E'),linear-gradient(90deg,rgba(255,255,255,.4) 0%,rgba(255,255,255,.4) 100%)">
-          <!-- iPhone image (masked) -->
-          <div class="absolute h-[154px] left-[240px] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-size-[148px_148px] mask-position-[-35px_-26px] top-[26px] w-[75px]"
-               style="mask-image:url('https://www.figma.com/api/mcp/asset/9eb44c56-35df-4b58-afa1-6984336a5bd9');-webkit-mask-image:url('https://www.figma.com/api/mcp/asset/9eb44c56-35df-4b58-afa1-6984336a5bd9')">
-            <div class="absolute inset-0 overflow-hidden pointer-events-none">
-              <img alt="" class="absolute h-[178.13%] left-[-255.91%] max-w-none top-[-38.68%] w-[650.28%]" src="https://www.figma.com/api/mcp/asset/a2656285-509a-4a73-8ff3-2d89d659ca81">
-            </div>
-          </div>
-          <!-- Text -->
-          <div class="content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start justify-end min-w-px relative">
-            <div class="content-stretch flex flex-col items-start relative shrink-0 w-full">
-              <div class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[0] not-italic relative shrink-0 text-[#101010] text-[16px] tracking-[-0.48px] whitespace-nowrap">
-                <p class="leading-[1.2] mb-0 whitespace-pre">지훈님, 주문하신 </p>
-                <p class="leading-[1.2] whitespace-pre">iPhone20 Pro가 도착했어요</p>
-              </div>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex items-center justify-end px-[12px] py-[8px] relative rounded-[999px] shrink-0">
-              <p class="[word-break:break-word] font-['Pretendard_Variable:SemiBold'] leading-[1.3] not-italic relative shrink-0 text-[#3617ce] text-[14px] text-center tracking-[-0.56px] whitespace-nowrap">1분 셀프 개통하기</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Family pill -->
-        <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex gap-[4px] items-center overflow-clip pl-[18px] pr-[20px] py-[12px] relative rounded-[999px] shrink-0">
-          <div class="relative shrink-0 size-[20px]">
-            <div class="absolute h-[11.5px] left-[2.5px] top-[4px] w-[15px]">
-              <img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/ce39584c-9e77-4df8-9ab9-2e867ba83a2e">
-            </div>
-          </div>
-          <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[14px] tracking-[-0.42px] whitespace-nowrap">가족 결합 현황 확인해줘</p>
-        </div>
-
-        <!-- Billing pill -->
-        <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex gap-[4px] items-center overflow-clip pl-[18px] pr-[20px] py-[12px] relative rounded-[999px] shrink-0">
-          <div class="relative shrink-0 size-[20px]">
-            <div class="absolute h-[11.5px] left-[2px] top-[4.75px] w-[16px]">
-              <img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/4d10b159-cc38-4cc4-928b-0a49b954f456">
-            </div>
-          </div>
-          <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[14px] tracking-[-0.42px] whitespace-nowrap">이번달 요금이 많이 나온 이유 알려줘</p>
-        </div>
-      </div>
-
-      <!-- ── RIMOWA Banner ── -->
-      <div class="absolute bg-[rgba(255,255,255,0.2)] h-[101px] left-[20px] overflow-clip rounded-[28px] top-[640px] w-[353px]" style="z-index:5">
-        <div class="-translate-x-1/2 absolute h-[61.895px] left-[calc(50%+124.2px)] top-[23px] w-[47.409px]">
-          <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <img alt="" class="absolute h-full left-[-16.67%] max-w-none top-0 w-[130.56%]" src="https://www.figma.com/api/mcp/asset/73e0d7f5-34c1-4ca3-8243-f8e47532dd4d">
-          </div>
-        </div>
-        <div class="absolute content-stretch flex flex-col gap-[4px] items-start left-[28px] top-[24px]">
-          <div class="content-stretch flex flex-col gap-px items-start relative shrink-0">
-            <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[16px] tracking-[-0.48px] whitespace-nowrap">어떤 여행에도 어울리는 아이콘</p>
-          </div>
-          <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-70 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">RIMOWA 수트케이스</p>
-        </div>
-        <div class="absolute content-stretch flex gap-[4px] h-[4px] items-center left-[28px] top-[73px] w-[44px]">
-          <div class="relative shrink-0 size-[4px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/88b3c8bd-c4a0-41e7-8e22-43c80bfe339e"></div>
-          <div class="relative shrink-0 size-[4px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/724a6d57-c6f1-4d9c-b4c2-81e09a767b6a"></div>
-          <div class="relative shrink-0 size-[4px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/724a6d57-c6f1-4d9c-b4c2-81e09a767b6a"></div>
-          <div class="relative shrink-0 size-[4px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/724a6d57-c6f1-4d9c-b4c2-81e09a767b6a"></div>
-        </div>
-      </div>
-
-      <!-- ── Tab pills (opacity 0.4) ── -->
-      <div class="absolute content-stretch flex flex-col items-start left-[20px] opacity-40 top-[751px] w-[353px]" style="z-index:5">
-        <div class="content-center flex flex-wrap gap-[6px] h-[86px] items-center relative shrink-0 w-[361px]">
-          <div class="content-stretch flex gap-[6px] items-center relative shrink-0 w-[373px]">
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute bg-[#3617ce] h-[4px] left-[6px] rounded-[1.6px] top-[3px] w-[2px]"></div>
-                  <div class="absolute bg-[#3617ce] h-[4px] left-[12px] rounded-[1.6px] top-[3px] w-[2px]"></div>
-                  <div class="absolute h-[12px] left-[3.5px] top-[5px] w-[13px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/7b2e9351-8686-4740-bdf2-5c49e60a9767"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">4월 혜택</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="-translate-x-1/2 -translate-y-1/2 absolute h-[15px] left-1/2 top-1/2 w-[11px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/10f15664-9aaf-490e-bee2-e7137bbb6e1e"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">혜택 줍기</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute content-start flex flex-wrap gap-[1.5px] items-start left-[3.75px] size-[12.5px] top-[3.75px]">
-                    <div class="bg-[#3617ce] relative rounded-[1px] shrink-0 size-[5.5px]"></div>
-                    <div class="bg-[#3617ce] relative rounded-[1px] shrink-0 size-[5.5px]"></div>
-                    <div class="bg-[#3617ce] relative rounded-[1px] shrink-0 size-[5.5px]"></div>
-                    <div class="bg-[#3617ce] relative rounded-[1px] shrink-0 size-[5.5px]"></div>
-                  </div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">카테고리</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 absolute left-1/2 size-[20px] top-[6px]">
-                  <div class="absolute inset-[22.5%_15%]"><div class="absolute inset-[3.65%_0.92%_0_0.92%]"><img alt="" class="block max-w-none size-full" src="https://www.figma.com/api/mcp/asset/052db225-5e7c-488c-b269-2cdb77f9bd93"></div></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">VIP Pick</p>
-            </div>
-          </div>
-          <div class="content-stretch flex gap-[6px] items-start relative shrink-0 w-[361px]">
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute h-[14.999px] left-[4px] top-[2.5px] w-[12px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/81a0c4fc-2b3b-4f61-bc81-349156d78c4a"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">0 Week</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute bg-[#3617ce] h-[4px] left-[6px] rounded-[1.6px] top-[3px] w-[2px]"></div>
-                  <div class="absolute bg-[#3617ce] h-[4px] left-[12px] rounded-[1.6px] top-[3px] w-[2px]"></div>
-                  <div class="absolute h-[12px] left-[3.5px] top-[5px] w-[13px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/c5e2c527-be44-4d57-9e28-c2a82a0888e2"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">이벤트</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute h-[8px] left-[3px] top-[8px] w-[14px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/1b7c2664-439d-475b-970c-d80a7d169c53"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">영화 예매</p>
-            </div>
-            <div class="bg-[rgba(255,255,255,0.5)] content-stretch flex gap-[8px] items-center justify-center pl-[4px] pr-[12px] py-[4px] relative rounded-[100px] shrink-0">
-              <div class="bg-white overflow-clip relative rounded-[999px] shrink-0 size-[32px]">
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[20px] top-1/2">
-                  <div class="absolute h-[13px] left-[3.52px] top-[3.5px] w-[12.959px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/ec9c4e10-4e25-44c0-9617-6022c3c33547"></div>
-                </div>
-              </div>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-1px] whitespace-nowrap">글로벌 여행</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ━━━ ConBenefit (top:857px) ━━━ -->
-      <div class="absolute content-stretch flex flex-col gap-[8px] items-start left-[20px] top-[857px] w-[353px]" style="z-index:5">
-
-        <!-- 1. CGV -->
-        <div class="bg-[rgba(255,255,255,0.9)] content-stretch flex flex-col gap-[30px] items-start overflow-clip px-[28px] py-[30px] relative rounded-[28px] shrink-0 w-full">
-          <div class="content-stretch flex items-center justify-between relative shrink-0 w-[309px]">
-            <div class="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
-              <div class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[0] not-italic relative shrink-0 text-[#101010] text-[18px] tracking-[-0.54px] w-full">
-                <p class="leading-[1.2] mb-0">불금인 오늘</p><p class="leading-[1.2]">CGV에서 무료 영화 어때요?</p>
-              </div>
-              <div class="content-stretch flex items-center relative shrink-0 w-full">
-                <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-60 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">T 영화예매</p>
-              </div>
-            </div>
-          </div>
-          <div class="content-stretch flex flex-col items-start relative shrink-0 w-full">
-            <div class="content-stretch flex gap-[8px] items-start relative shrink-0 w-full">
-              <!-- 인크레더블 3 -->
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.3)] border-solid content-stretch flex flex-col gap-[12px] items-start relative rounded-[24px] shrink-0">
-                <div class="h-[190px] overflow-clip relative shrink-0 w-[128px]"><div class="absolute h-[190px] left-0 rounded-[16px] top-0 w-[128px]"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[16px] size-full" src="https://www.figma.com/api/mcp/asset/6244e00f-c9eb-4979-bd9f-76bf79339166"></div></div>
-                <div class="content-stretch flex flex-col gap-[4px] items-start px-[4px] relative shrink-0 w-full">
-                  <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[14px] tracking-[-0.56px] w-full">인크레더블 3</p>
-                  <div class="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">평점 4.7</p>
-                    <div class="bg-[#d9d9d9] h-[8px] relative shrink-0 w-px"></div>
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">예매율 21.4%</p>
-                  </div>
-                </div>
-              </div>
-              <!-- 토이스토리 5 -->
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.3)] border-solid content-stretch flex flex-col gap-[12px] items-start relative rounded-[24px] shrink-0">
-                <div class="h-[190px] overflow-clip relative shrink-0 w-[128px]"><div class="absolute h-[190px] left-0 rounded-[16px] top-0 w-[128px]"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[16px] size-full" src="https://www.figma.com/api/mcp/asset/142fec7b-61bb-4eb7-823a-eee414f71e66"></div></div>
-                <div class="content-stretch flex flex-col gap-[4px] items-start px-[4px] relative shrink-0 w-full">
-                  <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[14px] tracking-[-0.56px] w-full">토이스토리 5</p>
-                  <div class="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">평점 3.6</p>
-                    <div class="bg-[#d9d9d9] h-[8px] relative shrink-0 w-px"></div>
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">예매율 18.7%</p>
-                  </div>
-                </div>
-              </div>
-              <!-- 어벤져스 -->
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.3)] border-solid content-stretch flex flex-col gap-[12px] items-start relative rounded-[24px] shrink-0">
-                <div class="h-[190px] overflow-clip relative shrink-0 w-[128px]"><div class="absolute h-[190px] left-0 rounded-[16px] top-0 w-[128px]"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[16px] size-full" src="https://www.figma.com/api/mcp/asset/30ec1cc9-c289-4ce6-a4a4-b2e44de9d34b"></div></div>
-                <div class="content-stretch flex flex-col gap-[4px] items-start px-[4px] relative shrink-0 w-full">
-                  <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.2] not-italic relative shrink-0 text-[#101010] text-[14px] tracking-[-0.56px] w-full">어벤져스: 둠스데이</p>
-                  <div class="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">평점 4.2</p>
-                    <div class="bg-[#d9d9d9] h-[8px] relative shrink-0 w-px"></div>
-                    <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-40 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">예매율 18.7%</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. 6월 8일까지 혜택 -->
-        <div class="bg-[rgba(255,255,255,0.9)] content-stretch flex flex-col gap-[30px] items-start px-[28px] py-[30px] relative rounded-[28px] shrink-0 w-[353px]">
-          <div class="content-stretch flex items-center justify-between relative shrink-0 w-[309px]">
-            <div class="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
-              <div class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[0] not-italic relative shrink-0 text-[#101010] text-[18px] tracking-[-0.54px] w-full">
-                <p class="leading-[1.3] mb-0">6월 8일까지 지훈님에게만</p><p class="leading-[1.3]">보이는 혜택이에요 </p>
-              </div>
-              <div class="content-stretch flex gap-[2px] items-center relative shrink-0 w-full">
-                <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-60 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">0 Week</p>
-              </div>
-            </div>
-          </div>
-          <div class="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-            <!-- 공차 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[27.077px] top-1/2"><img alt="" class="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/a0cdfeed-7586-459f-b4a6-7a3598df0ff2"></div></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">인기 음료 6종 50% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">공차</p>
-              </div>
-            </div>
-            <!-- 뚜레쥬르 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[27.077px] top-1/2"><img alt="" class="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/a97cec7c-c51d-42d6-b85d-d230e5d1351f"></div></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">브라우니 1개 증정</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">뚜레쥬르</p>
-              </div>
-            </div>
-            <!-- NOL 티켓 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[27.077px] top-1/2"><img alt="" class="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/3fa409c5-a045-4c90-8ede-391da5bc7750"></div></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">전시회 40% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">NOL 티켓</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. 가족 나들이 배너 -->
-        <div class="bg-[rgba(253,253,254,0.5)] border border-solid border-white content-stretch flex items-center justify-between overflow-clip relative rounded-[28px] shrink-0 w-[353px]">
-          <div class="content-stretch flex flex-col items-start justify-center mr-[-203px] px-[28px] py-[26px] relative shrink-0 w-[203px]">
-            <div class="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic relative shrink-0 text-[#101010] whitespace-nowrap">
-              <div class="font-['Pretendard_Variable:SemiBold'] leading-[0] opacity-80 relative shrink-0 text-[16px] tracking-[-0.64px]">
-                <p class="leading-[1.3] mb-0">이번 주말, 가족 나들이에</p><p class="leading-[1.3]">쓰기 좋은 혜택</p>
-              </div>
-              <p class="font-['Pretendard_Variable:Medium'] leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">제휴사별 혜택 더보기</p>
-            </div>
-          </div>
-          <div class="h-[112px] overflow-clip relative rounded-[16px] shrink-0 w-[353px]">
-            <div class="absolute left-[245px] overflow-clip size-[80px] top-[16px]">
-              <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[80px] top-1/2">
-                <img alt="" class="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/64e0b589-f178-40f9-bb73-11cf3bdfbb7a">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. 오늘이 지나면 카드 -->
-        <div class="bg-[rgba(255,255,255,0.9)] content-stretch flex flex-col items-start overflow-clip relative rounded-[28px] shrink-0 w-[353px]">
-          <div class="h-[172px] overflow-clip relative rounded-[20px] shrink-0 w-[353px]">
-            <div class="absolute h-[172px] left-0 top-0 w-[353px]"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/95dc9371-277a-424d-9a8c-2f9c429f427b"></div>
-          </div>
-          <div class="content-stretch flex h-[66px] items-center justify-between px-[28px] relative shrink-0 w-[353px]">
-            <div class="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic relative shrink-0 text-[#101010] text-[18px] tracking-[-0.54px] w-full">오늘이 지나면<br>다시 없는 혜택이에요</p>
-              <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-60 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">T Week ∙ 오늘 소멸 예정</p>
-            </div>
-          </div>
-          <div class="content-stretch flex flex-col items-start px-[28px] py-[30px] relative shrink-0 w-full">
-            <div class="content-stretch flex gap-[16px] items-center relative shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2">
-                  <div class="-translate-x-1/2 -translate-y-1/2 absolute h-[7.283px] left-1/2 top-1/2 w-[32px]"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/e2a9defa-8e2d-4407-b628-ad8dc1f434c7"></div>
-                </div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">치킨 프랜차이즈 20% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">배달의 민족</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. T DAY 멤버십 -->
-        <div class="bg-[rgba(255,255,255,0.9)] content-stretch flex flex-col gap-[30px] items-start overflow-clip px-[28px] py-[30px] relative rounded-[28px] shrink-0 w-full">
-          <div class="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
-            <div class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[0] not-italic relative shrink-0 text-[#101010] text-[18px] tracking-[-0.54px] whitespace-nowrap">
-              <p class="leading-[1.2] mb-0">오늘의 T DAY 멤버십</p><p class="leading-[1.2]">혜택을 만나보세요</p>
-            </div>
-            <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-60 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">제휴사별 혜택</p>
-          </div>
-          <div class="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-            <!-- 아웃백 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white border-[1.091px] border-solid border-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[32px] top-1/2"><img alt="" class="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/4d330208-a835-4025-857f-8677d7a0fe33"></div></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">전 메뉴 15% 즉시 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">아웃백 스테이크 하우스</p>
-              </div>
-            </div>
-            <!-- 티맵모빌리티 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative rounded-[999px] shrink-0 size-[48px]">
-                <div class="absolute bg-white border-[1.091px] border-solid border-white left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[48px] top-1/2"><div class="absolute inset-0 overflow-hidden pointer-events-none"><img alt="" class="absolute left-[11%] max-w-none size-[78%] top-[11.27%]" src="https://www.figma.com/api/mcp/asset/b9c4dc52-552d-491f-b6fb-5021d2f0fecb"></div></div></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute bg-[#f4f5fa] left-1/2 mix-blend-multiply size-[48px] top-1/2"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start not-italic relative shrink-0 text-[#101010] w-[249px] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">전기차 충전 최대 10% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">티맵모빌리티</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. AirPods 배너 -->
-        <div class="bg-[rgba(253,253,254,0.5)] border border-solid border-white content-stretch flex items-center justify-between overflow-clip relative rounded-[28px] shrink-0 w-[353px]">
-          <div class="content-stretch flex flex-col items-start justify-center mr-[-203px] px-[28px] py-[26px] relative shrink-0 w-[203px]">
-            <div class="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic relative shrink-0 text-[#101010] whitespace-nowrap">
-              <div class="font-['Pretendard_Variable:SemiBold'] leading-[0] opacity-80 relative shrink-0 text-[16px] tracking-[-0.64px]">
-                <p class="leading-[1.3] mb-0">AirPods Max3</p><p class="leading-[1.3]">사전 예약 하셨나요?</p>
-              </div>
-              <p class="font-['Pretendard_Variable:Medium'] leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">사전예약 클럽 멤버십 혜택</p>
-            </div>
-          </div>
-          <div class="h-[112px] overflow-clip relative rounded-[16px] shrink-0 w-[353px]">
-            <div class="absolute left-[245px] overflow-clip size-[80px] top-[16px]">
-              <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[80px] top-1/2">
-                <div class="absolute inset-0 overflow-hidden pointer-events-none"><img alt="" class="absolute h-[80%] left-[13.98%] max-w-none top-[10%] w-[72.05%]" src="https://www.figma.com/api/mcp/asset/9360c83f-cdf5-4f0b-8dea-f15e0d11ccb3"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 7. VIP 혜택 -->
-        <div class="bg-[rgba(255,255,255,0.9)] content-stretch flex flex-col gap-[30px] items-start overflow-clip px-[28px] py-[30px] relative rounded-[28px] shrink-0 w-full" style="margin-bottom:120px">
-          <div class="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
-            <div class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[0] not-italic relative shrink-0 text-[#101010] text-[18px] tracking-[-0.54px] whitespace-nowrap">
-              <p class="leading-[1.2] mb-0">VIP 지훈님,</p><p class="leading-[1.2]">최대 할인 혜택만 모았어요</p>
-            </div>
-            <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] not-italic opacity-60 relative shrink-0 text-[#101010] text-[12px] tracking-[-0.48px] whitespace-nowrap">카테고리별 혜택</p>
-          </div>
-          <div class="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-            <!-- Category tabs -->
-            <div class="content-stretch flex gap-[4px] items-center relative shrink-0 w-full" style="overflow-x:auto;scrollbar-width:none">
-              <div class="content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0" style="background:rgba(217,217,217,0.2)">
-                <p class="[word-break:break-word] font-['Pretendard_Variable:SemiBold'] leading-[1.4] not-italic relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">카페</p>
-              </div>
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(16,16,16,0.05)] border-solid content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0"><p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic opacity-50 relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">베이커리</p></div>
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(16,16,16,0.05)] border-solid content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0"><p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic opacity-50 relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">외식</p></div>
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(16,16,16,0.05)] border-solid content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0"><p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic opacity-50 relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">쇼핑</p></div>
-              <div class="bg-[rgba(255,255,255,0.4)] border border-[rgba(16,16,16,0.05)] border-solid content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0"><p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic opacity-50 relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">문화생활</p></div>
-              <div class="bg-[rgba(255,255,255,0.4)] content-stretch flex items-center justify-center px-[12px] py-[8px] relative rounded-[100px] shrink-0"><p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.4] not-italic opacity-50 relative shrink-0 text-[#101010] text-[14px] text-center tracking-[-0.28px] whitespace-nowrap">피자 · 치킨</p></div>
-            </div>
-            <!-- 배스킨라빈스 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative shrink-0 size-[48px]">
-                <div class="absolute bg-[#f4f5fa] left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[32px] top-1/2"><div class="absolute inset-0 overflow-hidden pointer-events-none"><img alt="" class="absolute h-[58.3%] left-0 max-w-none top-[27.45%] w-full" src="https://www.figma.com/api/mcp/asset/a76bd7f8-3fa2-4f19-b096-0c36a19ad9ae"></div></div></div>
-                <div class="absolute bottom-[-5px] overflow-clip right-[-5px] size-[24px]"><img alt="" class="block size-full" src="https://www.figma.com/api/mcp/asset/2bb89967-cbee-40b8-ac88-212f607705af"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start min-w-px not-italic relative text-[#101010] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">월 1회 싱글레귤러 50% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">배스킨라빈스</p>
-              </div>
-            </div>
-            <!-- 공차 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative shrink-0 size-[48px]">
-                <div class="absolute bg-[#f4f5fa] left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[32px] top-1/2"><div class="absolute inset-0 overflow-hidden pointer-events-none"><img alt="" class="absolute h-full left-[11.78%] max-w-none top-0 w-[76.44%]" src="https://www.figma.com/api/mcp/asset/a0cdfeed-7586-459f-b4a6-7a3598df0ff2"></div></div></div>
-                <div class="absolute bottom-[-5px] overflow-clip right-[-5px] size-[24px]"><img alt="" class="block size-full" src="https://www.figma.com/api/mcp/asset/2bb89967-cbee-40b8-ac88-212f607705af"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start min-w-px not-italic relative text-[#101010] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">1일 1회 사용제한 없이 10% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">공차</p>
-              </div>
-            </div>
-            <!-- 폴바셋 -->
-            <div class="content-stretch flex gap-[16px] items-center overflow-clip relative rounded-[24px] shrink-0 w-full">
-              <div class="overflow-clip relative shrink-0 size-[48px]">
-                <div class="absolute bg-[#f4f5fa] left-0 rounded-[1089.818px] size-[48px] top-0"></div>
-                <div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 overflow-clip size-[32px] top-1/2"><div class="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[32px] top-1/2"><img alt="" class="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src="https://www.figma.com/api/mcp/asset/92ac0274-05a9-43de-b271-84c164dd2976"></div></div>
-                <div class="absolute bottom-[-5px] overflow-clip right-[-5px] size-[24px]"><img alt="" class="block size-full" src="https://www.figma.com/api/mcp/asset/2bb89967-cbee-40b8-ac88-212f607705af"></div>
-              </div>
-              <div class="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col font-['Pretendard_Variable:Medium'] gap-[4px] items-start min-w-px not-italic relative text-[#101010] whitespace-nowrap">
-                <p class="leading-[1.2] relative shrink-0 text-[14px] tracking-[-0.56px]">아메리카노 20% 할인</p>
-                <p class="leading-[1.3] opacity-40 relative shrink-0 text-[12px] tracking-[-0.48px]">폴바셋</p>
-              </div>
-            </div>
-            <!-- 더보기 버튼 -->
-            <div class="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0">
-              <div class="bg-[rgba(231,236,255,0.4)] border border-[rgba(255,255,255,0.3)] border-solid col-1 h-[40px] ml-0 mt-0 relative rounded-[24px] row-1 w-[297px]"></div>
-              <p class="[word-break:break-word] col-1 font-['Pretendard_Variable:Medium'] leading-[1.2] ml-[22px] mt-[13px] not-italic relative row-1 text-[#4c4c4c] text-[12px] tracking-[-0.36px] whitespace-nowrap">카페 혜택 더보기</p>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /ConBenefit -->
-
-    </div><!-- /content -->
-  </div><!-- /scroll -->
-
-  <!-- ── Fixed bottom overlay ── -->
-  <div id="bottom-overlay">
-    <!-- Gradient -->
-    <div class="absolute bg-gradient-to-b bottom-0 from-[rgba(186,207,246,0)] h-[140px] left-0 to-[#bacff6] to-[50.048%] w-[393px]" style="pointer-events:none"></div>
-    <!-- GNB -->
-    <div class="-translate-x-1/2 absolute bottom-[34px] h-[52px] left-1/2 w-[393px]" style="pointer-events:all">
-      <div class="absolute bg-[rgba(255,255,255,0.5)] left-[321px] rounded-[999px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] size-[52px] top-0"></div>
-      <div class="absolute left-[321px] overflow-clip rounded-[999px] size-[52px] top-0">
-        <div class="absolute content-stretch flex flex-col items-center left-[14px] overflow-clip top-[14px]">
-          <div class="mb-[-16px] relative shrink-0 size-[24px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/a497b8e3-1f1b-4eb5-8684-bbe98b10a5f4"></div>
-          <p class="[word-break:break-word] font-['Pretendard_Variable:Medium'] leading-[1.3] min-w-full not-italic opacity-0 relative shrink-0 text-[#3617ce] text-[12px] text-center tracking-[-0.12px] w-[min-content]">혜택</p>
-        </div>
-      </div>
-      <div class="absolute bg-[rgba(255,255,255,0.5)] h-[52px] left-[20px] rounded-[26px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] top-0 w-[293px]"></div>
-      <div class="absolute h-[52px] left-[20px] overflow-clip rounded-[999px] top-0 w-[293px]">
-        <div class="absolute h-[22px] left-[20px] overflow-clip top-[15px] w-[221px]">
-          <div class="absolute left-0 size-[16px] top-[3px]"><div class="absolute left-0 size-[16px] top-0"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/4762be21-f874-4c0f-b529-33682b6c585d"></div></div>
-          <p class="[word-break:break-word] absolute font-['Pretendard_Variable:Medium'] leading-[1.4] left-[24px] not-italic overflow-hidden text-[#3617ce] text-[16px] text-ellipsis top-0 tracking-[-0.64px] w-[197px] whitespace-nowrap">T에 대해 무엇이든 물어보세요</p>
-        </div>
-        <div class="absolute content-stretch flex items-center justify-center left-[249px] rounded-[999px] size-[32px] top-[10px]">
-          <div class="relative shrink-0 size-[24px]"><div class="absolute left-[5px] size-[14px] top-[5px]"><img alt="" class="absolute block inset-0 max-w-none size-full" src="https://www.figma.com/api/mcp/asset/525f5138-e5af-4902-90fa-64fc0655b313"></div></div>
-        </div>
-      </div>
-    </div>
-    <!-- Home indicator -->
-    <div class="absolute bottom-0 content-stretch flex flex-col items-center justify-end left-0 overflow-clip pb-[8px] pt-[21px] px-[120.5px] w-[393px]" style="pointer-events:none">
-      <div class="h-[5px] relative shrink-0 w-[134px]"><div class="absolute bg-[#101010] inset-0 rounded-[100px]"></div></div>
-    </div>
+    <!-- 직접 입력 -->
+    <label>W</label>
+    <input type="number" id="inp-w" value="375" min="320" max="768">
+    <label>H</label>
+    <input type="number" id="inp-h" value="812" min="480" max="1200">
+    <button id="apply-btn">적용</button>
   </div>
 
-</div><!-- /phone -->
+  <!-- ── 프레임 ── -->
+  <div id="frame" style="width:375px;height:812px;">
+    <div id="scroll">
+      <div class="screen">
 
-<script>
-function downloadPage() {
-  const blob = new Blob(['<!DOCTYPE html>' + document.documentElement.outerHTML], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'skt-next-screen.html';
-  a.click();
-}
-</script>
+        <!-- ══════════════════════════════
+             Header  /  피그마 노드 8530:14072
+        ══════════════════════════════ -->
+        <header id="main-header" style="
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: #f7f8fa;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 20px;
+          width: 100%;
+        ">
+          <!-- 뒤로가기 버튼 -->
+          <button onclick="history.back()" style="
+            display:flex; align-items:center; justify-content:center;
+            width:24px; height:24px; flex-shrink:0;
+            background:none; border:none; padding:0; cursor:pointer;
+          " aria-label="뒤로가기">
+            <img src="assets/scenario1/ico_back.svg" style="width:8px;height:15px;display:block;" alt="">
+          </button>
+
+          <!-- 타이틀 -->
+          <span style="
+            font-size:16px; font-weight:600;
+            color:#1c1c1e; letter-spacing:-1px;
+            line-height:26px; flex:1; min-width:0;
+          ">나의 상품 현황</span>
+        </header>
+
+        <!-- ══════════════════════════════
+             HERO  /  피그마 노드 8530:14102
+        ══════════════════════════════ -->
+        <section style="width:100%;background:#f7f8fa;">
+
+          <!-- 타이틀  pt-12 px-20 -->
+          <div style="padding:12px 20px 0;">
+            <p style="margin:0;font-size:18px;font-weight:600;color:#1c1c1e;letter-spacing:-1px;line-height:22px;">
+              지훈님, 아래 혜택 2개만 확인해서 등급 올리면<br>32,000원 더 아낄 수 있어요.
+            </p>
+          </div>
+
+          <!-- 카드  px-16 py-20 -->
+          <div style="padding:20px 16px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:20px;">
+
+              <!-- ① 현재 요금제 행 -->
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5px 0;">
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <img src="assets/scenario1/ico_phone_sim.svg" style="width:16px;height:16px;flex-shrink:0;" alt="">
+                  <span style="font-size:12px;font-weight:400;color:#8e8e93;letter-spacing:-0.8px;white-space:nowrap;">6GX 프레스티지 · 109,000원</span>
+                </div>
+                <span style="font-size:12px;font-weight:400;color:#8e8e93;letter-spacing:-0.8px;text-decoration:underline;white-space:nowrap;cursor:pointer;">요금제 상세</span>
+              </div>
+
+              <!-- ② 레벨 프로그레스 바 (height:72px) / 피그마 노드 8530:14116 -->
+              <div style="position:relative;height:72px;overflow:visible;">
+
+                <!-- 말풍선 SVG: 72px 컨테이너에 직접 absolute
+                     SVG viewBox white rect → y=14 시작이므로 top:-14px
+                     수평: bubble x=16~131, 컨테이너 left:6px 기준 → left:-10px
+                     꼬리 x=73.5 → 컨테이너 기준 63.5px ≈ fill 끝(21.12%) -->
+                <img src="assets/scenario1/tooltip_bubble_coffee.svg"
+                     style="position:absolute;top:-14px;left:-10px;width:147px;height:59px;display:block;pointer-events:none;z-index:2;" alt="">
+
+                <!-- 툴팁 텍스트: bubble 흰 영역(x:6~121, y:0~23)에 중앙 정렬 -->
+                <p style="position:absolute;top:0;left:6px;width:115px;height:23px;margin:0;
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:12px;font-weight:500;color:rgba(64,64,64,0.7);
+                          letter-spacing:-0.6px;white-space:nowrap;pointer-events:none;z-index:3;">
+                  ☕ 커피 1잔 아끼는 중
+                </p>
+
+                <!-- 바 + 레이블  /  top:37px 고정 (72-35=37) -->
+                <div style="position:absolute;top:37px;left:0;right:0;">
+
+                  <!-- 프로그레스 바 트랙 (overflow:visible — 도트가 위로 돌출) -->
+                  <div style="position:relative;height:11px;margin-bottom:6px;overflow:visible;">
+                    <!-- 전체 트랙 배경 -->
+                    <div style="position:absolute;inset:0;background:#f0f0f0;border-radius:99px;"></div>
+                    <!-- Ghost fill: left=19px(6.27%), width=64px(21.12%) -->
+                    <div style="position:absolute;top:0;left:6.27%;height:11px;width:21.12%;background:rgba(89,64,223,0.2);border-radius:99px;"></div>
+                    <!-- Active fill: left=0, width=64px(21.12%) -->
+                    <div style="position:absolute;top:0;left:0;height:11px;width:21.12%;background:#5940df;border-radius:99px;"></div>
+                    <!-- 레벨 도트: center=fill 우측 끝(21.12%), top=-6px -->
+                    <div style="position:absolute;top:-6px;left:calc(21.12% - 11.5px);width:23px;height:23px;">
+                      <img src="assets/scenario1/ico_level_dot.svg" style="width:100%;height:100%;display:block;" alt="">
+                    </div>
+                  </div>
+
+                  <!-- 레벨 레이블: gap:46px + flex:1 0 0 → 텍스트 간격 균등 -->
+                  <div style="display:flex;gap:46px;width:100%;align-items:center;">
+                    <p style="flex:1 0 0;min-width:1px;margin:0;font-size:12px;font-weight:600;color:#5940df;letter-spacing:-0.8px;line-height:18px;">Lv 1.</p>
+                    <p style="flex:1 0 0;min-width:1px;margin:0;font-size:12px;font-weight:400;color:rgba(89,64,223,0.5);letter-spacing:-0.8px;line-height:18px;text-align:center;">Lv 2.</p>
+                    <p style="flex:1 0 0;min-width:1px;margin:0;font-size:12px;font-weight:400;color:#b2b2b2;letter-spacing:-0.8px;line-height:18px;text-align:center;">Lv 3.</p>
+                    <p style="flex:1 0 0;min-width:1px;margin:0;font-size:12px;font-weight:400;color:#b2b2b2;letter-spacing:-0.8px;line-height:18px;text-align:center;">Lv 4.</p>
+                    <p style="flex:1 0 0;min-width:1px;margin:0;font-size:12px;font-weight:400;color:#b2b2b2;letter-spacing:-0.8px;line-height:18px;">Lv 5.</p>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ③ AI 인사이트 텍스트 -->
+              <div style="display:flex;align-items:center;justify-content:center;gap:3px;">
+                <img src="assets/scenario1/ico_ai.svg" style="width:18px;height:18px;flex-shrink:0;" alt="">
+                <p style="margin:0;font-size:14px;font-weight:400;color:#777;letter-spacing:-0.42px;text-align:center;white-space:nowrap;line-height:18px;">
+                  혜택이 커피 1잔에서 <span style="font-weight:600;">영화 티켓 2매</span>만큼 커져요.
+                </p>
+              </div>
+
+              <!-- ④ 구분선 -->
+              <div style="height:1px;background:#e7e7e7;width:100%;"></div>
+
+              <!-- ⑤ 나의 데이터/통화 -->
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:2px;">
+                    <div style="width:18px;height:18px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                      <img src="assets/scenario1/ico_data_usage.svg" style="width:11px;height:11px;" alt="">
+                    </div>
+                    <span style="font-size:13px;font-weight:400;color:rgba(64,64,64,0.6);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">나의 데이터/통화</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:500;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">지훈님 패턴에 합리적인 요금제를 찾았어요.</span>
+                </div>
+                <button id="btn-data" onclick="document.getElementById('section-data').scrollIntoView({behavior:'smooth'})" style="width:28px;height:28px;border-radius:14px;background:white;box-shadow:0 6px 5px rgba(0,0,0,0.15);border:none;padding:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <img src="assets/scenario1/ico_scroll_btn.svg" style="width:18px;height:18px;" alt="">
+                </button>
+              </div>
+
+              <!-- ⑥ 결합 상품 -->
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:2px;">
+                    <div style="width:18px;height:18px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                      <img src="assets/scenario1/ico_bundle.svg" style="width:12.5px;height:12.5px;" alt="">
+                    </div>
+                    <span style="font-size:13px;font-weight:400;color:rgba(64,64,64,0.6);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">결합 상품</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:500;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">지훈님이 훨씬 잘 쓸 수 있는 결합 상품을 찾았어요.</span>
+                </div>
+                <button id="btn-combo" onclick="document.getElementById('section-combo').scrollIntoView({behavior:'smooth'})" style="width:28px;height:28px;border-radius:14px;background:white;box-shadow:0 6px 5px rgba(0,0,0,0.15);border:none;padding:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <img src="assets/scenario1/ico_scroll_btn.svg" style="width:18px;height:18px;" alt="">
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             나의 데이터/통화  /  피그마 노드 8530:14176
+        ══════════════════════════════ -->
+        <section id="section-data" style="width:100%;background:#f7f8fa;">
+
+          <!-- 섹션 레이블 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">나의 데이터/통화</p>
+          </div>
+
+          <!-- 카드  px-16 pb-20 -->
+          <div style="padding:0 16px 20px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:24px;">
+
+              <!-- ① 상품 행: 아이콘 박스 + 제목 + 상태 -->
+              <div style="display:flex;gap:12px;align-items:center;">
+                <!-- 아이콘 박스 (스크린샷) -->
+                <img src="assets/scenario1/icon_box_data.png" style="width:46px;height:46px;border-radius:8px;flex-shrink:0;" alt="">
+                <!-- 텍스트 -->
+                <div style="flex:1;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">콘텐츠/OTT 위주로 사용</p>
+                    <p style="margin:0;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">데이터 무제한</p>
+                  </div>
+                  <!-- 위 방향 chevron (펼쳐진 상태) -->
+                  <div style="transform:scaleY(-1);flex-shrink:0;margin-top:3px;">
+                    <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;display:block;" alt="">
+                  </div>
+                </div>
+              </div>
+
+              <!-- ② 데이터 사용량 분석 서브카드 -->
+              <div style="background:#f7f7f7;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+
+                <!-- 헤더: 데이터 사용량 분석 / 3월 기준 -->
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:2px;">
+                    <span style="font-size:13px;font-weight:500;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:16px;">데이터 사용량 분석</span>
+                    <!-- 인포 아이콘 -->
+                    <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <img src="assets/scenario1/ico_info.svg" style="width:12px;height:12px;" alt="">
+                    </div>
+                  </div>
+                  <span style="font-size:13px;font-weight:500;color:rgba(64,64,64,0.5);letter-spacing:-0.8px;line-height:16px;">3월 기준</span>
+                </div>
+
+                <!-- 도넛 차트 + 범례 -->
+                <div style="display:flex;gap:20px;align-items:center;">
+
+                  <!-- 도넛 차트 (90×90) -->
+                  <div style="position:relative;width:90px;height:90px;flex-shrink:0;">
+                    <img src="assets/scenario1/chart_donut_progress.svg" style="width:90px;height:90px;display:block;" alt="">
+                    <!-- 60.4% 텍스트: left:67.5 top:44.5 → translate(-50%,-50%) -->
+                    <p style="position:absolute;left:67.5px;top:44.5px;transform:translate(-50%,-50%);margin:0;font-size:12px;font-weight:500;color:white;letter-spacing:-0.82px;white-space:nowrap;line-height:14.7px;">60.4%</p>
+                    <!-- 넷플릭스 배지: left:60 top:60, 30×30
+                         스크린샷 원본 50×50에 그림자 여백 ~10px 포함
+                         → 50×50 자연 크기로 렌더링 후 컨테이너 overflow:hidden으로 중앙 30×30만 클리핑 -->
+                    <div style="position:absolute;left:60px;top:60px;width:30px;height:30px;border-radius:6px;box-shadow:0 6px 10px rgba(0,0,0,0.15);overflow:hidden;flex-shrink:0;">
+                      <img src="assets/scenario1/logo_netflix.png"
+                           style="position:absolute;width:50px;height:50px;top:50%;left:50%;transform:translate(-50%,-50%);" alt="">
+                    </div>
+                  </div>
+
+                  <!-- 범례 -->
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                    <!-- 콘텐츠/OTT -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <div style="display:flex;gap:6px;align-items:center;">
+                        <div style="width:12px;height:12px;border-radius:2px;background:#ff7575;flex-shrink:0;"></div>
+                        <span style="font-size:14px;font-weight:600;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">콘텐츠 / OTT</span>
+                      </div>
+                      <span style="font-size:14px;font-weight:600;color:#ff4043;letter-spacing:-0.8px;line-height:18px;">31.3GB</span>
+                    </div>
+                    <!-- SNS -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <div style="display:flex;gap:6px;align-items:center;">
+                        <div style="width:12px;height:12px;border-radius:2px;background:#ffbfbf;flex-shrink:0;"></div>
+                        <span style="font-size:14px;font-weight:500;color:rgba(64,64,64,0.5);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">SNS</span>
+                      </div>
+                      <span style="font-size:14px;font-weight:500;color:rgba(64,64,64,0.7);letter-spacing:-0.8px;line-height:18px;">10GB</span>
+                    </div>
+                    <!-- 휴대폰/통신 -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                      <div style="display:flex;gap:6px;align-items:center;">
+                        <div style="width:12px;height:12px;border-radius:2px;background:#ffdddd;flex-shrink:0;"></div>
+                        <span style="font-size:14px;font-weight:500;color:rgba(64,64,64,0.5);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">휴대폰 / 통신</span>
+                      </div>
+                      <span style="font-size:14px;font-weight:500;color:rgba(64,64,64,0.7);letter-spacing:-0.8px;line-height:18px;">5.2GB</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div><!-- /데이터 사용량 분석 -->
+
+              <!-- ③+④ AI 텍스트 + 카드: gap-12px로 묶음 (피그마 노드 8530:14257) -->
+              <div style="display:flex;flex-direction:column;gap:12px;">
+
+              <p style="margin:0;font-size:16px;font-weight:500;color:#404040;letter-spacing:-1px;line-height:20px;">
+                넷플릭스 볼 때 데이터를 가장 많이 쓰시니까 이 요금제가 훨씬 합리적이에요.
+              </p>
+
+              <!-- ④ 추천 요금제 + T에이전트 카드 -->
+              <div style="display:flex;flex-direction:column;gap:8px;">
+
+                <!-- 추천 요금제 카드 (gray) -->
+                <div style="background:#f7f7f7;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+
+                  <!-- 요금제 헤더 -->
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <!-- SKT T 배지 (white circle, 24×24) -->
+                    <div style="position:relative;width:24px;height:24px;background:white;border-radius:50%;overflow:hidden;flex-shrink:0;">
+                      <img src="assets/scenario1/logo_skt_t.png" style="position:absolute;left:3px;top:3px;width:9.4px;height:9.4px;object-fit:cover;" alt="">
+                      <div style="position:absolute;left:8.35px;top:8.35px;width:12.5px;height:12.5px;border-radius:50%;border:0.5px solid white;overflow:hidden;">
+                        <img src="assets/scenario1/logo_skt_badge.png" style="width:100%;height:100%;object-fit:cover;" alt="">
+                      </div>
+                    </div>
+                    <!-- 요금제명 + 설명 -->
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                      <span style="font-size:14px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:18px;white-space:nowrap;">0 청년 109</span>
+                      <div style="display:flex;gap:2px;font-size:12px;font-weight:400;color:rgba(64,64,64,0.7);letter-spacing:-0.8px;line-height:14px;white-space:nowrap;">
+                        <span>월 109,000원</span><span>∙</span><span>6G</span><span>∙</span><span>만 34세 이하</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 구분선 -->
+                  <div style="height:1px;background:rgba(0,0,0,0.07);width:100%;"></div>
+
+                  <!-- 혜택 목록 -->
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <!-- 넷플릭스 스탠다드 -->
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <div style="width:24px;height:24px;border-radius:12px;overflow:hidden;flex-shrink:0;">
+                        <img src="assets/scenario1/logo_netflix_icon.png" style="width:100%;height:100%;object-fit:cover;" alt="">
+                      </div>
+                      <span style="font-size:13px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:22px;">넷플릭스 스탠다드 제공</span>
+                    </div>
+                    <!-- 커피/영화/로밍 -->
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <img src="assets/scenario1/logo_skt_t.png" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">
+                      <span style="font-size:13px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:22px;">커피/영화/로밍 50% 할인</span>
+                    </div>
+                    <!-- T 멤버십 VIP -->
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <img src="assets/scenario1/logo_t_membership.png" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">
+                      <span style="font-size:13px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:22px;">T 멤버십 VIP 혜택</span>
+                    </div>
+                    <!-- 스마트기기 무료 -->
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <img src="assets/scenario1/logo_smart_device.png" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">
+                      <span style="font-size:13px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:22px;">스마트기기 2회선 이용요금 무료</span>
+                    </div>
+                  </div>
+
+                </div><!-- /추천 요금제 카드 -->
+
+                <!-- T에이전트 분석 카드 (purple) / 피그마 노드 8530:14304 -->
+                <div style="background:#ece8ff;border-radius:12px;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+
+                  <!-- 상단: AI아이콘 + 그라디언트 텍스트 + 칩 -->
+                  <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                      <img src="assets/scenario1/ico_ai_2.svg" style="width:18px;height:18px;" alt="">
+                      <p style="margin:0;font-size:14px;font-weight:600;letter-spacing:-0.796px;line-height:1.4;
+                                background:linear-gradient(to right,#5940df,#0d0052);
+                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                                background-clip:text;">
+                        자주 쓰는 넷플릭스에 커피·영화·로밍 할인까지 더해 훨씬 합리적인 구성이에요.
+                      </p>
+                    </div>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                      <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                        <span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">넷플릭스 무료</span>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                        <span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">주요 혜택 50% 할인</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 구분선 -->
+                  <div style="width:100%;height:1px;background:rgba(255,255,255,0.8);"></div>
+
+                  <!-- 변경 전/후 -->
+                  <div style="width:100%;display:flex;flex-direction:column;gap:16px;">
+                    <p style="margin:0;font-size:13px;font-weight:600;color:#5940df;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">지훈님의 패턴에 맞게 최적 옵션을 설정했어요.</p>
+                    <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+                      <!-- 변경 전 -->
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:13px;font-weight:400;color:#1c1c1e;opacity:0.6;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">변경 전</span>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                          <span style="font-size:12px;font-weight:500;color:rgba(64,64,64,0.8);letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">6GX 프레스티지</span>
+                        </div>
+                      </div>
+                      <!-- 변경 후 -->
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:13px;font-weight:400;color:#5940df;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">변경 후</span>
+                        <div style="background:rgba(255,255,255,0.8);border:1px solid #5940df;border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                          <span style="font-size:12px;font-weight:600;color:#5940df;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">0 청년 109</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 바로 변경하기 -->
+                  <p style="margin:0;font-size:13px;font-weight:400;color:#5940df;letter-spacing:-0.8px;line-height:18px;text-decoration:underline;opacity:0.5;white-space:nowrap;cursor:pointer;">바로 변경하기</p>
+
+                </div><!-- /T에이전트 분석 카드 -->
+
+              </div><!-- /추천 요금제 + T에이전트 -->
+
+              </div><!-- /③+④ gap-12px 묶음 -->
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             인터넷  /  피그마 노드 8530:14331
+        ══════════════════════════════ -->
+        <section style="width:100%;background:#f7f8fa;">
+
+          <!-- 섹션 레이블  pl:16 py:8 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">인터넷</p>
+          </div>
+
+          <!-- 카드  px:16 pb:20 -->
+          <div style="padding:0 16px 20px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:16px;">
+
+              <!-- 상품 행  gap:12 items-center -->
+              <div style="display:flex;gap:12px;align-items:center;">
+                <img src="assets/scenario1/icon_box_internet.png" style="width:46px;height:46px;border-radius:8px;flex-shrink:0;" alt="">
+                <div style="flex:1 0 0;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">기가라이트 쉐어 사용 중</p>
+                    <div style="display:flex;gap:2px;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">
+                      <span>월 37,400원</span><span>∙</span><span>500Mbps</span>
+                    </div>
+                  </div>
+                  <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;flex-shrink:0;margin-top:3px;" alt="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             단말기  /  피그마 노드 8530:14362
+        ══════════════════════════════ -->
+        <section style="width:100%;background:#f7f8fa;">
+
+          <!-- 섹션 레이블  pl:16 py:8 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">단말기</p>
+          </div>
+
+          <!-- 카드  px:16 pb:20 -->
+          <div style="padding:0 16px 20px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:16px;">
+
+              <!-- 상품 행  gap:12 items-center -->
+              <div style="display:flex;gap:12px;align-items:center;">
+                <img src="assets/scenario1/icon_box_device.png" style="width:46px;height:46px;border-radius:8px;flex-shrink:0;" alt="">
+                <div style="flex:1 0 0;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">잔여 할부 1개월</p>
+                    <div style="display:flex;gap:2px;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">
+                      <span>월 39,950원</span><span>∙</span><span>갤럭시 S25</span>
+                    </div>
+                  </div>
+                  <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;flex-shrink:0;margin-top:3px;" alt="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 이후 섹션 추가 영역 -->
+        <div style="height:400px;"></div>
+
+      </div><!-- /screen -->
+    </div><!-- /scroll -->
+  </div><!-- /frame -->
+
+
+  <script>
+    const frame  = document.getElementById('frame');
+    const inpW   = document.getElementById('inp-w');
+    const inpH   = document.getElementById('inp-h');
+    const presets = document.querySelectorAll('.preset');
+
+    function applySize(w, h) {
+      frame.style.width  = w + 'px';
+      frame.style.height = h + 'px';
+      inpW.value = w;
+      inpH.value = h;
+      // 활성 프리셋 표시
+      presets.forEach(btn => {
+        btn.classList.toggle('active',
+          Number(btn.dataset.w) === w && Number(btn.dataset.h) === h);
+      });
+    }
+
+    // 프리셋 클릭
+    presets.forEach(btn => {
+      btn.addEventListener('click', () => {
+        applySize(Number(btn.dataset.w), Number(btn.dataset.h));
+      });
+    });
+
+    // 직접 입력 적용
+    document.getElementById('apply-btn').addEventListener('click', () => {
+      const w = Math.max(320, Math.min(768, Number(inpW.value) || 375));
+      const h = Math.max(480, Math.min(1200, Number(inpH.value) || 812));
+      applySize(w, h);
+    });
+
+    // Enter 키로도 적용
+    [inpW, inpH].forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('apply-btn').click();
+      });
+    });
+  </script>
+
 </body>
 </html>
