@@ -65,6 +65,25 @@
     }
     #apply-btn:hover { opacity: 0.85; }
 
+    /* ── Bottom bar 텍스트 크로스페이드 ── */
+    #bottom-bar-text-data,
+    #bottom-bar-text-combo {
+      transition:
+        opacity  0.48s cubic-bezier(0.4, 0, 0.2, 1),
+        filter   0.48s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.48s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 아이콘 bounce-in keyframe */
+    @keyframes bbIconIn {
+      0%   { opacity:0; transform: scale(0.82) rotate(-8deg); }
+      60%  {            transform: scale(1.06) rotate(2deg);  }
+      100% { opacity:1; transform: scale(1)    rotate(0deg);  }
+    }
+    .bb-icon-in {
+      animation: bbIconIn 0.4s ease-out both;
+    }
+
     @media (max-width: 767px) {
       body {
         margin: 0; padding: 0;
@@ -455,7 +474,7 @@
                   <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
                     <div style="display:flex;flex-direction:column;gap:4px;">
                       <img src="assets/scenario1/ico_ai_2.svg" style="width:18px;height:18px;" alt="">
-                      <p style="margin:0;font-size:14px;font-weight:600;letter-spacing:-0.796px;line-height:1.4;
+                      <p id="agent-data-gradient-text" style="margin:0;font-size:14px;font-weight:600;letter-spacing:-0.796px;line-height:1.4;
                                 background:linear-gradient(to right,#5940df,#0d0052);
                                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
                                 background-clip:text;">
@@ -573,8 +592,156 @@
           </div>
         </section>
 
-        <!-- 이후 섹션 추가 영역 -->
-        <div style="height:400px;"></div>
+        <!-- ══════════════════════════════
+             결합 상품 (product)  /  피그마 노드 8530:14384
+        ══════════════════════════════ -->
+        <section id="section-combo" style="width:100%;background:#f7f8fa;">
+
+          <!-- 섹션 레이블 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">결합 상품</p>
+          </div>
+
+          <!-- 카드  px-16 pb-20 -->
+          <div style="padding:0 16px 20px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px 16px;display:flex;flex-direction:column;gap:16px;">
+
+              <!-- ① 상품 행: gap-12 items-center -->
+              <div style="display:flex;gap:12px;align-items:center;width:100%;">
+
+                <!-- 아이콘 박스: 46×46 bg-#f3f3f3 rounded-8 -->
+                <div style="width:46px;height:46px;background:#f3f3f3;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:32px;height:32px;border-radius:135px;overflow:hidden;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAACXBIWXMAAAAnAAAAJwEqCZFPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAA7lJREFUeAHtwDEBAAAAwqD1T20MHygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GahiAAHE99fNAAAAAElFTkSuQmCC" style="width:100%;height:100%;object-fit:cover;object-position:bottom;" alt="">
+                  </div>
+                </div>
+
+                <!-- 텍스트 + chevron -->
+                <div style="flex:1;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">디즈니 플러스 스탠다드 사용 중</p>
+                    <p style="margin:0;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">무료</p>
+                  </div>
+                  <!-- 위 방향 chevron (scaleY(-1) = 펼쳐진 상태) -->
+                  <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;">
+                    <div style="transform:scaleY(-1);">
+                      <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;display:block;" alt="">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ②③ 버블차트 카드 + T에이전트 카드: gap-8 -->
+              <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+
+                <!-- 버블 차트 회색 카드 -->
+                <div style="background:#f7f7f7;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;">
+
+                  <!-- 헤더: 주간 평균 사용 시간 / 3/12~3/17 -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                    <div style="display:flex;align-items:center;gap:2px;">
+                      <span style="font-size:13px;font-weight:500;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:16px;white-space:nowrap;">주간 평균 사용 시간</span>
+                      <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <img src="assets/scenario1/ico_info.svg" style="width:12px;height:12px;" alt="">
+                      </div>
+                    </div>
+                    <span style="font-size:13px;font-weight:500;color:rgba(64,64,64,0.5);letter-spacing:-0.8px;line-height:16px;white-space:nowrap;">3/12 ~ 3/17</span>
+                  </div>
+
+                  <!-- 버블 차트: position:relative, height=182px(62+120) -->
+                  <div style="position:relative;width:227px;height:182px;margin:0 auto;">
+
+                    <!-- Disney+ bubble: 68×68, top=0, left=77 -->
+                    <div style="position:absolute;left:77px;top:0;width:68px;height:68px;border-radius:50%;background:#FFDDDD;">
+                      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:44px;">
+                        <p style="margin:0;font-size:12px;font-weight:600;color:#ff5656;letter-spacing:-0.8px;line-height:1.2;">디즈니 +</p>
+                        <p style="margin:0;font-size:11px;font-weight:500;color:#ff8d8d;letter-spacing:-0.8px;line-height:1.2;">2시간</p>
+                      </div>
+                    </div>
+
+                    <!-- Gemini bubble: 120×120, top=62, left=0 -->
+                    <div style="position:absolute;left:0;top:62px;width:120px;height:120px;border-radius:50%;background:#8872FF;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                      <p style="margin:0;font-size:14px;font-weight:600;color:white;letter-spacing:-0.8px;line-height:1.2;text-align:center;">Gemini</p>
+                      <p style="margin:0;font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);letter-spacing:-0.8px;line-height:1.2;text-align:center;">48시간</p>
+                    </div>
+
+                    <!-- Google Drive bubble: 100×100, top=51, left=127 -->
+                    <div style="position:absolute;left:127px;top:51px;width:100px;height:100px;border-radius:50%;background:#CEC4FF;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                      <p style="margin:0;font-size:14px;font-weight:600;color:#8872ff;letter-spacing:-0.8px;line-height:1.2;text-align:center;white-space:nowrap;">Google Drive</p>
+                      <p style="margin:0;font-size:13px;font-weight:500;color:rgba(136,114,255,0.5);letter-spacing:-0.8px;line-height:1.2;text-align:center;">32시간</p>
+                    </div>
+
+                  </div>
+                </div><!-- /버블 차트 카드 -->
+
+                <!-- T에이전트 분석 카드 (purple) / 피그마 노드 8772:6580 -->
+                <div id="agent-card-combo" style="background:#ece8ff;border-radius:12px;padding:16px 16px 20px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+
+                  <!-- 상단: AI아이콘 + 그라디언트 텍스트 + 칩 -->
+                  <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                      <img src="assets/scenario1/ico_ai_2.svg" style="width:18px;height:18px;" alt="">
+                      <p id="agent-combo-gradient-text" style="margin:0;font-size:14px;font-weight:600;letter-spacing:-0.796px;line-height:1.4;
+                                background:linear-gradient(to right,#5940df,#0d0052);
+                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                                background-clip:text;">
+                        잘 안 보는 디즈니 플러스 대신, 자주 사용하는 Google AI Pro를 결합해 보세요.
+                      </p>
+                    </div>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                      <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                        <span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">디즈니 플러스 해지</span>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;">
+                        <span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">Google AI Pro 무료 교체</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 구분선 -->
+                  <div style="width:100%;height:1px;background:rgba(255,255,255,0.8);"></div>
+
+                  <!-- 변경 전/후 -->
+                  <div style="width:100%;display:flex;flex-direction:column;gap:16px;">
+                    <p style="margin:0;font-size:13px;font-weight:600;color:#5940df;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">지훈님의 패턴에 맞게 최적 옵션을 설정했어요.</p>
+                    <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+                      <!-- 변경 전 -->
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:13px;font-weight:400;color:#1c1c1e;opacity:0.6;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">변경 전</span>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:4px;padding:4px 8px;display:flex;align-items:center;gap:4px;">
+                          <div style="width:18px;height:18px;border-radius:135px;overflow:hidden;flex-shrink:0;">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAACXBIWXMAAAAnAAAAJwEqCZFPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAA7lJREFUeAHtwDEBAAAAwqD1T20MHygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4GahiAAHE99fNAAAAAElFTkSuQmCC" style="width:100%;height:100%;object-fit:cover;object-position:bottom;" alt="">
+                          </div>
+                          <span style="font-size:12px;font-weight:500;color:rgba(64,64,64,0.8);letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">디즈니 플러스 스탠다드</span>
+                        </div>
+                      </div>
+                      <!-- 변경 후 -->
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:13px;font-weight:400;color:#5940df;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">변경 후</span>
+                        <div style="background:rgba(255,255,255,0.8);border:1px solid #5940df;border-radius:4px;padding:4px 8px;display:flex;align-items:center;gap:4px;">
+                          <div style="width:18px;height:18px;border-radius:56px;border:1px solid #d6d2e9;overflow:hidden;flex-shrink:0;">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAAAnAAAAJwEqCZFPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARVJREFUeAHtwDEBAAAAwqD1T+1rCCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN4AATwAAdS1LEsAAAAASUVORK5CYII=" style="width:100%;height:100%;object-fit:cover;" alt="">
+                          </div>
+                          <span style="font-size:12px;font-weight:600;color:#5940df;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">Google AI Pro</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 바로 변경하기 -->
+                  <p style="margin:0;font-size:13px;font-weight:400;color:#5940df;letter-spacing:-0.8px;line-height:18px;text-decoration:underline;opacity:0.5;white-space:nowrap;cursor:pointer;">바로 변경하기</p>
+
+                </div><!-- /T에이전트 분석 카드 -->
+
+              </div><!-- /버블차트 + T에이전트 gap-8 -->
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 하단 여백 -->
+        <div style="height:120px;"></div>
 
       </div><!-- /screen -->
     </div><!-- /scroll -->
@@ -592,12 +759,22 @@
       opacity:0;
       transition:transform 0.42s cubic-bezier(0.32,0.72,0,1), opacity 0.42s cubic-bezier(0.32,0.72,0,1);
     ">
-      <!-- 상단 텍스트 행  gap:4 pb:16 px:24 -->
-      <div style="display:flex;gap:4px;align-items:center;padding:0 4px 16px;width:100%;">
-        <img src="assets/scenario1/ico_navigate.svg" style="width:16px;height:16px;flex-shrink:0;" alt="">
-        <p style="margin:0;flex:1 0 0;font-size:14px;font-weight:500;color:#101010;letter-spacing:-0.56px;line-height:1.5;">
-          기존 요금제 대비 어떤 혜택이 있는지 비교해 드릴게요.
-        </p>
+      <!-- 텍스트 크로스페이드 래퍼: 두 문구를 absolute 겹침 -->
+      <div id="bottom-bar-text-wrapper" style="position:relative;width:100%;min-height:62px;overflow:hidden;">
+        <!-- data 섹션 문구 (기본 표시) -->
+        <div id="bottom-bar-text-data" style="position:absolute;inset:0;display:flex;gap:4px;align-items:flex-start;padding:0 4px 16px;opacity:1;filter:blur(0px);transform:translateY(0px);pointer-events:auto;">
+          <img id="bar-icon-data" src="assets/scenario1/ico_navigate.svg" style="width:16px;height:16px;flex-shrink:0;margin-top:3px;" alt="">
+          <p style="margin:0;flex:1 0 0;font-size:14px;font-weight:500;color:#101010;letter-spacing:-0.56px;line-height:1.5;">
+            기존 요금제 대비 어떤 혜택이 있는지 비교해 드릴게요.
+          </p>
+        </div>
+        <!-- 결합 상품 섹션 문구 (기본 숨김) -->
+        <div id="bottom-bar-text-combo" style="position:absolute;inset:0;display:flex;gap:4px;align-items:flex-start;padding:0 4px 16px;opacity:0;filter:blur(3px);transform:translateY(5px);pointer-events:none;">
+          <img id="bar-icon-combo" src="assets/scenario1/ico_navigate.svg" style="width:16px;height:16px;flex-shrink:0;margin-top:3px;" alt="">
+          <p style="margin:0;flex:1 0 0;font-size:14px;font-weight:500;color:#101010;letter-spacing:-0.56px;line-height:1.5;">
+            요금제에 맞춰 결합 상품도 바꿀 때, 얼마나 더 합리적인지 비교할 수 있어요.
+          </p>
+        </div>
       </div>
       <!-- 버튼 행  gap:10 -->
       <div style="display:flex;align-items:center;gap:10px;width:100%;">
@@ -663,34 +840,106 @@
       scrollEl.scrollTo({ top, behavior: 'smooth' });
     });
 
-    // BottomGroup: agent 카드 진입(30%) → 슬라이드업 / 완전히 벗어남(0%) → 슬라이드다운
+    // BottomGroup 슬라이드업/다운 + 섹션별 문구 전환
     const bottomBar = document.getElementById('bottom-bar');
-    const agentCard = document.getElementById('agent-card-data');
-    if (bottomBar && agentCard) {
-      const scrollEl = document.getElementById('scroll');
+    const scrollEl  = document.getElementById('scroll');
+    const textData  = document.getElementById('bottom-bar-text-data');
+    const textCombo = document.getElementById('bottom-bar-text-combo');
 
-      // 진입 감지: 카드가 30% 이상 보일 때 슬라이드업 + 페이드인
-      const showObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            bottomBar.style.transform = 'translateY(0)';
-            bottomBar.style.opacity   = '1';
-          }
-        });
-      }, { root: scrollEl, threshold: 0.3 });
+    if (bottomBar && scrollEl) {
+      let dataVisible   = false; // agent-card-data 가 조금이라도 보이는지
+      let comboVisible  = false; // agent-card-combo 가 조금이라도 보이는지
+      let barShowing    = false;
+      let activeSection = null;
 
-      // 이탈 감지: 카드가 완전히 사라지면 슬라이드다운 + 페이드아웃
-      const hideObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) {
-            bottomBar.style.transform = 'translateY(100%)';
-            bottomBar.style.opacity   = '0';
-          }
+      // 텍스트만 크로스페이드 — bar 위치는 건드리지 않음
+      const switchText = (section) => {
+        if (section === activeSection) return;
+        activeSection = section;
+
+        const incoming = section === 'data' ? textData  : textCombo;
+        const outgoing = section === 'data' ? textCombo : textData;
+        const inIcon   = document.getElementById(section === 'data' ? 'bar-icon-data' : 'bar-icon-combo');
+
+        outgoing.style.opacity       = '0';
+        outgoing.style.filter        = 'blur(3px)';
+        outgoing.style.transform     = 'translateY(-5px)';
+        outgoing.style.pointerEvents = 'none';
+
+        incoming.style.transition    = 'none';
+        incoming.style.opacity       = '0';
+        incoming.style.filter        = 'blur(3px)';
+        incoming.style.transform     = 'translateY(5px)';
+        incoming.style.pointerEvents = 'auto';
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            incoming.style.transition = '';
+            incoming.style.opacity    = '1';
+            incoming.style.filter     = 'blur(0px)';
+            incoming.style.transform  = 'translateY(0px)';
+          });
         });
+
+        if (inIcon) {
+          inIcon.classList.remove('bb-icon-in');
+          void inIcon.offsetWidth;
+          inIcon.classList.add('bb-icon-in');
+        }
+      };
+
+      // bar가 보이면 텍스트만 교체, 숨겨져 있으면 슬라이드업 후 교체
+      const showBar = (section) => {
+        switchText(section);
+        if (!barShowing) {
+          barShowing = true;
+          bottomBar.style.transform = 'translateY(0)';
+          bottomBar.style.opacity   = '1';
+        }
+      };
+
+      // 두 섹션 모두 완전히 벗어났을 때만 슬라이드다운
+      const tryHide = () => {
+        if (dataVisible || comboVisible) return;
+        barShowing    = false;
+        activeSection = null;
+        bottomBar.style.transform = 'translateY(100%)';
+        bottomBar.style.opacity   = '0';
+      };
+
+      // ── 가시성 추적 (threshold 0): 둘 다 사라지면 숨김
+      const dataVisObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { dataVisible = e.isIntersecting; tryHide(); });
       }, { root: scrollEl, threshold: 0 });
 
-      showObserver.observe(agentCard);
-      hideObserver.observe(agentCard);
+      const comboVisObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { comboVisible = e.isIntersecting; tryHide(); });
+      }, { root: scrollEl, threshold: 0 });
+
+      // ── 표시·전환 트리거 (threshold 0.3): 섹션 진입 시 문구 결정
+      const dataShowObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) showBar('data'); });
+      }, { root: scrollEl, threshold: 0.3 });
+
+      const comboShowObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) showBar('combo'); });
+      }, { root: scrollEl, threshold: 0.3 });
+
+      // 관찰 시작
+      const agentCardData     = document.getElementById('agent-card-data');
+      const comboGradientText = document.getElementById('agent-combo-gradient-text');
+      const agentCardCombo    = document.getElementById('agent-card-combo');
+
+      if (agentCardData) {
+        dataShowObs.observe(agentCardData); // 30% 진입 → data 표시
+        dataVisObs.observe(agentCardData);  // 완전 이탈 → 숨김 판단
+      }
+      if (comboGradientText) {
+        comboShowObs.observe(comboGradientText); // 30% 진입 → combo로 전환
+      }
+      if (agentCardCombo) {
+        comboVisObs.observe(agentCardCombo); // 완전 이탈 → 숨김 판단
+      }
     }
   </script>
 
