@@ -740,8 +740,75 @@
           </div>
         </section>
 
-        <!-- 하단 여백 -->
-        <div style="height:120px;"></div>
+        <!-- ══════════════════════════════
+             구독 상품  /  피그마 노드 8530:14473
+             섹션 pb:20  /  카드컨테이너 px:16  /  카드 p:20  /  행 gap:12
+        ══════════════════════════════ -->
+        <section style="width:100%;background:#f7f8fa;padding-bottom:20px;">
+
+          <!-- 섹션 레이블  pl:16 py:8 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">구독 상품</p>
+          </div>
+
+          <!-- 카드  px:16 -->
+          <div style="padding:0 16px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;">
+
+              <!-- 상품 행  gap:12 items-center -->
+              <div style="display:flex;gap:12px;align-items:center;">
+                <img src="assets/scenario1/icon_box_tpass.png" style="width:46px;height:46px;border-radius:8px;flex-shrink:0;" alt="">
+                <div style="flex:1 0 0;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">T 패스 AI 크리에이터 패키지</p>
+                    <div style="display:flex;gap:2px;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">
+                      <span>월 19,900원(분담납부)</span><span>∙</span><span>3회차</span>
+                    </div>
+                  </div>
+                  <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;flex-shrink:0;margin-top:3px;" alt="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             부가서비스  /  피그마 노드 8530:14498
+             카드컨테이너 pb:20 px:16  /  카드 p:20  /  행 gap:12
+             하단 여백 159px
+        ══════════════════════════════ -->
+        <section style="width:100%;background:#f7f8fa;">
+
+          <!-- 섹션 레이블  pl:16 py:8 -->
+          <div style="padding:8px 16px;">
+            <p style="margin:0;font-size:14px;font-weight:500;color:#404040;letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">부가서비스</p>
+          </div>
+
+          <!-- 카드  px:16 pb:20 -->
+          <div style="padding:0 16px 20px;">
+            <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;">
+
+              <!-- 상품 행  gap:12 items-center -->
+              <div style="display:flex;gap:12px;align-items:center;">
+                <img src="assets/scenario1/icon_box_vcoloring.png" style="width:46px;height:46px;border-radius:8px;flex-shrink:0;" alt="">
+                <div style="flex:1 0 0;min-width:0;display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600;color:#404040;letter-spacing:-1px;line-height:24px;white-space:nowrap;">V컬러링 플러스 사용 중</p>
+                    <div style="display:flex;gap:2px;font-size:13px;font-weight:400;color:rgba(64,64,64,0.8);letter-spacing:-0.8px;line-height:18px;white-space:nowrap;">
+                      <span>월 4,400원</span><span>∙</span><span>통화/메시지</span>
+                    </div>
+                  </div>
+                  <img src="assets/scenario1/ico_chevron_down.svg" style="width:18px;height:18px;flex-shrink:0;margin-top:3px;" alt="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 부가서비스 하단 여백 159px -->
+          <div style="height:159px;"></div>
+        </section>
 
       </div><!-- /screen -->
     </div><!-- /scroll -->
@@ -898,25 +965,22 @@
         }
       };
 
-      // 두 섹션 모두 완전히 벗어났을 때만 슬라이드다운
+      // 두 카드 모두 완전히 벗어났을 때만 슬라이드다운
+      // debounce: 카드 간 전환 구간에서 잠깐 둘 다 invisible이 되어도 bar가 튀지 않도록
+      let hideTimer = null;
       const tryHide = () => {
+        clearTimeout(hideTimer);
         if (dataVisible || comboVisible) return;
-        barShowing    = false;
-        activeSection = null;
-        bottomBar.style.transform = 'translateY(100%)';
-        bottomBar.style.opacity   = '0';
+        hideTimer = setTimeout(() => {
+          if (dataVisible || comboVisible) return;
+          barShowing    = false;
+          activeSection = null;
+          bottomBar.style.transform = 'translateY(100%)';
+          bottomBar.style.opacity   = '0';
+        }, 120);
       };
 
-      // ── 가시성 추적 (threshold 0): 둘 다 사라지면 숨김
-      const dataVisObs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { dataVisible = e.isIntersecting; tryHide(); });
-      }, { root: scrollEl, threshold: 0 });
-
-      const comboVisObs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { comboVisible = e.isIntersecting; tryHide(); });
-      }, { root: scrollEl, threshold: 0 });
-
-      // ── 표시·전환 트리거 (threshold 0.3): 섹션 진입 시 문구 결정
+      // ── 표시·전환 트리거 (threshold 0.3): agent 카드 30% 진입 시 문구 결정
       const dataShowObs = new IntersectionObserver((entries) => {
         entries.forEach(e => { if (e.isIntersecting) showBar('data'); });
       }, { root: scrollEl, threshold: 0.3 });
@@ -925,21 +989,21 @@
         entries.forEach(e => { if (e.isIntersecting) showBar('combo'); });
       }, { root: scrollEl, threshold: 0.3 });
 
-      // 관찰 시작
-      const agentCardData     = document.getElementById('agent-card-data');
-      const comboGradientText = document.getElementById('agent-combo-gradient-text');
-      const agentCardCombo    = document.getElementById('agent-card-combo');
+      // ── 가시성 추적 (threshold 0): agent 카드 자체가 완전히 사라지면 숨김
+      // sectionData 전체를 보면 초기 로드 시부터 뷰포트에 걸려 always-true가 됨
+      const dataVisObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { dataVisible = e.isIntersecting; tryHide(); });
+      }, { root: scrollEl, threshold: 0 });
 
-      if (agentCardData) {
-        dataShowObs.observe(agentCardData); // 30% 진입 → data 표시
-        dataVisObs.observe(agentCardData);  // 완전 이탈 → 숨김 판단
-      }
-      if (comboGradientText) {
-        comboShowObs.observe(comboGradientText); // 30% 진입 → combo로 전환
-      }
-      if (agentCardCombo) {
-        comboVisObs.observe(agentCardCombo); // 완전 이탈 → 숨김 판단
-      }
+      const comboVisObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { comboVisible = e.isIntersecting; tryHide(); });
+      }, { root: scrollEl, threshold: 0 });
+
+      const agentCardData  = document.getElementById('agent-card-data');
+      const agentCardCombo = document.getElementById('agent-card-combo');
+
+      if (agentCardData)  { dataShowObs.observe(agentCardData);  dataVisObs.observe(agentCardData); }
+      if (agentCardCombo) { comboShowObs.observe(agentCardCombo); comboVisObs.observe(agentCardCombo); }
     }
   </script>
 
