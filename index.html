@@ -62,6 +62,8 @@
       background: white;
       transform: translateX(100%);
       transition: transform 0.42s cubic-bezier(0.32,0.72,0,1);
+      display: flex;
+      flex-direction: column;
     }
     #slide3-screen.active { transform: translateX(0); }
     #scroll-1, #scroll-2 {
@@ -1377,16 +1379,17 @@
     <!-- 완료 화면 (헤더 포함 전체 슬라이드) -->
     <div id="slide3-screen">
 
-      <!-- 헤더 (흰 배경, 절대 위치) -->
-      <header style="position:absolute;top:0;left:0;right:0;z-index:10;background:white;display:flex;align-items:center;gap:8px;padding:20px;">
+      <!-- 헤더 -->
+      <header style="flex-shrink:0;background:white;display:flex;align-items:center;gap:8px;padding:20px;">
         <button onclick="goToSlide(1)" style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;" aria-label="뒤로가기">
           <img src="assets/scenario1/ico_back.svg" style="width:8px;height:15px;display:block;" alt="">
         </button>
         <span style="font-size:16px;font-weight:600;color:#1c1c1e;letter-spacing:-1px;line-height:26px;flex:1;min-width:0;"></span>
       </header>
 
-      <!-- contents (top:147px — 피그마 기준) -->
-      <div style="position:absolute;top:147px;left:0;width:100%;display:flex;flex-direction:column;gap:20px;align-items:center;">
+      <!-- 중간 콘텐츠 (헤더~바텀 사이 세로 균등 여백) -->
+      <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:20px 0;">
+        <div style="width:100%;display:flex;flex-direction:column;gap:20px;align-items:center;">
 
         <!-- title: 이미지 + 텍스트 -->
         <div style="width:100%;aspect-ratio:375/68;position:relative;overflow:hidden;flex-shrink:0;">
@@ -1459,10 +1462,11 @@
 
         </div><!-- /details -->
 
-      </div><!-- /contents -->
+        </div>
+      </div><!-- /중간 콘텐츠 -->
 
-      <!-- BottomGroup 고정 -->
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 32px;border-radius:28px 28px 0 0;">
+      <!-- BottomGroup -->
+      <div style="flex-shrink:0;padding:16px 20px 32px;border-radius:28px 28px 0 0;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,0.06);box-shadow:0 0 20px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <img src="assets/scenario1/ico_tagent.svg" style="width:24px;height:24px;" alt="">
