@@ -45,7 +45,7 @@
       z-index: 10;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible;
     }
     .slide-page.active { transform: translateX(0); }
 
@@ -563,6 +563,43 @@
       <!-- 블러 오버레이 -->
       <div id="overlay-con2" style="position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity 0.45s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:linear-gradient(to bottom, rgba(221,221,221,0.7), rgba(2,2,2,0.7));"></div>
 
+      <!-- Bezel 컴포넌트 (151×151px, top:10px 중앙 정렬) -->
+      <div id="bezel-con2" style="position:absolute;top:-350px;left:50%;transform:translateX(-50%);z-index:40;opacity:0;width:151px;height:151px;pointer-events:none;transition:top 0.52s cubic-bezier(0.32,0.72,0,1), opacity 0.3s ease, filter 0.35s ease;">
+
+        <!-- Face ID 레이어 -->
+        <div id="bezel-faceid" style="position:absolute;inset:0;transition:opacity 0.35s ease;opacity:1;">
+          <div style="position:absolute;top:-41.06%;right:-49.01%;bottom:-56.95%;left:-49.01%;">
+            <img src="https://www.figma.com/api/mcp/asset/fca9166f-40df-4119-82b9-c9ed5b3a9eb8" style="width:100%;height:100%;display:block;">
+          </div>
+        </div>
+
+        <!-- Check 레이어 (초기 숨김) -->
+        <div id="bezel-check" style="position:absolute;inset:0;transition:opacity 0.4s ease;opacity:0;background:black;border-radius:40px;box-shadow:0 12px 37px rgba(0,0,0,0.5);">
+          <!-- 내부 중앙 글로우 -->
+          <div id="bezel-glow" style="position:absolute;inset:0;border-radius:40px;background:radial-gradient(circle at 50% 52%, rgba(135,250,137,0.2) 0%, transparent 60%);opacity:0;transition:opacity 0.7s ease;"></div>
+          <!-- SVG 원 (stroke-dashoffset 애니메이션) -->
+          <div style="position:absolute;left:50%;transform:translateX(-50%);top:41px;width:70px;height:70px;">
+            <svg width="70" height="70" viewBox="0 0 70 70" style="overflow:visible;">
+              <circle id="bezel-circle-svg"
+                cx="35" cy="35" r="31"
+                fill="none"
+                stroke="#87fa89"
+                stroke-width="3"
+                stroke-dasharray="194.8"
+                stroke-dashoffset="194.8"
+                stroke-linecap="round"
+                transform="rotate(-90 35 35)"
+                style="transition:stroke-dashoffset 0.5s ease;"/>
+            </svg>
+          </div>
+          <!-- 체크마크 팝 (원 중앙 = top:41 + 35 = 76px) -->
+          <div style="position:absolute;left:50%;top:76px;transform:translate(-50%,-50%);">
+            <div id="bezel-checkmark" style="font-size:40px;color:#87fa89;line-height:1;opacity:0;transform:scale(0);transform-origin:center;transition:opacity 0.2s ease, transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);">✓</div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- 오버레이 위 X 헤더 -->
       <div id="overlay-header-con2" style="position:absolute;top:0;left:0;width:100%;z-index:26;pointer-events:none;opacity:0;transition:opacity 0.45s ease;display:flex;align-items:center;padding:20px;">
         <button onclick="closeOverlay('con2')" style="width:26px;height:26px;background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;">
@@ -576,12 +613,12 @@
           <p style="margin:0;font-size:20px;font-weight:600;color:#292929;text-align:center;letter-spacing:-1px;line-height:24px;">포인트 적용을 위해<br>비밀번호를 입력해주세요.</p>
           <!-- number field -->
           <div id="pw-dots" style="display:flex;gap:12px;align-items:center;justify-content:center;width:168px;height:18px;">
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
-            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.12s;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
           </div>
         </div>
         <div style="height:32px;"></div>
@@ -943,6 +980,78 @@
       const mainArea = document.getElementById('overlay-main-' + id.replace('overlay-', ''));
       if (mainArea) { mainArea.style.opacity = '1'; }
 
+      // 키패드와 동시에 Bezel 슬라이드다운
+      const pageKey2 = id.replace('overlay-', '');
+      const bezel = document.getElementById('bezel-' + pageKey2);
+      if (bezel) {
+        bezel.style.opacity = '1';
+        bezel.style.top = '10px';
+
+        // 1초 후 Face ID → Check 크로스페이드 + 스케일 펄스 + 초록 glow
+        setTimeout(function() {
+          const faceEl  = document.getElementById('bezel-faceid');
+          const checkEl = document.getElementById('bezel-check');
+          if (!faceEl || !checkEl) return;
+
+          // 스케일 펄스 (느리게)
+          bezel.style.transition = 'top 0.52s cubic-bezier(0.32,0.72,0,1), opacity 0.3s ease, transform 0.4s ease';
+          bezel.style.transform = 'translateX(-50%) scale(1.06)';
+          setTimeout(function() {
+            bezel.style.transform = 'translateX(-50%) scale(1)';
+          }, 380);
+
+          // Face ID 페이드아웃
+          faceEl.style.transition = 'opacity 0.4s ease';
+          faceEl.style.opacity = '0';
+
+          // number field 순차 자동 입력 (색상 페이드인만, 160ms 간격)
+          const allDots = document.querySelectorAll('#pw-dots .dot');
+          allDots.forEach(function(dot, i) {
+            setTimeout(function() { dot.style.background = '#000000'; }, i * 80);
+          });
+
+          // Check 레이어 페이드인
+          checkEl.style.opacity = '1';
+
+          // 원 그리기 (check 등장 후 100ms)
+          const circleSvg = document.getElementById('bezel-circle-svg');
+          setTimeout(function() {
+            if (circleSvg) {
+              circleSvg.style.transition = 'stroke-dashoffset 0.5s ease';
+              circleSvg.style.strokeDashoffset = '0';
+            }
+          }, 100);
+
+          // 체크마크 팝 (원 그려진 후)
+          const checkmarkEl = document.getElementById('bezel-checkmark');
+          setTimeout(function() {
+            if (checkmarkEl) {
+              checkmarkEl.style.opacity = '1';
+              checkmarkEl.style.transform = 'scale(1.15)';
+              setTimeout(function() {
+                checkmarkEl.style.transform = 'scale(1)';
+              }, 160);
+            }
+          }, 650); // 100ms + 500ms 원 그리기 + 여유
+
+          // 내부 글로우: 체크 직후 등장 → 사라짐
+          const glowEl = document.getElementById('bezel-glow');
+          if (glowEl) {
+            setTimeout(function() { glowEl.style.opacity = '1'; }, 650);
+            setTimeout(function() { glowEl.style.opacity = '0'; }, 1100);
+          }
+
+          // 체크 완료 후 1초 뒤 베젤 위로 사라짐 (내려올 때와 동일한 속도)
+          // 체크 완료 ≈ 1000ms → 1000 + 1000 = 2000ms
+          setTimeout(function() {
+            if (bezel) {
+              bezel.style.transition = 'top 0.52s cubic-bezier(0.32,0.72,0,1)';
+              bezel.style.top = '-350px';
+            }
+          }, 2000);
+        }, 1000);
+      }
+
       if (isTouchDevice) {
         // 모바일: 네이티브 키패드
         const input = document.getElementById('input-' + id.replace('overlay-', ''));
@@ -965,6 +1074,33 @@
       if (xHeader)   { xHeader.style.opacity = '0'; xHeader.style.pointerEvents = 'none'; }
       if (mainArea2) { mainArea2.style.opacity = '0'; }
       if (kp)       { kp.style.transform = 'translateY(100%)'; kp.style.pointerEvents = 'none'; }
+      const bezel = document.getElementById('bezel-' + pageKey);
+      if (bezel) {
+        bezel.style.top = '-350px';
+        bezel.style.opacity = '0';
+        bezel.style.filter = '';
+        bezel.style.transform = 'translateX(-50%)';
+        const faceEl  = document.getElementById('bezel-faceid');
+        const checkEl = document.getElementById('bezel-check');
+        if (faceEl)  { faceEl.style.opacity  = '1'; faceEl.style.transition = 'opacity 0.35s ease'; }
+        if (checkEl) checkEl.style.opacity = '0';
+        const glowEl = document.getElementById('bezel-glow');
+        if (glowEl) glowEl.style.opacity = '0';
+        const circleSvg = document.getElementById('bezel-circle-svg');
+        if (circleSvg) {
+          circleSvg.style.transition = 'none';
+          circleSvg.style.strokeDashoffset = '194.8';
+          circleSvg.getBoundingClientRect(); // reflow 강제
+        }
+        const checkmarkEl = document.getElementById('bezel-checkmark');
+        if (checkmarkEl) {
+          checkmarkEl.style.transition = 'none';
+          checkmarkEl.style.opacity = '0';
+          checkmarkEl.style.transform = 'scale(0)';
+          checkmarkEl.getBoundingClientRect(); // reflow 강제
+          checkmarkEl.style.transition = 'opacity 0.2s ease, transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275)';
+        }
+      }
       const input = document.getElementById('input-' + pageKey);
       if (input) input.blur();
       resetDots();
