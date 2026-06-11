@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenario 2</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+  <style>
+    *, *::before, *::after {
+      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #frame {
+      position: relative;
+      background: #ecedef;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    #scroll::-webkit-scrollbar { display: none; }
+    .screen { width: 100%; background: #ecedef; }
+
+    /* 슬라이드 페이지 */
+    .slide-page {
+      position: absolute;
+      inset: 0;
+      background: #f7f8fa;
+      transform: translateX(100%);
+      transition: transform 0.42s cubic-bezier(0.32,0.72,0,1);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+    }
+    .slide-page.active { transform: translateX(0); }
+
+    #controls .preset {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    #controls .preset:hover { background: #ede9fe; border-color: #8b5cf6; color: #5940df; }
+    #controls .preset.active { background: #ede9fe; border-color: #5940df; color: #5940df; }
+    #controls .divider { width: 1px; height: 20px; background: #e5e7eb; }
+    #controls input[type=number] {
+      width: 52px; padding: 3px 6px;
+      border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 13px; font-weight: 500; text-align: center;
+      color: #374151; background: #f9fafb; outline: none;
+    }
+    #controls input[type=number]:focus { border-color: #5940df; }
+    #controls input[type=number]::-webkit-inner-spin-button,
+    #controls input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    #controls label { color: #6b7280; font-size: 12px; }
+    #apply-btn {
+      padding: 4px 12px; border-radius: 6px; border: none;
+      background: #5940df; color: #fff;
+      font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    }
+    #apply-btn:hover { opacity: 0.85; }
+
+    @media (max-width: 767px) {
+      body { margin: 0; padding: 0; background: #ecedef; display: block; }
+      #controls { display: none !important; }
+      #frame { width: 100vw !important; height: 100dvh !important; box-shadow: none !important; }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        margin: 0;
+        padding: 24px 0 48px;
+        background: #d1d5db;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        min-height: 100vh;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 13px; font-weight: 500; color: #374151;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      #frame {
+        flex-shrink: 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 컨트롤 바 -->
+  <div id="controls">
+    <span style="font-weight:600;color:#111827;">프레임</span>
+    <div class="divider"></div>
+    <button class="preset active" data-w="375" data-h="812">iPhone SE  375×812</button>
+    <button class="preset" data-w="390" data-h="844">iPhone 14  390×844</button>
+    <button class="preset" data-w="393" data-h="852">iPhone 15 Pro  393×852</button>
+    <button class="preset" data-w="430" data-h="932">iPhone 15 Plus  430×932</button>
+    <button class="preset" data-w="360" data-h="800">Android  360×800</button>
+    <div class="divider"></div>
+    <label>W</label>
+    <input type="number" id="inp-w" value="375" min="320" max="768">
+    <label>H</label>
+    <input type="number" id="inp-h" value="812" min="480" max="1200">
+    <button id="apply-btn">적용</button>
+  </div>
+
+  <!-- 프레임 -->
+  <div id="frame" style="width:375px;height:812px;">
+
+    <!-- 헤더 -->
+    <header style="flex-shrink:0;height:72px;background:#ecedef;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;width:100%;">
+      <div style="width:48px;height:48px;flex-shrink:0;"></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+
+        <!-- 바코드 -->
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 4H5C3.895 4 3 4.895 3 6V7" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17 20L19 20C20.105 20 21 19.105 21 18L21 17" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 7L21 6C21 4.895 20.105 4 19 4L17 4" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17L3 18C3 19.105 3.895 20 5 20L7 20" stroke="#101010" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="5.5" y="11.5" width="13" height="1" rx="0.5" fill="#101010" stroke="#101010"/>
+          </svg>
+        </div>
+
+        <!-- 장바구니 -->
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(2.132, 8)">
+              <path d="M2.258 12.124L1.008 2.124C0.933 1.527 1.399 1 2 1H17.735C18.336 1 18.802 1.527 18.727 2.124L17.477 12.124C17.415 12.625 16.989 13 16.485 13H3.25C2.746 13 2.321 12.625 2.258 12.124Z" stroke="#101010" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(7, 2)">
+              <path d="M1 9.5V4C1 2.5 2.2 1 5 1C7.8 1 9 2.5 9 4V9.5" stroke="#101010" stroke-width="2" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 메뉴 -->
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="4" y1="6" x2="20" y2="6" stroke="#101010" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4" y1="12" x2="20" y2="12" stroke="#101010" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4" y1="18" x2="20" y2="18" stroke="#101010" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- 스크롤 영역 -->
+    <div id="scroll">
+      <div class="screen">
+
+        <!-- 카드 컨테이너 -->
+        <div style="display:flex;flex-direction:column;gap:8px;padding:10px 11px 0;">
+
+          <!-- profile 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;height:80px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0;width:100%;">
+            <div style="display:flex;gap:4px;align-items:center;">
+              <div style="width:24px;height:24px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#c8cbd4;display:flex;align-items:flex-end;justify-content:center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" r="4" fill="#fff" opacity="0.9"/>
+                  <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" fill="#fff" opacity="0.9"/>
+                </svg>
+              </div>
+              <p style="font-size:16px;font-weight:500;line-height:1.3;color:#000;letter-spacing:-0.64px;white-space:nowrap;margin:0;">김지훈님</p>
+              <p style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;margin:0;">010-1234-5678</p>
+            </div>
+            <div style="background:#ebeef6;border-radius:9999px;padding:6px 12px;display:flex;align-items:center;flex-shrink:0;">
+              <p style="font-size:12px;font-weight:600;line-height:1.3;color:rgba(5,0,26,0.5);letter-spacing:-0.6px;white-space:nowrap;margin:0;">회선 변경</p>
+            </div>
+          </div>
+
+          <!-- con1 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">39,250원</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">3월 납부완료</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">실시간 이용요금</span>
+            </div>
+            <!-- 청구서+코인 아이콘 -->
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_9092_14185)">
+<mask id="mask0_9092_14185" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="15" y="1" width="23" height="33">
+<path d="M38 32.6832V31.5852L38 4.99902C38 3.34217 36.6568 1.99902 35 1.99902H18C16.3431 1.99902 15 3.34217 15 4.99903V31.5852V32.6832C15 33.5598 16.0476 34.0122 16.6857 33.4111L18.2598 31.9282C19.0929 31.1434 20.4135 31.2165 21.1549 32.0885L22.384 33.5341C22.7833 34.0037 23.5083 34.0037 23.9077 33.5341L24.9763 32.2772C25.775 31.3379 27.225 31.3379 28.0237 32.2772L29.0923 33.5341C29.4916 34.0037 30.2167 34.0037 30.616 33.5341L31.8451 32.0885C32.5865 31.2165 33.9071 31.1434 34.7402 31.9282L36.3143 33.4111C36.9524 34.0122 38 33.5598 38 32.6832Z" fill="#EBEEF6"/>
+</mask>
+<g mask="url(#mask0_9092_14185)">
+<path d="M38 32.5863V31.3783L38 4.99902C38 3.34217 36.6568 1.99902 35 1.99902H18C16.3431 1.99902 15 3.34217 15 4.99903V31.3783V32.5863C15 33.477 16.0767 33.9233 16.7068 33.2938L18.2132 31.7887C19.0557 30.947 20.4424 31.0234 21.1873 31.9525L22.3656 33.4223C22.7659 33.9217 23.5257 33.9217 23.9261 33.4223L24.9395 32.1581C25.7402 31.1595 27.2598 31.1595 28.0605 32.1581L29.0739 33.4223C29.4742 33.9217 30.2341 33.9217 30.6344 33.4223L31.8127 31.9525C32.5576 31.0234 33.9443 30.947 34.7868 31.7887L36.2932 33.2938C36.9233 33.9233 38 33.477 38 32.5863Z" fill="#D1D1D1"/>
+<path d="M2 2.99805L23.4361 -1.95088L31.2817 34.2078L9.84557 39.1567L2 2.99805Z" fill="#DEDEDE"/>
+<path d="M20 9.99805C20 9.44576 20.4477 8.99805 21 8.99805H32C32.5523 8.99805 33 9.44576 33 9.99805C33 10.5503 32.5523 10.998 32 10.998H21C20.4477 10.998 20 10.5503 20 9.99805Z" fill="white"/>
+<path d="M20 13.999C20 13.4467 20.4477 12.999 21 12.999H28C28.5523 12.999 29 13.4467 29 13.999C29 14.5513 28.5523 14.999 28 14.999H21C20.4477 14.999 20 14.5513 20 13.999Z" fill="white"/>
+</g>
+<g filter="url(#filter0_d_9092_14185)">
+<g filter="url(#filter1_d_9092_14185)">
+<path d="M22 28.001C22 33.5238 17.5228 38.001 12 38.001C6.47715 38.001 2 33.5238 2 28.001C2 22.4781 6.47715 18.001 12 18.001C17.5228 18.001 22 22.4781 22 28.001Z" fill="#1D1D1D"/>
+</g>
+<path d="M12.0006 24.251C12.3231 24.2512 12.6098 24.4578 12.7119 24.7637L13.9993 28.6276L15.2884 24.7637C15.4195 24.371 15.8445 24.1591 16.2373 24.29C16.6301 24.4211 16.8419 24.846 16.7109 25.2389L14.7122 31.2383C14.6101 31.5445 14.3222 31.751 13.9993 31.751C13.6768 31.7507 13.3901 31.5443 13.2881 31.2383L11.999 27.3743L10.7116 31.2383C10.6095 31.5445 10.323 31.7509 10.0003 31.751C9.67748 31.751 9.39113 31.5445 9.28904 31.2383L7.28872 25.2389C7.15778 24.8461 7.3697 24.4212 7.76235 24.29C8.15515 24.1591 8.58007 24.371 8.71124 24.7637L9.99868 28.6292L11.2877 24.7637L11.3349 24.6546C11.4625 24.4097 11.718 24.251 12.0006 24.251Z" fill="white"/>
+<path d="M9.00065 27.252C9.41472 27.2521 9.75098 27.5882 9.75098 28.0023C9.75098 28.4164 9.41471 28.7524 9.00065 28.7526L7.00033 28.7526C6.58611 28.7526 6.25 28.4165 6.25 28.0023C6.25 27.5881 6.58611 27.252 7.00033 27.252L9.00065 27.252Z" fill="white"/>
+<path d="M17.0007 27.252C17.4147 27.2521 17.751 27.5882 17.751 28.0023C17.751 28.4164 17.4147 28.7524 17.0007 28.7526L15.0003 28.7526C14.5861 28.7526 14.25 28.4165 14.25 28.0023C14.25 27.5881 14.5861 27.252 15.0003 27.252L17.0007 27.252Z" fill="white"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_9092_14185" x="-0.4" y="17.401" width="24.8" height="24.8" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1.8"/>
+<feGaussianBlur stdDeviation="1.2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9092_14185"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9092_14185" result="shape"/>
+</filter>
+<filter id="filter1_d_9092_14185" x="-0.16" y="15.841" width="25.52" height="25.52" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="0.6" dy="0.6"/>
+<feGaussianBlur stdDeviation="1.38"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0837158 0 0 0 0 0.06 0 0 0 0 0.2 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9092_14185"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9092_14185" result="shape"/>
+</filter>
+<clipPath id="clip0_9092_14185">
+<rect width="40" height="40" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- con2 카드 -->
+          <div onclick="openPage('page-con2')" style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;cursor:pointer;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">13,500P</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">3월 누적할인 1,700원</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">T멤버십 포인트</span>
+            </div>
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_8496_8442)">
+<mask id="mask0_8496_8442" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="9" y="1" width="29" height="34">
+<path d="M24.7599 1.99902H17.5983H13.5979C12.772 1.99902 12.2457 2.88122 12.6379 3.60805L15.9859 9.8115C16.3204 10.4313 16.3352 11.1744 16.0256 11.8069L10.1807 23.7483C9.45681 25.2272 9.627 26.9876 10.6207 28.3004L14.3819 33.2691C15.2067 34.3587 16.4944 34.999 17.8611 34.999H29.1376C30.5039 34.999 31.7914 34.359 32.6163 33.2697L36.3793 28.3005C37.3734 26.9877 37.5438 25.227 36.8198 23.7478L30.9673 11.7909C30.6621 11.1673 30.6719 10.4357 30.9937 9.82048L34.5505 3.02035C34.7935 2.5557 34.4565 1.99902 33.9321 1.99902C33.7839 1.99902 33.6396 2.04617 33.52 2.13364L31.233 3.80669C30.4659 4.36785 29.4237 4.36785 28.6566 3.80669L27.3362 2.84077C26.5886 2.29383 25.6862 1.99902 24.7599 1.99902Z" fill="#EBEEF6"/>
+</mask>
+<g mask="url(#mask0_8496_8442)">
+<path d="M24.7599 1.99902H17.5983H13.5979C12.772 1.99902 12.2457 2.88122 12.6379 3.60805L15.9859 9.8115C16.3204 10.4313 16.3352 11.1744 16.0256 11.8069L10.1807 23.7483C9.45681 25.2272 9.627 26.9876 10.6207 28.3004L14.3819 33.269C15.2067 34.3587 16.4944 34.999 17.8611 34.999H29.1376C30.5039 34.999 31.7914 34.359 32.6163 33.2697L36.3793 28.3005C37.3734 26.9877 37.5438 25.227 36.8198 23.7478L30.9673 11.7909C30.6621 11.1673 30.6719 10.4357 30.9937 9.82048L34.5505 3.02035C34.7935 2.5557 34.4565 1.99902 33.9321 1.99902C33.7839 1.99902 33.6396 2.04617 33.52 2.13364L31.233 3.80669C30.4659 4.36785 29.4237 4.36785 28.6566 3.80669L27.3362 2.84077C26.5886 2.29383 25.6862 1.99902 24.7599 1.99902Z" fill="#D1D1D1"/>
+<path d="M-1 4.94824L20.4361 -0.000681296L28.2817 36.158L6.84557 41.1069L-1 4.94824Z" fill="#DEDEDE"/>
+</g>
+<path d="M31.4076 9.72656C31.9595 9.72695 32.4069 10.1739 32.4069 10.7259C32.4069 11.278 31.9595 11.7249 31.4076 11.7253H16.1341C15.5818 11.7253 15.1348 11.2782 15.1348 10.7259C15.1348 10.1736 15.5818 9.72656 16.1341 9.72656H31.4076Z" fill="white"/>
+<g filter="url(#filter0_d_8496_8442)">
+<g filter="url(#filter1_d_8496_8442)">
+<path d="M22 28.002C22 33.5248 17.5228 38.002 12 38.002C6.47715 38.002 2 33.5248 2 28.002C2 22.4791 6.47715 18.002 12 18.002C17.5228 18.002 22 22.4791 22 28.002Z" fill="#1D1D1D"/>
+</g>
+<path d="M12.5886 23.5029C13.2038 23.503 13.7298 23.6293 14.1665 23.882C14.6072 24.1347 14.9399 24.487 15.164 24.9387C15.3881 25.3862 15.5 25.9021 15.5 26.4863C15.5 27.0664 15.386 27.5804 15.158 28.0279C14.9302 28.4712 14.596 28.8212 14.1555 29.0781C13.7187 29.3309 13.1886 29.4576 12.5657 29.4577H10.9813V31.6949C10.9813 32.1412 10.6498 32.5029 10.2407 32.5029C9.8316 32.5029 9.5 32.1412 9.5 31.6949V24.3209C9.5001 23.8692 9.83575 23.503 10.2498 23.5029H12.5886ZM10.9813 24.8573V28.1203H12.3661C12.7307 28.1203 13.0327 28.0523 13.272 27.9155C13.5151 27.7746 13.6937 27.5817 13.8076 27.3372C13.9254 27.0928 13.9843 26.809 13.9843 26.4858C13.9843 26.1543 13.9254 25.8682 13.8076 25.6278C13.6937 25.3834 13.5151 25.1951 13.272 25.0625C13.0289 24.9258 12.7248 24.8573 12.3602 24.8573H10.9813Z" fill="white"/>
+<path d="M9.36719 31.6966V24.3236C9.3673 23.8099 9.75172 23.3732 10.2493 23.373H12.5882C13.2207 23.3732 13.77 23.5026 14.2305 23.7686H14.2321C14.6951 24.0342 15.0461 24.4066 15.2819 24.8818L15.3633 25.0609C15.5425 25.4858 15.6318 25.9623 15.6318 26.4883C15.6318 27.0113 15.5408 27.4862 15.3584 27.9108L15.2754 28.0898C15.0357 28.556 14.6825 28.9257 14.2207 29.195C13.7598 29.4616 13.2058 29.592 12.5654 29.5921H11.112V31.6966C11.112 32.2049 10.7323 32.6374 10.2396 32.6374C9.747 32.6373 9.36719 32.2048 9.36719 31.6966ZM13.8512 26.4883C13.8512 26.1722 13.7955 25.9059 13.6885 25.6875L13.6868 25.6859C13.5853 25.4681 13.4269 25.3008 13.2083 25.1813L13.2067 25.1797C12.9885 25.057 12.7075 24.9909 12.3587 24.9909H11.112V27.9906H12.3652C12.7138 27.9905 12.9914 27.9253 13.2051 27.8034L13.3581 27.6992C13.5011 27.5863 13.6102 27.447 13.6868 27.2826L13.7585 27.1068C13.8196 26.9241 13.8512 26.7184 13.8512 26.4883ZM14.1149 26.4883C14.1148 26.8273 14.0538 27.1312 13.9261 27.3965L13.9245 27.3949C13.7986 27.6646 13.6023 27.8775 13.3369 28.0312V28.0329C13.0722 28.1841 12.7455 28.2542 12.3652 28.2542H10.8483V24.7272H12.3587C12.739 24.7272 13.0674 24.7981 13.3353 24.9486H13.3337C13.5999 25.0938 13.7982 25.3024 13.9245 25.5719H13.9261C14.0544 25.8341 14.1149 26.1416 14.1149 26.4883ZM9.63086 31.6966C9.63086 32.0809 9.91413 32.372 10.2396 32.3721C10.5651 32.3721 10.8483 32.081 10.8483 31.6966V29.3268H12.5654C13.1698 29.3267 13.675 29.2038 14.0872 28.9655C14.5065 28.721 14.8233 28.3897 15.0394 27.9694L15.1826 27.6374C15.3052 27.2927 15.3665 26.91 15.3665 26.4883C15.3665 25.9212 15.2577 25.4253 15.0443 24.999C14.8319 24.5713 14.5182 24.2378 14.1003 23.998H14.0986C13.6862 23.7597 13.1847 23.6368 12.5882 23.6367H10.2493C9.91883 23.6368 9.63095 23.9338 9.63086 24.3236V31.6966Z" fill="white"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_8496_8442" x="-0.618182" y="17.3474" width="25.2364" height="25.2364" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1.96364"/>
+<feGaussianBlur stdDeviation="1.30909"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_8496_8442"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_8496_8442" result="shape"/>
+</filter>
+<filter id="filter1_d_8496_8442" x="-0.356364" y="15.6456" width="26.0218" height="26.0218" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="0.654545" dy="0.654545"/>
+<feGaussianBlur stdDeviation="1.50545"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0837158 0 0 0 0 0.06 0 0 0 0 0.2 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_8496_8442"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_8496_8442" result="shape"/>
+</filter>
+<clipPath id="clip0_8496_8442">
+<rect width="40" height="40" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- con3 바코드 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;padding:32px 28px;width:100%;">
+            <p style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;margin:0 0 12px 0;">T멤버십</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <!-- 바코드 SVG -->
+              <div style="width:100%;height:48px;overflow:hidden;">
+                <svg width="100%" height="48" viewBox="0 0 297 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<path d="M58.0858 0L58.1232 48H51.5461L51.5273 0H58.0858Z" fill="#101010"/><path d="M269.354 0L269.317 48H262.627L262.796 0H269.354Z" fill="#101010"/><path d="M253.904 0L253.96 48H247.336L247.345 0H253.904Z" fill="#101010"/><path d="M237.508 0L237.47 48H230.902L230.949 0H237.508Z" fill="#101010"/><path d="M209.4 0L209.559 48H202.861L202.842 0H209.4Z" fill="#101010"/><path d="M14.9876 0L14.9126 48H8.23242L8.42917 0H14.9876Z" fill="#101010"/><path d="M193.945 0L194.189 48H187.565L187.387 0H193.945Z" fill="#101010"/><path d="M177.543 0L177.702 48H171.05L170.984 0H177.543Z" fill="#101010"/><path d="M29.9842 0L30.1997 48H23.6038L23.4258 0H29.9842Z" fill="#101010"/><path d="M149.91 0L149.723 48H143.127L143.352 0H149.91Z" fill="#101010"/><path d="M134.46 0L134.451 48H127.752L127.902 0H134.46Z" fill="#101010"/><path d="M118.055 0L117.886 48H111.318L111.496 0H118.055Z" fill="#101010"/><path d="M89.9428 0L89.9615 48H83.375L83.3844 0H89.9428Z" fill="#101010"/><path d="M74.4822 0L74.6509 48H67.9707L67.9238 0H74.4822Z" fill="#101010"/><path d="M290.91 0H297V48H290.676L290.91 0Z" fill="#101010"/><path d="M262.804 0L262.635 48H258.175L258.119 0H262.804Z" fill="white"/><path d="M143.353 0L143.128 48H138.668V0H143.353Z" fill="white"/><path d="M83.3857 0L83.3764 48H78.7949L78.7012 0H83.3857Z" fill="white"/><path d="M23.4274 0L23.6054 48H19.1738L19.2113 0H23.4274Z" fill="white"/><path d="M202.837 0L202.856 48H198.434L198.621 0H202.837Z" fill="white"/><path d="M215.023 0L214.976 48H211.36L211.275 0H215.023Z" fill="#101010"/><path d="M95.5602 0L95.3915 48H91.8406L91.8125 0H95.5602Z" fill="#101010"/><path d="M3.2792 0L3.13867 48H0V0H3.2792Z" fill="#101010"/><path d="M62.7682 0L62.9463 48H59.4609L59.489 0H62.7682Z" fill="#101010"/><path d="M242.188 0L242.206 48H238.73L238.908 0H242.188Z" fill="#101010"/><path d="M274.513 0L274.71 48H271.215L271.234 0H274.513Z" fill="#101010"/><path d="M218.299 0L218.28 48H214.973L215.02 0H218.299Z" fill="white"/><path d="M277.789 0L277.995 48H274.707L274.51 0H277.789Z" fill="white"/><path d="M98.8482 0L98.792 48H95.4004L95.569 0H98.8482Z" fill="white"/><path d="M182.232 0L182.457 48H178.991L178.953 0H182.232Z" fill="#101010"/><path d="M158.346 0L158.421 48H155.198L155.066 0H158.346Z" fill="white"/><path d="M111.494 0L111.316 48H108.299L108.215 0H111.494Z" fill="white"/><path d="M38.8847 0L38.9222 48H35.6242L35.6055 0H38.8847Z" fill="white"/><path d="M155.067 0L155.199 48H151.723L151.788 0H155.067Z" fill="#101010"/><path d="M122.742 0L122.723 48H119.219L119.462 0H122.742Z" fill="#101010"/><path d="M290.92 0L290.686 48H287.687L287.641 0H290.92Z" fill="white"/><path d="M35.6076 0L35.6263 48H32.1035L32.3284 0H35.6076Z" fill="#101010"/><path d="M256.719 0L256.635 48H253.964L253.908 0H256.719Z" fill="white"/><path d="M77.2932 0L77.2744 48H74.6511L74.4824 0H77.2932Z" fill="white"/><path d="M230.951 0L230.904 48H228.047L228.141 0H230.951Z" fill="white"/><path d="M51.5271 0L51.5459 48H48.6602L48.7164 0H51.5271Z" fill="white"/><path d="M196.752 0L196.771 48H194.185L193.941 0H196.752Z" fill="white"/><path d="M170.988 0L171.054 48H168.187L168.178 0H170.988Z" fill="white"/><path d="M46.8403 0L46.9059 48H44.5449L44.498 0H46.8403Z" fill="white"/><path d="M106.805 0L106.758 48H104.406L104.462 0H106.805Z" fill="white"/><path d="M136.789 0L137.005 48H134.438L134.447 0H136.789Z" fill="white"/><path d="M286.232 0L286.166 48H283.684L283.89 0H286.232Z" fill="white"/><path d="M282.004 0L282.013 48H279.652L279.662 0H282.004Z" fill="white"/><path d="M32.3267 0L32.1018 48H30.1999L29.9844 0H32.3267Z" fill="white"/><path d="M43.0946 0L43.029 48H40.668L40.7523 0H43.0946Z" fill="white"/><path d="M226.268 0L226.286 48H223.916L223.925 0H226.268Z" fill="white"/><path d="M222.047 0L222.244 48H219.78L219.705 0H222.047Z" fill="white"/><path d="M8.42823 0L8.23147 48H6.17026L6.08594 0H8.42823Z" fill="white"/><path d="M162.551 0L162.523 48H160.152L160.209 0H162.551Z" fill="white"/><path d="M102.588 0L102.663 48H100.293L100.246 0H102.588Z" fill="white"/><path d="M166.301 0L166.507 48H164.034L163.959 0H166.301Z" fill="white"/><path d="M17.3294 0L17.4137 48H14.9121L14.9871 0H17.3294Z" fill="white"/><path d="M127.889 0L127.739 48H125.818L126.015 0H127.889Z" fill="white"/><path d="M245.466 0L245.409 48H243.657L243.592 0H245.466Z" fill="#101010"/><path d="M48.7098 0L48.6536 48H46.9015L46.8359 0H48.7098Z" fill="#101010"/><path d="M104.462 0L104.406 48H102.663L102.588 0H104.462Z" fill="#101010"/><path d="M184.098 0L184.033 48H182.449L182.225 0H184.098Z" fill="white"/><path d="M138.667 0V48H137.008L136.793 0H138.667Z" fill="#101010"/><path d="M187.386 0L187.564 48H185.549L185.512 0H187.386Z" fill="white"/><path d="M168.177 0L168.186 48H166.509L166.303 0H168.177Z" fill="#101010"/><path d="M283.882 0L283.676 48H282.017L282.008 0H283.882Z" fill="#101010"/><path d="M198.63 0L198.442 48H196.775L196.756 0H198.63Z" fill="#101010"/><path d="M126.022 0L125.826 48H124.186L124.148 0H126.022Z" fill="#101010"/><path d="M160.212 0L160.156 48H158.413L158.338 0H160.212Z" fill="#101010"/><path d="M211.274 0L211.359 48H209.56L209.4 0H211.274Z" fill="white"/><path d="M91.823 0L91.8512 48H89.968L89.9492 0H91.823Z" fill="white"/><path d="M40.7586 0L40.6743 48H38.9222L38.8848 0H40.7586Z" fill="#101010"/><path d="M279.671 0L279.661 48H278.003L277.797 0H279.671Z" fill="#101010"/><path d="M271.236 0L271.217 48H269.324L269.362 0H271.236Z" fill="white"/><path d="M223.925 0L223.915 48H222.248L222.051 0H223.925Z" fill="#101010"/><path d="M64.6551 0L64.5614 48H62.9593L62.7812 0H64.6551Z" fill="white"/><path d="M228.136 0L228.042 48H226.28L226.262 0H228.136Z" fill="#101010"/><path d="M67.9242 0L67.9711 48H66.041L66.0504 0H67.9242Z" fill="white"/><path d="M19.2137 0L19.1762 48H17.4242L17.3398 0H19.2137Z" fill="#101010"/><path d="M247.34 0L247.331 48H245.41L245.466 0H247.34Z" fill="white"/><path d="M151.776 0L151.71 48H149.715L149.902 0H151.776Z" fill="white"/><path d="M243.601 0L243.666 48H242.214L242.195 0H243.601Z" fill="white"/><path d="M124.147 0L124.184 48H122.723L122.741 0H124.147Z" fill="white"/><path d="M238.919 0L238.741 48H237.477L237.514 0H238.919Z" fill="white"/><path d="M4.68458 0L4.67521 48H3.13867L3.27921 0H4.68458Z" fill="white"/><path d="M78.7054 0L78.799 48H77.2812L77.3 0H78.7054Z" fill="#101010"/><path d="M258.121 0L258.177 48H256.631L256.715 0H258.121Z" fill="#101010"/><path d="M66.0577 0L66.0483 48H64.5586L64.6523 0H66.0577Z" fill="#101010"/><path d="M119.465 0L119.221 48H117.891L118.059 0H119.465Z" fill="white"/><path d="M108.222 0L108.306 48H106.77L106.816 0H108.222Z" fill="#101010"/><path d="M59.4972 0L59.4691 48H58.1293L58.0918 0H59.4972Z" fill="white"/><path d="M44.5003 0L44.5471 48H43.0293L43.0949 0H44.5003Z" fill="#101010"/><path d="M219.701 0L219.776 48H218.277L218.296 0H219.701Z" fill="#101010"/><path d="M100.255 0L100.301 48H98.793L98.8492 0H100.255Z" fill="#101010"/><path d="M163.963 0L164.038 48H162.529L162.557 0H163.963Z" fill="#101010"/><path d="M185.502 0L185.54 48H184.031L184.097 0H185.502Z" fill="#101010"/><path d="M287.631 0L287.678 48H286.16L286.226 0H287.631Z" fill="#101010"/><path d="M178.941 0L178.978 48H177.694L177.535 0H178.941Z" fill="white"/><path d="M6.09638 0L6.18071 48H4.68164L4.69101 0H6.09638Z" fill="#101010"/>
+                </svg>
+              </div>
+              <!-- 바코드 번호 + 시간 -->
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="display:flex;gap:8px;">
+                  <span style="font-size:11px;font-weight:500;color:#101010;opacity:0.5;letter-spacing:-0.44px;">1234</span>
+                  <span style="font-size:11px;font-weight:500;color:#101010;opacity:0.5;letter-spacing:-0.44px;">4561</span>
+                  <span style="font-size:11px;font-weight:500;color:#101010;opacity:0.5;letter-spacing:-0.44px;">1506</span>
+                  <span style="font-size:11px;font-weight:500;color:#101010;opacity:0.5;letter-spacing:-0.44px;">4932</span>
+                </div>
+                <span style="font-size:11px;font-weight:500;color:#3e4dc0;letter-spacing:-0.44px;">19:58</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- con4 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">6.5GB</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">20GB 제공</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">실시간 잔여량</span>
+            </div>
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_9110_14620)">
+<mask id="mask0_9110_14620" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="17" y="1" width="21" height="34">
+<path d="M17.998 6.79903C17.998 5.11887 17.998 4.27879 18.325 3.63705C18.6126 3.07257 19.0716 2.61362 19.6361 2.326C20.2778 1.99902 21.1179 1.99902 22.798 1.99902H33.198C34.8782 1.99902 35.7183 1.99902 36.36 2.326C36.9245 2.61362 37.3834 3.07257 37.6711 3.63705C37.998 4.27879 37.998 5.11887 37.998 6.79902V30.199C37.998 31.8792 37.998 32.7193 37.6711 33.361C37.3834 33.9255 36.9245 34.3844 36.36 34.672C35.7183 34.999 34.8782 34.999 33.198 34.999H22.798C21.1179 34.999 20.2778 34.999 19.6361 34.672C19.0716 34.3844 18.6126 33.9255 18.325 33.361C17.998 32.7193 17.998 31.8792 17.998 30.199V6.79903Z" fill="#D2D9EB"/>
+</mask>
+<g mask="url(#mask0_9110_14620)">
+<path d="M17.998 6.79903C17.998 5.11887 17.998 4.27879 18.325 3.63705C18.6126 3.07257 19.0716 2.61362 19.6361 2.326C20.2778 1.99902 21.1179 1.99902 22.798 1.99902H33.198C34.8782 1.99902 35.7183 1.99902 36.36 2.326C36.9245 2.61362 37.3834 3.07257 37.6711 3.63705C37.998 4.27879 37.998 5.11887 37.998 6.79902V30.199C37.998 31.8792 37.998 32.7193 37.6711 33.361C37.3834 33.9255 36.9245 34.3844 36.36 34.672C35.7183 34.999 34.8782 34.999 33.198 34.999H22.798C21.1179 34.999 20.2778 34.999 19.6361 34.672C19.0716 34.3844 18.6126 33.9255 18.325 33.361C17.998 32.7193 17.998 31.8792 17.998 30.199V6.79903Z" fill="#D1D1D1"/>
+<path d="M2.99805 4.94824L24.4342 -0.000681296L32.2798 36.158L10.8436 41.1069L2.99805 4.94824Z" fill="#DEDEDE"/>
+<path d="M30.9967 5C31.549 5 31.9977 5.44706 31.9977 5.99935C31.9977 6.55163 31.549 6.9987 30.9967 6.9987L24.9974 6.9987C24.4451 6.9987 23.998 6.55163 23.998 5.99935C23.998 5.44706 24.4451 5 24.9974 5L30.9967 5Z" fill="white"/>
+</g>
+<g filter="url(#filter0_d_9110_14620)">
+<path d="M2 27.601C2 24.2407 2 22.5605 2.65396 21.277C3.2292 20.1481 4.14708 19.2302 5.27606 18.6549C6.55953 18.001 8.23969 18.001 11.6 18.001H12.4C15.7603 18.001 17.4405 18.001 18.7239 18.6549C19.8529 19.2302 20.7708 20.1481 21.346 21.277C22 22.5605 22 24.2407 22 27.601V28.401C22 31.7613 22 33.4414 21.346 34.7249C20.7708 35.8539 19.8529 36.7718 18.7239 37.347C17.4405 38.001 15.7603 38.001 12.4 38.001H11.6C8.23969 38.001 6.55953 38.001 5.27606 37.347C4.14708 36.7718 3.2292 35.8539 2.65396 34.7249C2 33.4414 2 31.7613 2 28.401V27.601Z" fill="#1D1D1D"/>
+</g>
+<path d="M7 29.001C7 28.4487 7.44772 28.001 8 28.001C8.55228 28.001 9 28.4487 9 29.001V32.001C9 32.5533 8.55228 33.001 8 33.001C7.44772 33.001 7 32.5533 7 32.001V29.001Z" fill="white"/>
+<path d="M11 27.0029C11 26.4506 11.4477 26.0029 12 26.0029C12.5523 26.0029 13 26.4506 13 27.0029V32.0029C13 32.5552 12.5523 33.0029 12 33.0029C11.4477 33.0029 11 32.5552 11 32.0029V27.0029Z" fill="white"/>
+<path d="M15 25.0039C15 24.4516 15.4477 24.0039 16 24.0039C16.5523 24.0039 17 24.4516 17 25.0039V32.0039C17 32.5562 16.5523 33.0039 16 33.0039C15.4477 33.0039 15 32.5562 15 32.0039V25.0039Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_d_9110_14620" x="-0.4" y="15.601" width="26.1333" height="26.1333" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="0.666667" dy="0.666667"/>
+<feGaussianBlur stdDeviation="1.53333"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0837158 0 0 0 0 0.06 0 0 0 0 0.2 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_9110_14620"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_9110_14620" result="shape"/>
+</filter>
+<clipPath id="clip0_9110_14620">
+<rect width="40" height="40" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- con5 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">4명 결합</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">15,000원 할인</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">결합가족</span>
+            </div>
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_8496_8573)">
+<mask id="mask0_8496_8573" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="9" y="3" width="29" height="30">
+<path d="M23.4999 18.8192C27.6773 18.8192 31.6849 20.209 34.6387 22.681C35.7401 23.6029 36.6619 24.647 37.3843 25.7757C39.3442 28.8376 36.3123 32.001 32.6878 32.001H14.312C10.6878 32.0007 7.65588 28.8375 9.61556 25.7757C10.3383 24.6466 11.2618 23.6032 12.3637 22.681C15.3174 20.209 19.3228 18.8193 23.4999 18.8192ZM23.4999 3.00098C27.1245 3.00098 30.0627 5.95183 30.0627 9.59189C30.0627 13.2319 27.1245 16.1828 23.4999 16.1828C19.8756 16.1826 16.9372 13.2318 16.9372 9.59189C16.9372 5.95197 19.8756 3.00121 23.4999 3.00098Z" fill="#D2D9EB"/>
+</mask>
+<g mask="url(#mask0_8496_8573)">
+<path d="M23.4999 18.8221C27.6773 18.8221 31.6849 20.2119 34.6387 22.6839C35.7401 23.6059 36.6619 24.65 37.3843 25.7786C39.3442 28.8406 36.3123 32.0039 32.6878 32.0039H14.312C10.6878 32.0037 7.65588 28.8404 9.61556 25.7786C10.3383 24.6495 11.2618 23.6062 12.3637 22.6839C15.3174 20.212 19.3228 18.8222 23.4999 18.8221ZM23.4999 3.00391C27.1245 3.00391 30.0627 5.95476 30.0627 9.59482C30.0627 13.2349 27.1245 16.1857 23.4999 16.1857C19.8756 16.1855 16.9372 13.2347 16.9372 9.59482C16.9372 5.9549 19.8756 3.00414 23.4999 3.00391Z" fill="#D1D1D1"/>
+<path d="M-1 4L20.4361 -0.948924L28.273 35.2116L6.83685 40.1605L-1 4Z" fill="#DEDEDE"/>
+</g>
+<g filter="url(#filter0_d_8496_8573)">
+<path d="M2 26.999C2 21.4762 6.47715 16.999 12 16.999C17.5228 16.999 22 21.4762 22 26.999C22 32.5219 17.5228 36.999 12 36.999C6.47715 36.999 2 32.5219 2 26.999Z" fill="#1D1D1D"/>
+</g>
+<path d="M12 23.5C12.5272 23.5 12.9545 23.9274 12.9545 24.4545V26.0455H14.5455C15.0726 26.0455 15.5 26.4728 15.5 27C15.5 27.5272 15.0726 27.9545 14.5455 27.9545H12.9545V29.5455C12.9545 30.0726 12.5272 30.5 12 30.5C11.4728 30.5 11.0455 30.0726 11.0455 29.5455V27.9545H9.45455C8.92736 27.9545 8.5 27.5272 8.5 27C8.5 26.4728 8.92736 26.0455 9.45455 26.0455H11.0455V24.4545C11.0455 23.9274 11.4728 23.5 12 23.5Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_d_8496_8573" x="-0.4" y="14.599" width="26.1333" height="26.1333" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="0.666667" dy="0.666667"/>
+<feGaussianBlur stdDeviation="1.53333"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.0837158 0 0 0 0 0.06 0 0 0 0 0.2 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_8496_8573"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_8496_8573" result="shape"/>
+</filter>
+<clipPath id="clip0_8496_8573">
+<rect width="40" height="40" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- banner 카드 -->
+          <div style="width:100%;border-radius:28px;overflow:hidden;flex-shrink:0;">
+            <svg width="100%" viewBox="0 0 353 112" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g clip-path="url(#clip0_8496_8575)">
+<path d="M0 44.8C0 29.1185 0 21.2778 3.05182 15.2883C5.73627 10.0197 10.0197 5.73627 15.2883 3.05182C21.2778 0 29.1185 0 44.8 0H308.2C323.881 0 331.722 0 337.712 3.05182C342.98 5.73627 347.264 10.0197 349.948 15.2883C353 21.2778 353 29.1185 353 44.8V67.2C353 82.8815 353 90.7222 349.948 96.7117C347.264 101.98 342.98 106.264 337.712 108.948C331.722 112 323.881 112 308.2 112H44.8C29.1185 112 21.2778 112 15.2883 108.948C10.0197 106.264 5.73627 101.98 3.05182 96.7117C0 90.7222 0 82.8815 0 67.2V44.8Z" fill="#FDFDFE" fill-opacity="0.5"/>
+<path opacity="0.8" d="M36.6719 34.5C36.599 34.0573 36.4349 33.6745 36.1797 33.3516C35.9297 33.0286 35.612 32.7839 35.2266 32.6172C34.8464 32.4453 34.4271 32.3594 33.9688 32.3594C33.349 32.3594 32.7995 32.5156 32.3203 32.8281C31.8464 33.1354 31.474 33.5885 31.2031 34.1875C30.9375 34.7865 30.8047 35.5052 30.8047 36.3438C30.8047 37.1927 30.9375 37.9167 31.2031 38.5156C31.474 39.1094 31.8464 39.5599 32.3203 39.8672C32.7995 40.1745 33.3464 40.3281 33.9609 40.3281C34.4141 40.3281 34.8281 40.2474 35.2031 40.0859C35.5781 39.9193 35.8932 39.6797 36.1484 39.3672C36.4089 39.0547 36.5833 38.6823 36.6719 38.25L38.7266 38.2578C38.6224 38.9818 38.3594 39.6406 37.9375 40.2344C37.5156 40.8281 36.9609 41.2969 36.2734 41.6406C35.5859 41.9844 34.8073 42.1562 33.9375 42.1562C32.9427 42.1562 32.0521 41.9245 31.2656 41.4609C30.4844 40.9922 29.8724 40.3203 29.4297 39.4453C28.987 38.5651 28.7656 37.5312 28.7656 36.3438C28.7656 35.1458 28.9896 34.1094 29.4375 33.2344C29.8854 32.3594 30.4974 31.6901 31.2734 31.2266C32.0547 30.763 32.9427 30.5312 33.9375 30.5312C34.7708 30.5312 35.5286 30.6901 36.2109 31.0078C36.8984 31.3203 37.4583 31.776 37.8906 32.375C38.3281 32.9688 38.6068 33.6771 38.7266 34.5H36.6719ZM39.8366 30.6875H41.8678V35.4922H47.1334V30.6875H49.1725V42H47.1334V37.1875H41.8678V42H39.8366V30.6875ZM49.8919 42L53.8762 30.6875H56.3841L60.3684 42H58.1966L55.1731 33H55.0794L52.0559 42H49.8919ZM58.1028 37.5625V39.1953H52.1419V37.5625H58.1028ZM70.3769 42H68.5722L63.2206 34.2734H63.1191V42H61.0878V30.6875H62.9159L68.2519 38.4219H68.3534V30.6875H70.3769V42ZM71.8384 30.6875H79.19V32.3984H73.8697V35.4922H78.8072V37.1875H73.8697V40.2891H79.2212V42H71.8384V30.6875ZM80.4953 30.6875H82.5266V40.2891H87.5266V42H80.4953V30.6875ZM39.8516 54.7734H31.7578V57.0078H30V53.4453H38.0703V52.1484H29.9688V50.7578H39.8516V54.7734ZM40.1719 57.5625H30V56.1719H40.1719V57.5625ZM41.3672 60.1562H28.4609V58.7656H41.3672V60.1562ZM35.75 64.4141H34.0156V59.2656H35.75V64.4141ZM46.5084 64.375H44.7662V59.1094H46.5084V64.375ZM51.3991 64.375H49.6881V59.1094H51.3991V64.375ZM48.61 52.2344C48.61 53.0573 48.3704 53.8125 47.8912 54.5C47.4173 55.1875 46.7558 55.763 45.9069 56.2266C45.0579 56.6849 44.084 56.9974 42.985 57.1641L42.3287 55.8047C43.2662 55.6849 44.097 55.4453 44.8209 55.0859C45.5449 54.7266 46.1048 54.2969 46.5006 53.7969C46.8965 53.2969 47.0944 52.776 47.0944 52.2344V51.75H48.61V52.2344ZM49.0944 52.2344C49.0944 52.776 49.2897 53.2969 49.6803 53.7969C50.0761 54.2969 50.636 54.7266 51.36 55.0859C52.0892 55.4453 52.9225 55.6849 53.86 55.8047L53.235 57.1641C52.1256 56.9974 51.1439 56.6849 50.2897 56.2266C49.4355 55.7682 48.7689 55.1953 48.2897 54.5078C47.8157 53.8151 47.5787 53.0573 47.5787 52.2344V51.75H49.0944V52.2344ZM54.5241 59.4844H41.6647V58.0703H54.5241V59.4844ZM53.3444 52.4297H42.8287V51.0625H53.3444V52.4297ZM68.4862 52.9219H59.5175V51.5156H68.4862V52.9219ZM70.8847 62.6562H58.0253V61.2188H70.8847V62.6562ZM69.5097 52.8047C69.4993 53.6953 69.4862 54.4089 69.4706 54.9453C69.455 55.4818 69.4003 56.1406 69.3066 56.9219C69.218 57.7031 69.0748 58.5547 68.8769 59.4766L67.1816 59.2969C67.3691 58.4271 67.5097 57.6094 67.6034 56.8438C67.6972 56.0729 67.7519 55.3958 67.7675 54.8125C67.7831 54.2292 67.7909 53.5599 67.7909 52.8047V51.5156H69.5097V52.8047ZM59.33 56.7344L59.0722 55.2344L68.1503 54.9062V56.2188L59.33 56.7344ZM64.4862 61.7422H62.7753V57.7422H64.4862V61.7422ZM81.6744 52.9219H72.7056V51.5156H81.6744V52.9219ZM84.0728 62.6562H71.2134V61.2188H84.0728V62.6562ZM82.6978 52.8047C82.6874 53.6953 82.6744 54.4089 82.6587 54.9453C82.6431 55.4818 82.5884 56.1406 82.4947 56.9219C82.4061 57.7031 82.2629 58.5547 82.065 59.4766L80.3697 59.2969C80.5572 58.4271 80.6978 57.6094 80.7916 56.8438C80.8853 56.0729 80.94 55.3958 80.9556 54.8125C80.9712 54.2292 80.9791 53.5599 80.9791 52.8047V51.5156H82.6978V52.8047ZM72.5181 56.7344L72.2603 55.2344L81.3384 54.9062V56.2188L72.5181 56.7344ZM77.6744 61.7422H75.9634V57.7422H77.6744V61.7422ZM99.3241 58.1094H97.5819V50.2812H99.3241V58.1094ZM89.5194 56.4219C90.5871 56.4167 91.4595 56.4062 92.1366 56.3906C92.8189 56.3698 93.4933 56.3307 94.16 56.2734C94.8267 56.2161 95.5037 56.1302 96.1912 56.0156L96.3944 57.4219C95.3579 57.5885 94.3319 57.7031 93.3162 57.7656C92.3058 57.8229 91.0402 57.8516 89.5194 57.8516H88.3084V56.4219H89.5194ZM94.7928 55H90.0116V57.3594H88.3084V53.6719H93.0741V52.3281H88.2928V50.9297H94.7928V55ZM91.7069 60.1094H97.5897V58.7344H99.3241V64.2109H89.9725V58.7344H91.7069V60.1094ZM97.5897 62.8125V61.4609H91.7069V62.8125H97.5897ZM107.731 52.1953C107.731 53.2005 107.478 54.1432 106.973 55.0234C106.473 55.9036 105.78 56.651 104.895 57.2656C104.015 57.8802 103.017 58.3047 101.903 58.5391L101.153 57.0938C102.106 56.9115 102.968 56.5729 103.739 56.0781C104.515 55.5833 105.119 54.9948 105.551 54.3125C105.989 53.6302 106.207 52.9245 106.207 52.1953V51.1641H107.731V52.1953ZM108.043 52.1953C108.043 52.9245 108.262 53.6328 108.7 54.3203C109.142 55.0026 109.752 55.5938 110.528 56.0938C111.309 56.5885 112.179 56.9219 113.137 57.0938L112.364 58.5391C111.26 58.3047 110.267 57.8828 109.387 57.2734C108.507 56.6641 107.814 55.9219 107.309 55.0469C106.809 54.1667 106.559 53.2161 106.559 52.1953V51.1641H108.043V52.1953ZM113.668 62.5859H100.762V61.1562H113.668V62.5859ZM125.7 64.375H123.958V60.8438H116.075V59.4453H125.7V64.375ZM125.7 58.8438H123.958V50.2656H125.7V58.8438ZM115.927 56.8125C117.541 56.8125 118.82 56.7891 119.763 56.7422C120.711 56.6901 121.653 56.5859 122.591 56.4297L122.763 57.8125C121.799 57.9688 120.823 58.0729 119.833 58.125C118.849 58.1719 117.547 58.1927 115.927 58.1875H114.739V56.8125H115.927ZM121.544 52.6094H116.482V57.2812H114.739V51.2109H121.544V52.6094ZM121.138 55.3438H115.935V54H121.138V55.3438Z" fill="#101010"/>
+<path opacity="0.4" d="M37.9609 78.584H28.3867V77.6758H37.9609V78.584ZM33.7246 78.0156H32.6113V76.2461H33.7246V78.0156ZM30.748 73.832H35.6113V72.7188H36.7129V76.6211H29.6465V72.7188H30.748V73.832ZM35.6113 75.7422V74.6758H30.748V75.7422H35.6113ZM36.7949 82.8613H29.5352V79.4629H36.7949V82.8613ZM30.6367 81.959H35.7051V80.3301H30.6367V81.959ZM44.2138 83.0605H43.1005V78.7832H44.2138V83.0605ZM47.9697 83.0605H46.8623V78.7832H47.9697V83.0605ZM50.3252 79.4043H40.7158V78.4961H50.3252V79.4043ZM49.1123 77.1777H41.917V73.041H49.1123V77.1777ZM43.0127 76.2871H48.0048V73.9375H43.0127V76.2871ZM59.144 78.9824H51.8198V78.0859H59.144V78.9824ZM60.228 81.6719H50.6186V80.7578H60.228V81.6719ZM59.0385 74.2773H52.9565V78.3438H51.8198V73.3516H59.0385V74.2773ZM58.8041 76.5625H52.6108V75.6836H58.8041V76.5625ZM69.1176 74.2773H63.4281V73.3633H69.1176V74.2773ZM63.1352 77.3242C64.2875 77.3242 65.4164 77.3027 66.5219 77.2598C67.6273 77.2168 68.6527 77.1348 69.598 77.0137L69.6742 77.8516C68.7211 78.0078 67.7074 78.1133 66.6332 78.168C65.5629 78.2188 64.4418 78.2441 63.2699 78.2441L63.1352 77.3242ZM65.4789 77.7461H64.4066V74.0371H65.4789V77.7461ZM68.1156 77.7461H67.0492V74.0371H68.1156V77.7461ZM71.6664 78.9004H70.559V72.502H71.6664V78.9004ZM68.1566 79.1172C68.9027 79.1172 69.5434 79.1914 70.0785 79.3398C70.6137 79.4883 71.0238 79.707 71.309 79.9961C71.5941 80.2812 71.7367 80.6289 71.7367 81.0391C71.7367 81.4453 71.5941 81.793 71.309 82.082C71.0238 82.375 70.6137 82.5977 70.0785 82.75C69.5434 82.9023 68.9027 82.9785 68.1566 82.9785C67.4223 82.9785 66.7875 82.9023 66.2523 82.75C65.7172 82.5977 65.307 82.375 65.0219 82.082C64.7367 81.793 64.5941 81.4453 64.5941 81.0391C64.5941 80.6289 64.7367 80.2812 65.0219 79.9961C65.307 79.707 65.7172 79.4883 66.2523 79.3398C66.7875 79.1914 67.4223 79.1172 68.1566 79.1172ZM68.1566 79.9902C67.6449 79.9902 67.2035 80.0312 66.8324 80.1133C66.4613 80.1953 66.1781 80.3145 65.9828 80.4707C65.7875 80.627 65.6898 80.8164 65.6898 81.0391C65.6898 81.2617 65.7875 81.4551 65.9828 81.6191C66.1781 81.7793 66.4613 81.9023 66.8324 81.9883C67.2035 82.0703 67.6449 82.1113 68.1566 82.1113C68.6762 82.1113 69.1195 82.0703 69.4867 81.9883C69.8578 81.9023 70.1391 81.7793 70.3305 81.6191C70.5258 81.4551 70.6234 81.2617 70.6234 81.0391C70.6234 80.8164 70.5258 80.627 70.3305 80.4707C70.1391 80.3145 69.8578 80.1953 69.4867 80.1133C69.1195 80.0312 68.6762 79.9902 68.1566 79.9902ZM80.6786 74.4297H73.9872V73.5156H80.6786V74.4297ZM82.4247 81.5898H72.8505V80.6641H82.4247V81.5898ZM81.2997 74.7871C81.2997 75.4629 81.2919 76.0332 81.2762 76.498C81.2645 76.959 81.2255 77.4785 81.1591 78.0566C81.0966 78.6309 80.993 79.2598 80.8485 79.9434L79.7352 79.8438C79.8798 79.2109 79.9852 78.6113 80.0516 78.0449C80.122 77.4746 80.1669 76.9629 80.1864 76.5098C80.2059 76.0566 80.2157 75.4824 80.2157 74.7871V73.5156H81.2997V74.7871ZM73.8407 77.5938L73.6942 76.6855L80.4735 76.4219V77.2422L73.8407 77.5938ZM90.1366 73.5156H91.1444L89.7498 82H88.742L90.1366 73.5156ZM85.0682 78.7363H91.5018L91.3319 79.7324H84.9041L85.0682 78.7363ZM87.1483 73.5156H88.1561L86.7616 82H85.7537L87.1483 73.5156ZM85.5604 75.7832H91.9998L91.8358 76.7793H85.4022L85.5604 75.7832ZM95.598 82H94.2972V74.8105H94.2503L92.2288 76.1348V74.8984L94.3323 73.5156H95.598V82ZM100.28 82.1172C99.7059 82.1172 99.1902 82.0195 98.7332 81.8242C98.2762 81.6289 97.9168 81.3555 97.6551 81.0039C97.3934 80.6484 97.2527 80.2402 97.2332 79.7793H98.534C98.5535 80.0176 98.6414 80.2305 98.7977 80.418C98.9539 80.6055 99.1609 80.75 99.4187 80.8516C99.6766 80.9531 99.9617 81.0039 100.274 81.0039C100.61 81.0039 100.915 80.9453 101.188 80.8281C101.462 80.707 101.673 80.5449 101.821 80.3418C101.97 80.1348 102.044 79.8965 102.044 79.627C102.044 79.3418 101.97 79.0898 101.821 78.8711C101.673 78.6523 101.454 78.4824 101.165 78.3613C100.88 78.2402 100.536 78.1797 100.134 78.1797H99.407V77.1309H100.134C100.454 77.1309 100.739 77.0742 100.989 76.9609C101.239 76.8477 101.432 76.6895 101.569 76.4863C101.706 76.2832 101.772 76.0488 101.768 75.7832C101.772 75.5254 101.714 75.2969 101.593 75.0977C101.471 74.8984 101.3 74.7461 101.077 74.6406C100.854 74.5312 100.596 74.4766 100.304 74.4766C100.014 74.4766 99.7469 74.5273 99.5008 74.6289C99.2547 74.7305 99.0535 74.875 98.8973 75.0625C98.7449 75.25 98.6629 75.4707 98.6512 75.7246H97.409C97.4285 75.2715 97.5672 74.8691 97.825 74.5176C98.0867 74.1621 98.4344 73.8867 98.868 73.6914C99.3055 73.4961 99.7859 73.3984 100.309 73.3984C100.852 73.3984 101.329 73.502 101.739 73.709C102.153 73.9121 102.471 74.1895 102.694 74.541C102.917 74.8926 103.024 75.2812 103.016 75.707C103.024 76.0195 102.966 76.3066 102.841 76.5684C102.72 76.8262 102.544 77.043 102.313 77.2188C102.087 77.3906 101.821 77.5137 101.516 77.5879V77.6523C101.899 77.7031 102.227 77.8223 102.501 78.0098C102.778 78.1934 102.989 78.4258 103.134 78.707C103.278 78.9883 103.346 79.3086 103.339 79.668C103.346 80.1289 103.218 80.5469 102.952 80.9219C102.686 81.293 102.319 81.5859 101.85 81.8008C101.382 82.0117 100.858 82.1172 100.28 82.1172ZM107.247 82.1172C106.595 82.1172 106.036 81.9473 105.572 81.6074C105.107 81.2676 104.751 80.7715 104.505 80.1191C104.259 79.4668 104.136 78.6797 104.136 77.7578C104.136 76.8438 104.259 76.0605 104.505 75.4082C104.751 74.7559 105.109 74.2578 105.577 73.9141C106.046 73.5703 106.603 73.3984 107.247 73.3984C107.892 73.3984 108.449 73.5703 108.917 73.9141C109.386 74.2578 109.743 74.7559 109.99 75.4082C110.236 76.0605 110.359 76.8438 110.359 77.7578C110.359 78.6797 110.236 79.4668 109.99 80.1191C109.747 80.7715 109.392 81.2676 108.923 81.6074C108.458 81.9473 107.9 82.1172 107.247 82.1172ZM107.247 81.0098C107.626 81.0098 107.952 80.8848 108.226 80.6348C108.503 80.3848 108.714 80.0176 108.859 79.5332C109.003 79.0449 109.074 78.4531 109.07 77.7578C109.07 77.0625 108.997 76.4707 108.853 75.9824C108.708 75.4941 108.499 75.123 108.226 74.8691C107.952 74.6152 107.626 74.4883 107.247 74.4883C106.868 74.4883 106.542 74.6152 106.269 74.8691C105.995 75.123 105.784 75.4941 105.636 75.9824C105.488 76.4707 105.413 77.0625 105.413 77.7578C105.413 78.4531 105.486 79.0449 105.63 79.5332C105.775 80.0176 105.986 80.3848 106.263 80.6348C106.54 80.8848 106.868 81.0098 107.247 81.0098Z" fill="#101010"/>
+<g clip-path="url(#clip1_8496_8575)">
+<path d="M245 16H325V96H245V16Z" fill="url(#pattern0_8496_8575)"/>
+</g>
+</g>
+<path d="M44.7998 0.5H308.2C316.049 0.5 321.906 0.500458 326.55 0.879883C331.188 1.25882 334.572 2.01321 337.484 3.49707C342.659 6.13359 346.866 10.3412 349.503 15.5156C350.987 18.428 351.741 21.8124 352.12 26.4502C352.5 31.0941 352.5 36.9509 352.5 44.7998V67.2002C352.5 75.0491 352.5 80.9059 352.12 85.5498C351.741 90.1876 350.987 93.572 349.503 96.4844C346.866 101.659 342.659 105.866 337.484 108.503C334.572 109.987 331.188 110.741 326.55 111.12C321.906 111.5 316.049 111.5 308.2 111.5H44.7998C36.9509 111.5 31.0941 111.5 26.4502 111.12C21.8124 110.741 18.428 109.987 15.5156 108.503C10.3412 105.866 6.13359 101.659 3.49707 96.4844C2.01321 93.572 1.25882 90.1876 0.879883 85.5498C0.500458 80.9059 0.5 75.0491 0.5 67.2002V44.7998L0.505859 39.2744C0.523756 34.0984 0.595316 29.9331 0.879883 26.4502C1.25882 21.8124 2.01321 18.428 3.49707 15.5156C6.13359 10.3412 10.3412 6.13359 15.5156 3.49707C18.428 2.01321 21.8124 1.25882 26.4502 0.879883C31.0941 0.500458 36.9509 0.5 44.7998 0.5Z" stroke="white"/>
+<defs>
+<pattern id="pattern0_8496_8575" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_8496_8575" transform="translate(-0.1 -0.1) scale(0.00175953)"/>
+</pattern>
+<clipPath id="clip0_8496_8575">
+<path d="M0 44.8C0 29.1185 0 21.2778 3.05182 15.2883C5.73627 10.0197 10.0197 5.73627 15.2883 3.05182C21.2778 0 29.1185 0 44.8 0H308.2C323.881 0 331.722 0 337.712 3.05182C342.98 5.73627 347.264 10.0197 349.948 15.2883C353 21.2778 353 29.1185 353 44.8V67.2C353 82.8815 353 90.7222 349.948 96.7117C347.264 101.98 342.98 106.264 337.712 108.948C331.722 112 323.881 112 308.2 112H44.8C29.1185 112 21.2778 112 15.2883 108.948C10.0197 106.264 5.73627 101.98 3.05182 96.7117C0 90.7222 0 82.8815 0 67.2V44.8Z" fill="white"/>
+</clipPath>
+<clipPath id="clip1_8496_8575">
+<rect width="80" height="80" fill="white" transform="translate(245 16)"/>
+</clipPath>
+<image id="image0_8496_8575" width="682" height="682" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqoAAAKqCAYAAADyhXxqAAAQAElEQVR4AezdC7Cl2VXfCX7ffeXNdz1VlaWSqlQSWCo9kAUIiYclN9gYGxtsU+G2GeiJiZloT7tjYmII9/Q8lTQm7AAMBIIGGTzQY3B3SIa2QYZwN8YSKsmyhcAiVBJ6oFdJ9VA9sqisy87+917e72z4z75n7733nOee1/9/zFmr1157rbX33vv8z1rrruXqWud/RsAIGAEjYASMgBEwAkZgDhEwUZ3DTXFJRsAILDICrt0IGAEjYAQmhYCJ6qSQdB4jYASMgBEwAkbACBiBiSIQRHWiGZ3MCBgBI2AEjIARMAJGwAhMAAET1QmA6BRGwAgYgRYCbhoBI2AEjMAEEDBRnQCITmEEjIARMAJGwAgYASMweQReJKqTz+2MRsAIGAEjYASMgBEwAkZg3wiYqO4bOg80AkbACAxHwL1GwAgYASNwMARMVA+Gn0cbASNgBIyAETACRsAITAmBFlGd0ixOawSMgBEwAkbACBgBI2AExkTARHVMwBxuBIyAERgLAQcbASNgBIzAvhEwUd03dB5oBIyAETACRsAIGAEjME0EuojqNOdzbiNgBIyAETACRsAIGAEjMBICJqojweQgI2AEjMBBEPBYI2AEjIAR2A8CJqr7Qc1jjIARMAJGwAgYASNgBKaOwECiOvWZPYERMAJGwAgYASNgBIzAkiNgorrkG+zyRsAIzAkCLsMIGAEjYASGIGCiOgQc dzACRsAIGAEjYASMgBGYHQL7J6qzq9UTGwEjYASMgBEwAkbACKwQAlrqq7pCWF2qETACRsAIGAEjYASMgBFYKgQmRlSXqioXYwSMgBEwAkbACBgBI2AEDgUBE9VDQd1BjYARMALDEXCXETACRsAIHAgBE9UDwefBRsAIGAEjYASMgBEwAtNEoIuoTnM+5zYCRsAIGAEjYASMgBEwAiMhYKI6EkwOMgJGwAgcBAGPNQJGwAgYgf0QMFH dl5pA42AETACRsAIGAEjYASmTKCLqE5zvudujIARMAJGwAgYASNgBIzASAiYqI4Ek4OMgBEwAgdBwGONgBEwAkZgPwRMVPelJtAIGAEjYASMgBEwAkbACOwXARPVfYHmJUbACBgBI2AEjIARMAJGwAgYgWkiYKI6TbydWw cjYASMgBEwAkbACBgBI2AEjIARMAJGwAgYASMwBQRMVKeAqlMaASNgBIyAETACRsAIGAEjYASMgBEwAkbACBgBE9VpIOiURsAIGAEjYASMgBEwAkbACBgBI2AEjIARMAJGwAhMAQITUAAj0JUAAAAAElFTkSuQmCC"/>
+</defs>
+</svg>
+          </div>
+
+          <!-- con6 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">23,800원</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">80,000원 한도</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">휴대폰 결제 / 콘텐츠 이용료</span>
+            </div>
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_8496_8588" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="22" y="5" width="21" height="34"><path d="M22.002 10.799C22.002 9.11887 22.002 8.27879 22.3289 7.63705C22.6166 7.07257 23.0755 6.61362 23.64 6.326C24.2817 5.99902 25.1218 5.99902 26.802 5.99902H37.202C38.8821 5.99902 39.7222 5.99902 40.3639 6.326C40.9284 6.61362 41.3874 7.07257 41.675 7.63705C42.002 8.27879 42.002 9.11887 42.002 10.799V34.199C42.002 35.8792 42.002 36.7193 41.675 37.361C41.3874 37.9255 40.9284 38.3844 40.3639 38.672C39.7222 38.999 38.8821 38.999 37.202 38.999H26.802C25.1218 38.999 24.2817 38.999 23.64 38.672C23.0755 38.3844 22.6166 37.9255 22.3289 37.361C22.002 36.7193 22.002 35.8792 22.002 34.199V10.799Z" fill="#D2D9EB"/></mask>
+<g mask="url(#mask0_8496_8588)"><path d="M22.002 10.799C22.002 9.11887 22.002 8.27879 22.3289 7.63705C22.6166 7.07257 23.0755 6.61362 23.64 6.326C24.2817 5.99902 25.1218 5.99902 26.802 5.99902H37.202C38.8821 5.99902 39.7222 5.99902 40.3639 6.326C40.9284 6.61362 41.3874 7.07257 41.675 7.63705C42.002 8.27879 42.002 9.11887 42.002 10.799V34.199C42.002 35.8792 42.002 36.7193 41.675 37.361C41.3874 37.9255 40.9284 38.3844 40.3639 38.672C39.7222 38.999 38.8821 38.999 37.202 38.999H26.802C25.1218 38.999 24.2817 38.999 23.64 38.672C23.0755 38.3844 22.6166 37.9255 22.3289 37.361C22.002 36.7193 22.002 35.8792 22.002 34.199V10.799Z" fill="#D1D1D1"/><path d="M7.00195 8.94824L28.4381 3.99932L36.2837 40.158L14.8475 45.1069L7.00195 8.94824Z" fill="#DEDEDE"/><path d="M35.0007 9C35.5529 9 36.0016 9.44706 36.0016 9.99935C36.0016 10.5516 35.5529 10.9987 35.0007 10.9987L29.0013 10.9987C28.449 10.9987 28.002 10.5516 28.002 9.99935C28.002 9.44706 28.449 9 29.0013 9L35.0007 9Z" fill="white"/></g>
+<g filter="url(#filter0_d_8496_8588)"><path d="M20.7041 25C22.181 25 23.4343 26.0145 23.9004 27.4287H10.5254C9.90108 27.4288 9.39474 27.6687 9.39453 28.3389C9.39453 29.0094 9.90095 29.2499 10.5254 29.25H22.6689C24.5096 29.2502 26.0018 30.7423 26.002 32.583V38.667C26.0018 40.5077 24.5096 41.9998 22.6689 42H9.33496C7.49427 41.9998 6.00213 40.5077 6.00195 38.667V28.6426C6.00209 26.6309 7.52092 25.0002 9.39453 25H20.7041Z" fill="#1D1D1D"/><path d="M23.002 36C23.002 36.5523 22.5542 37 22.002 37C21.4497 37 21.002 36.5523 21.002 36C21.002 35.4477 21.4497 35 22.002 35C22.5542 35 23.002 35.4477 23.002 36Z" fill="white"/></g>
+<defs><filter id="filter0_d_8496_8588" x="3.38377" y="24.3455" width="25.2364" height="22.2364" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dy="1.96364"/><feGaussianBlur stdDeviation="1.30909"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_8496_8588"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_8496_8588" result="shape"/></filter></defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- con7 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:30px 28px;width:100%;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;white-space:nowrap;">67,500원</span>
+                <div style="background:#f4f5fa;border-radius:6px;padding:4px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:11px;font-weight:500;line-height:1.3;color:#101010;opacity:0.5;letter-spacing:-0.44px;white-space:nowrap;">3개 상품 구독중</span>
+                </div>
+              </div>
+              <span style="font-size:12px;font-weight:500;line-height:1.3;color:#101010;opacity:0.6;letter-spacing:-0.48px;white-space:nowrap;">T 우주 월 구독료</span>
+            </div>
+            <div style="width:40px;height:40px;flex-shrink:0;">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g clip-path="url(#clip0_8496_8598)">
+<rect x="3" y="3" width="16" height="16" rx="4" fill="#222222"/>
+<path d="M13.2525 9.88006C13.3822 9.88006 13.4015 9.90011 13.4015 10.0381C13.4017 10.4364 13.4015 10.8347 13.4015 11.2331C13.4015 11.3318 13.37 11.3632 13.2705 11.3632C12.3697 11.3635 11.4687 11.3637 10.5679 11.364C10.3763 11.3641 10.215 11.4309 10.1074 11.6068C10.0444 11.7098 10.0251 11.8264 10.0251 11.9478C10.0256 12.906 10.0252 13.8645 10.0255 14.8227C10.0255 14.9825 10.0093 15.0002 9.85936 15C9.4845 14.9995 9.10946 14.9995 8.7346 14.9991C8.63005 14.9991 8.60159 14.9693 8.60157 14.8594V13.2218H8.60239C8.60239 12.692 8.60045 12.1622 8.60321 11.6326C8.60459 11.3642 8.6422 11.1004 8.75056 10.855C8.98426 10.3256 9.37826 10.0136 9.92157 9.9163C10.0526 9.89289 10.1872 9.88187 10.3202 9.88137C11.2976 9.87858 12.2752 9.87994 13.2525 9.88006ZM13.2869 7.01645C13.362 6.97886 13.3999 7.0059 13.4002 7.09547C13.4012 7.4929 13.3996 7.89069 13.4015 8.28824C13.4018 8.3739 13.3664 8.42548 13.3 8.4703C13.0048 8.66968 12.6835 8.78901 12.341 8.85232C11.9733 8.9203 11.6159 8.85373 11.2588 8.77199C10.9642 8.70463 10.6714 8.62494 10.3743 8.57552C10.0444 8.52059 9.7133 8.54003 9.38621 8.62399C9.15633 8.68299 8.93703 8.76664 8.73378 8.89729C8.65529 8.94768 8.603 8.91185 8.60239 8.80866C8.60124 8.59763 8.60198 8.38663 8.60198 8.1756L8.60157 7.56088C8.601 7.48811 8.62509 7.43824 8.68753 7.40283C8.98234 7.2357 9.29331 7.12282 9.62565 7.08718C9.77539 7.07108 9.92759 7.05626 10.0771 7.06622C10.2762 7.07938 10.4757 7.10705 10.6718 7.14699C10.9711 7.20784 11.2654 7.29981 11.5657 7.35131C12.0838 7.44028 12.5897 7.38685 13.0683 7.13738C13.142 7.09903 13.2127 7.05369 13.2869 7.01645Z" fill="white"/>
+<rect x="3" y="21" width="16" height="16" rx="4" fill="#222222"/>
+<rect x="7" y="24.5" width="9" height="9" fill="url(#pattern0_8496_8598)"/>
+<rect x="21" y="3" width="16" height="16" rx="4" fill="#222222"/>
+<path d="M26.807 6.9687L26.8121 6.94459C26.8506 6.93299 27.1832 6.93912 27.2431 6.93909L28.3806 6.93811C28.45 7.07779 28.5138 7.29256 28.5669 7.44685C28.7886 8.09093 29.0305 8.73124 29.251 9.37531L29.4805 10.0265C29.5336 10.1799 29.5974 10.3879 29.6662 10.5289C29.688 10.4922 29.6673 10.3565 29.6657 10.3072C29.6622 10.2024 29.6614 10.099 29.6611 9.9942L29.657 6.94062L31.2436 6.9407C31.2281 7.62671 31.2404 8.35652 31.2404 9.04518L31.2403 12.8234C31.244 13.5433 31.2424 14.2632 31.2352 14.9831L31.2266 14.9952C31.0113 14.999 30.6694 14.9424 30.445 14.9246C30.1605 14.9021 29.8861 14.8915 29.6017 14.8771C29.5733 14.7568 29.4746 14.5072 29.4292 14.3816L29.1402 13.5645L28.642 12.1491C28.5627 11.9251 28.4789 11.6591 28.3882 11.4429C28.3842 11.4461 28.3797 11.4488 28.376 11.4525C28.3589 11.47 28.3761 11.9669 28.3764 12.0387L28.379 13.8431C28.3791 14.163 28.3691 14.5603 28.3866 14.8761C28.1487 14.8995 27.8937 14.8953 27.6561 14.9177C27.3639 14.9452 27.0935 14.9857 26.7982 14.9965C26.8073 14.7614 26.8021 14.5048 26.8021 14.2679L26.8021 13.0332L26.8022 9.10807C26.8021 8.41335 26.7875 7.65896 26.807 6.9687Z" fill="#9B9B9B"/>
+<path d="M29.6484 6.9375L31.2351 6.93758C31.2195 7.62359 31.2319 8.35341 31.2319 9.04206L31.2318 12.8203C31.2355 13.5402 31.2338 14.2601 31.2266 14.9799C31.2227 14.9598 31.1743 14.8476 31.1617 14.8116L30.9613 14.2458L30.015 11.5678L29.7837 10.9184C29.754 10.835 29.6715 10.6052 29.6576 10.5258C29.6795 10.4891 29.6587 10.3534 29.6571 10.3041C29.6536 10.1993 29.6529 10.0959 29.6526 9.99108L29.6484 6.9375Z" fill="#717171"/>
+<path d="M26.807 6.96875C26.8179 7.02165 26.8173 7.01113 26.8366 7.05471C26.9006 7.19898 26.9517 7.36793 27.0036 7.51726L27.3034 8.36286L28.0801 10.5557C28.1201 10.668 28.3873 11.3742 28.3882 11.4429C28.3842 11.4461 28.3797 11.4489 28.376 11.4526C28.3589 11.47 28.3761 11.9669 28.3764 12.0388L28.379 13.8432C28.3791 14.1631 28.3691 14.5604 28.3866 14.8761C28.1487 14.8995 27.8937 14.8954 27.6561 14.9178C27.3639 14.9453 27.0935 14.9858 26.7982 14.9965C26.8073 14.7615 26.8021 14.5048 26.8021 14.2679L26.8021 13.0332L26.8022 9.10812C26.8021 8.41341 26.7875 7.65901 26.807 6.96875Z" fill="#717171"/>
+<rect x="21" y="21" width="16" height="16" rx="4" fill="#EBEEF6"/>
+</g>
+<defs>
+<pattern id="pattern0_8496_8598" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_8496_8598" transform="translate(-0.111111) scale(0.00072338)"/>
+</pattern>
+<clipPath id="clip0_8496_8598">
+<rect width="40" height="40" fill="white"/>
+</clipPath>
+<image id="image0_8496_8598" width="1536" height="1536" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABgAAAAYACAYAAACw7oNrAAAQAElEQVR4AezdO3IjyXYw4Ix/A3A6aHAFCBpw6YzVC2DQ6gWMowgt4NpahYxusz1ZCFi9gDEEmTAUXAEM6jp05eifg+mcafbwgUc98vEpJpEooCrznC+hmbh5gOL/+7d/+7f/0xj4DPgM+Az4DPgM+Az4DPgM+Az4DLz3Gfg//0eAQM0CYp9Y4D//8z//L7f3/v3qff8N9hnwGfAZ8BkY6zPw/5L/I0CAAAECBDoTkC4BAgQIECBAgAABAgQIECDQvkBKCgA9rLIcCRAgQIAAAQIECBAgQKBvAdkTIECAAAECXQooAHS57JImQIAAgZ4F5E6AAAECBAgQIDC+wG63S7mNP5sZCBAgQIDA3wXiFQWAUNAIECBAgAABAgQIECBAgEC7AjIjQIAAAQIEOhVQAOh04aVNgAABAr0KyJsAAQIECBAgQIAAAQIECBBoX+CPDBUA/nDwSIAAAQIECBAgQIAAAQIE2hSQ1SwC+/0+5TZLACYlQIAAAQK/CygA/I7gHwIECBAg0IuAPAkQIECAAAECBAgQIECAAIH2BXKGCgBZQk+AAAECBAgQIECAAAECBNoTkBEBAgQIECDQsYACQMeLL3UCBAgQ6E1AvgQIECBAgAABAmMKbLfblNuY8xibAAECBAi8LfDXuwoAf1l4RoAAAQIECBAgQIAAAQIE2hKQDQECBAgQINC1gAJA18sveQIECBDoSUCuBAgQIECAAAECBAgQIECAQPsCP2aoAPCjhucECBAgQIAAAQIECBAgQKAdAZlMLLDb7VJuE09tOgIECBAg8KKAAsCLLF4kQIAAAQKtCciHAAECBAgQIECAAAECBAgQaF/geYYKAM89HBEgQIAAAQIECBAgQIAAgTYEZEGAAAECBAh0L6AA0P1HAAABAgQI9CAgRwIECBAgQIAAgfEF9vt9ym382cxAgAABAgT+LvDzKwoAP4s4JkCAAAECBAgQIECAAAEC9QvIgAABAgQIECCQFAB8CAgQIECAQPMCEiRAgAABAgQIECBAgAABAgTaF/h7hgoAfzfxCgECBAgQIECAAAECBAgQqFtA9JMJbLfblNtkk5qIAAECBAgcKaAAcCSU0wgQIECAQK0C4iZAgAABAgQIECBAgAABAgTaF3gpQwWAl1S8RoAAAQIECBAgQIAAAQIE6hUQOQECBAgQIEDgIKAAcGDwQIAAAQIEWhWQFwECBAgQIECAwJgCu90u5TbmPMYmQIAAAQJvC7z8rgLAyy5eJUCAAAECBAgQIECAAAECdQqImgABAgQIECDwXUAB4DuEjgABAgQItCggJwIECBAgQIAAAQIECBAgQKB9gdcyVAB4TcbrBAgQIECAAAECBAgQIECgPgERTyyw3+9TbhNPbToCBAgQIPCugALAu0ROIECAAAECtQqImwABAgQIECBAgAABAgQIEGhf4PUMFQBet/EOAQIECBAgQIAAAQIECBCoS0C0BAgQIECAAIEfBBQAfsDwlAABAgQItCQgFwIECBAgQIAAgXEEttttym2cGYxKgAABAgSOF3jrTAWAt3S8R4AAAQIECBAgQIAAAQIE6hEQKQECBAgQIEDgmYACwDMOBwQIECBAoBUBeRAgQIAAAQIECBAgQIAAAQLtC7ydoQLA2z7eJUCAAAECBAgQIECAAAECdQiIcjKB3W6XcptsUhMRIECAAIEzBBQAzkBzCQECBAgQKF1AfAQIECBAgAABAgQIECBAgED7Au9lqADwnpD3CRAgQIAAAQIECBAgQIBA+QIiJECAAAECBAj8TUAB4G8kXiBAgAABArULiJ8AAQIECBAgQGBMgf1+n3Ibcx5jEyBAgACBtwXef1cB4H0jZxAgQIAAAQIECBAgQIAAgbIFRDe5wPX19eRzmpAAAQIECJwqoABwqpjzCRAgQIBA4QLCI0CAAAECBAgQGF8gfgEw/ixmIECAAAECrwsc844CwDFKziFAgAABAgQIECBAgAABAuUKiGwCge12m3KbYDpTECBAgACBQQQUAAZhNAgBAgQIEChFQBwECBAgQIAAAQJjCdze3o41tHEJECBAgMCJAsedrgBwnJOzCBAgQIAAAQIECBAgQIBAmQKimkwgfgEw2WQmIkCAAAECAwgoAAyAaAgCBAgQIFCKgDgIECBAgAABAgTGE9jtdinaeDMYmQABAgQIHCdw7FkKAMdKOY8AAQIECBAgQIAAAQIECJQnIKKJBPLG/2q1mmhG0xAgQIAAgUsFFAAuNzQCAQIECBAoREAYBAgQIECAAAECYwvkQsDY8xifAAECBAi8LnD8OwoAx1s5kwABAgQIECBAgAABAgQIlCUgmskE9vv9Ya7cHw48ECBAgACBwgUUAApfIOERIECAAIFjBZxHgAABAgQIECAwroDN/3F9jU6AAAECxwmccpYCwClaziVAgAABAgQIECBAgAABAuUIiGRigevr64lnNB0BAgQIELhMQAHgMj9XEyBAgACBQgSEQYAAAQIECBAgMLTAdrs9DJl7vwA4cHggQIAAgVkFTp9cAeA0L2cTIECAAAECBAgQIECAAIEyBEQxusDt7W2Kzf/oR5/MBAQIECBAYAQBBYARUA1JgAABAgSmFjAfAQIECBAgQIDAeAJRBBhvdCMTIECAAIHjBU49UwHgVDHnEyBAgAABAgQIECBAgACB+QVEMIHAly9fDrPsdrtD74EAAQIECNQmoABQ24qJlwABAgQI/E3ACwQIECBAgAABAmMIrFarZPN/DFljEiBAgMB5AqdfpQBwupkrCBAgQIAAAQIECBAgQIDAvAJmn0QgNv+jCDDJZCYhQIAAAQIjCCgAjIBqSAIECBAgMKWAuQgQIECAAAECBMYT+Pbt23iDG5kAAQIECJwgcM6pCgDnqLmGAAECBAgQIECAAAECBAjMJ2DmiQT2+326vr5O0U80pWkIECBAgMCgAgoAg3IajAABAgQITC1gPgIECBAgQIAAAQIECBAgQKB9gfMyVAA4z81VBAgQIECAAAECBAgQIEBgHgGzji6w3W7/nMO3//+k8IQAAQIEKhRQAKhw0YRMgAABAgSygJ4AAQIECBAgQGBYgdj8v729TdEPO7LRCBAgQIDA+QLnXqkAcK6c6wgQIECAAAECBAgQIECAwPQCZhxZIG/+Rz/yVIYnQIAAAQKjCygAjE5sAgIECBAgMJaAcQkQIECAAAECBIYW+PLly2HI3B8OPBAgQIAAgVkFzp9cAeB8O1cSIECAAAECBAgQIECAAIFpBcw2usBqtUq73S5FP/pkJiBAgAABAgQIECBAgACBQgUUAApfIOERIECAAAH3AABAAElEQVQCAAjcLqAAnAAAEABJREFUIECAgAIAAABJREFUBAgQIECAAAECBAgQIECAAAECBAgQIECAAIEyBWoOAADwCQlDSklKgAAAAABJRU5ErkJggg=="/>
+</defs>
+</svg>
+            </div>
+          </div>
+
+          <!-- menu 카드 -->
+          <div style="background:rgba(255,255,255,0.9);border-radius:28px;padding:30px 28px;width:100%;">
+            <p style="font-size:18px;font-weight:500;line-height:1.3;color:#101010;letter-spacing:-0.54px;margin:0 0 30px 0;">자주 보는 메뉴</p>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <div style="padding:8px 0;">
+                <p style="font-size:14px;font-weight:500;line-height:1.2;color:#101010;letter-spacing:-0.56px;margin:0;">데이터/통화 관리</p>
+              </div>
+              <div style="padding:8px 0;">
+                <p style="font-size:14px;font-weight:500;line-height:1.2;color:#101010;letter-spacing:-0.56px;margin:0;">나의 요금제/부가서비스</p>
+              </div>
+              <div style="padding:8px 0;">
+                <p style="font-size:14px;font-weight:500;line-height:1.2;color:#101010;letter-spacing:-0.56px;margin:0;">약정할인/기기 할부 정보</p>
+              </div>
+              <div style="padding:8px 0;">
+                <p style="font-size:14px;font-weight:500;line-height:1.2;color:#101010;letter-spacing:-0.56px;margin:0;">나의 PASS지갑</p>
+              </div>
+              <div style="padding:8px 0;">
+                <p style="font-size:14px;font-weight:500;line-height:1.2;color:#101010;letter-spacing:-0.56px;margin:0;">나의 쇼핑</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div style="height:140px;flex-shrink:0;"></div>
+      </div>
+    </div>
+
+    <!-- con2 슬라이드 페이지 -->
+    <div id="page-con2" class="slide-page" style="position:absolute;">
+      <!-- 숫자 키패드 트리거용 숨김 input -->
+      <input id="input-con2" inputmode="numeric" type="tel" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;border:none;outline:none;">
+
+      <!-- 블러 오버레이 -->
+      <div id="overlay-con2" style="position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity 0.45s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:linear-gradient(to bottom, rgba(221,221,221,0.7), rgba(2,2,2,0.7));"></div>
+
+      <!-- Bezel 컴포넌트 (151×151px, top:10px 중앙 정렬) -->
+      <div id="bezel-con2" style="position:absolute;top:-350px;left:50%;transform:translateX(-50%);z-index:40;opacity:0;width:151px;height:151px;pointer-events:none;transition:top 0.52s cubic-bezier(0.32,0.72,0,1), opacity 0.3s ease, filter 0.35s ease;">
+
+        <!-- Face ID 레이어 -->
+        <div id="bezel-faceid" style="position:absolute;inset:0;transition:opacity 0.35s ease;opacity:1;">
+          <div style="position:absolute;top:-41.06%;right:-49.01%;bottom:-56.95%;left:-49.01%;">
+            <img src="https://www.figma.com/api/mcp/asset/fca9166f-40df-4119-82b9-c9ed5b3a9eb8" style="width:100%;height:100%;display:block;">
+          </div>
+        </div>
+
+        <!-- Check 레이어 (초기 숨김) -->
+        <div id="bezel-check" style="position:absolute;inset:0;transition:opacity 0.4s ease;opacity:0;background:black;border-radius:40px;box-shadow:0 12px 37px rgba(0,0,0,0.5);">
+          <!-- 내부 중앙 글로우 -->
+          <div id="bezel-glow" style="position:absolute;inset:0;border-radius:40px;background:radial-gradient(circle at 50% 52%, rgba(135,250,137,0.2) 0%, transparent 60%);opacity:0;transition:opacity 0.7s ease;"></div>
+          <!-- SVG 원 (stroke-dashoffset 애니메이션) -->
+          <div style="position:absolute;left:50%;transform:translateX(-50%);top:41px;width:70px;height:70px;">
+            <svg width="70" height="70" viewBox="0 0 70 70" style="overflow:visible;">
+              <circle id="bezel-circle-svg"
+                cx="35" cy="35" r="31"
+                fill="none"
+                stroke="#87fa89"
+                stroke-width="3"
+                stroke-dasharray="194.8"
+                stroke-dashoffset="194.8"
+                stroke-linecap="round"
+                transform="rotate(-90 35 35)"
+                style="transition:stroke-dashoffset 0.5s ease;"/>
+            </svg>
+          </div>
+          <!-- 체크마크 팝 (원 중앙 = top:41 + 35 = 76px) -->
+          <div style="position:absolute;left:50%;top:76px;transform:translate(-50%,-50%);">
+            <div id="bezel-checkmark" style="font-size:40px;color:#87fa89;line-height:1;opacity:0;transform:scale(0);transform-origin:center;transition:opacity 0.2s ease, transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);">✓</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 오버레이 위 X 헤더 -->
+      <div id="overlay-header-con2" style="position:absolute;top:0;left:0;width:100%;z-index:26;pointer-events:none;opacity:0;transition:opacity 0.45s ease;display:flex;align-items:center;padding:20px;">
+        <button onclick="closeOverlay('con2')" style="width:26px;height:26px;background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <img src="https://www.figma.com/api/mcp/asset/ed5b1988-980a-477b-96f1-e55c0e2faed5" style="width:26px;height:26px;display:block;" alt="닫기">
+        </button>
+      </div>
+
+      <!-- 오버레이 위 main 영역 -->
+      <div id="overlay-main-con2" style="position:absolute;top:calc(50% - 136.5px);transform:translateY(-50%);left:0;width:100%;z-index:25;pointer-events:none;opacity:0;transition:opacity 0.45s ease;display:flex;flex-direction:column;align-items:center;">
+        <div style="display:flex;flex-direction:column;gap:80px;align-items:center;width:100%;">
+          <p style="margin:0;font-size:20px;font-weight:600;color:#292929;text-align:center;letter-spacing:-1px;line-height:24px;">포인트 적용을 위해<br>비밀번호를 입력해주세요.</p>
+          <!-- number field -->
+          <div id="pw-dots" style="display:flex;gap:12px;align-items:center;justify-content:center;width:168px;height:18px;">
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+            <div class="dot" style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background 0.18s ease;"></div>
+          </div>
+        </div>
+        <div style="height:32px;"></div>
+        <p style="margin:0;font-size:14px;font-weight:500;color:white;opacity:0.5;text-align:center;letter-spacing:-0.42px;line-height:18px;text-decoration:underline;cursor:pointer;">비밀번호가 기억나지 않아요.</p>
+      </div>
+
+      <!-- iOS 숫자 키패드 (PC 전용) -->
+      <div id="ios-keypad" style="
+        position:absolute;bottom:0;left:0;width:100%;z-index:30;
+        background:#d1d5db;
+        transform:translateY(100%);
+        transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+        pointer-events:none;
+        user-select:none;
+      ">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#d1d5db;padding:0 0 1px 0;">
+          <!-- Row 1 -->
+          <div onclick="kpInput('1')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:1px 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);-webkit-tap-highlight-color:transparent;" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">1</span>
+          </div>
+          <div onclick="kpInput('2')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:1px 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">2</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">ABC</span>
+          </div>
+          <div onclick="kpInput('3')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:1px 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">3</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">DEF</span>
+          </div>
+          <!-- Row 2 -->
+          <div onclick="kpInput('4')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">4</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">GHI</span>
+          </div>
+          <div onclick="kpInput('5')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">5</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">JKL</span>
+          </div>
+          <div onclick="kpInput('6')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">6</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">MNO</span>
+          </div>
+          <!-- Row 3 -->
+          <div onclick="kpInput('7')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">7</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">PQRS</span>
+          </div>
+          <div onclick="kpInput('8')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">8</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">TUV</span>
+          </div>
+          <div onclick="kpInput('9')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">9</span>
+            <span style="font-size:10px;font-weight:400;color:#000;letter-spacing:1px;line-height:1.2;margin-top:1px;">WXYZ</span>
+          </div>
+          <!-- Row 4 -->
+          <div style="background:#adb5bd;height:54px;border-radius:5px;margin:0 1px 0;"></div>
+          <div onclick="kpInput('0')" style="background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#acb3be'" onmouseup="this.style.background='white'" onmouseleave="this.style.background='white'">
+            <span style="font-size:24px;font-weight:300;color:#000;line-height:1;">0</span>
+          </div>
+          <div onclick="kpDelete()" style="background:#adb5bd;display:flex;align-items:center;justify-content:center;height:54px;cursor:pointer;border-radius:5px;margin:0 1px 0;box-shadow:0 1px 0 rgba(0,0,0,0.35);" onmousedown="this.style.background='#8c9198'" onmouseup="this.style.background='#adb5bd'" onmouseleave="this.style.background='#adb5bd'">
+            <svg width="24" height="18" viewBox="0 0 24 18" fill="none">
+              <path d="M9.5 1H22C22.6 1 23 1.4 23 2V16C23 16.6 22.6 17 22 17H9.5C8.9 17 8.4 16.7 8.1 16.3L1.5 9.7C1.2 9.4 1.2 8.6 1.5 8.3L8.1 1.7C8.4 1.3 8.9 1 9.5 1Z" fill="#adb5bd" stroke="#555" stroke-width="0.5"/>
+              <path d="M15 6L10 12M10 6L15 12" stroke="#333" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <!-- 홈 인디케이터 영역 -->
+        <div style="background:#d1d5db;height:21px;display:flex;align-items:center;justify-content:center;">
+          <div style="width:134px;height:5px;background:#888;border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <!-- 공통 헤더 -->
+      <div style="flex-shrink:0;position:sticky;top:0;z-index:1;background:#f7f8fa;display:flex;align-items:center;gap:8px;padding:20px;width:100%;">
+        <button onclick="closePage('page-con2')" style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;" aria-label="뒤로가기">
+          <img src="assets/scenario1/ico_back.svg" style="width:8px;height:15px;display:block;" alt="">
+        </button>
+        <span style="font-size:16px;font-weight:600;color:#1c1c1e;letter-spacing:-1px;line-height:26px;flex:1;min-width:0;">T 포인트 내역</span>
+      </div>
+      <!-- 콘텐츠 영역 -->
+      <div style="flex:1;overflow-y:auto;overflow-x:hidden;background:#f7f8fa;scrollbar-width:none;">
+        <div style="display:flex;flex-direction:column;gap:20px;padding:0 16px 40px;">
+
+          <!-- point + agent 그룹 (gap: 8px) -->
+          <div style="display:flex;flex-direction:column;gap:8px;">
+
+          <!-- point 카드 -->
+          <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:20px;">
+            <p style="margin:0;font-size:12px;font-weight:700;color:#1c1c1e;opacity:0.8;letter-spacing:-0.36px;line-height:18px;">사용 가능 포인트</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:24px;font-weight:600;color:#1c1c1e;letter-spacing:-0.72px;line-height:30px;">15,450P</span>
+              <div style="background:#e8e7ee;border-radius:8px;padding:4px 8px;display:flex;align-items:center;">
+                <span style="font-size:11px;font-weight:600;color:#1c1c1e;letter-spacing:-0.22px;line-height:18px;white-space:nowrap;">선물</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:14px;font-weight:400;color:#1c1c1e;opacity:0.6;letter-spacing:-0.4px;line-height:18px;">보유 포인트</span>
+                <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;">15,450P</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:14px;font-weight:400;color:#1c1c1e;opacity:0.6;letter-spacing:-0.4px;line-height:18px;">적립예정 포인트</span>
+                <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;">0P</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- agent 카드 -->
+          <div style="background:#ece8ff;border-radius:24px;padding:16px 16px 20px;display:flex;flex-direction:column;gap:20px;">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <img src="https://www.figma.com/api/mcp/asset/2f75c3c2-d8de-4850-b3ee-4e0e093a9fd7" style="width:18px;height:18px;">
+                  <p style="margin:0;font-size:14px;font-weight:600;background:linear-gradient(to right,#5940df,#0d0052);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.8px;line-height:1.4;">3개월째 포인트가 쌓이기만 했어요. 자동 납부로 돌리면 연간 최대 60,000원 아껴요.</p>
+                </div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;"><span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">포인트 미사용</span></div>
+                  <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;"><span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">자동납부 추천</span></div>
+                  <div style="background:rgba(255,255,255,0.8);border-radius:4px;padding:4px 8px;display:flex;align-items:center;"><span style="font-size:11.939px;font-weight:500;color:#5940df;letter-spacing:-0.398px;line-height:17.908px;white-space:nowrap;">연 6만원 절약</span></div>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,0.8);"></div>
+              <div style="display:flex;flex-direction:column;gap:16px;">
+                <p style="margin:0;font-size:13px;font-weight:600;color:#5940df;letter-spacing:-0.8px;line-height:18px;">수진님의 패턴에 맞게 최적 옵션을 설정했어요.</p>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:13px;font-weight:400;color:#1c1c1e;opacity:0.6;letter-spacing:-0.8px;line-height:18px;">변경 전</span>
+                    <div style="background:rgba(255,255,255,0.5);border-radius:4px;padding:4px 8px;display:flex;align-items:center;"><span style="font-size:12px;font-weight:500;color:rgba(64,64,64,0.8);letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">3월부터 1년간 자동 납부</span></div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:13px;font-weight:400;color:#5940df;letter-spacing:-0.8px;line-height:18px;">변경 후</span>
+                    <div style="background:rgba(255,255,255,0.8);border:1px solid #5940df;border-radius:4px;padding:4px 8px;display:flex;align-items:center;"><span style="font-size:12px;font-weight:600;color:#5940df;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">매월 최대 5,000P</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 버튼 -->
+            <div style="display:flex;gap:4px;">
+              <div style="background:white;border:1px solid #e0e0e0;border-radius:12px;height:42px;display:flex;align-items:center;justify-content:center;padding:8px 20px;cursor:pointer;white-space:nowrap;">
+                <span style="font-size:12px;font-weight:500;color:#202020;line-height:normal;">직접 선택하기</span>
+              </div>
+              <div onclick="showOverlay('overlay-con2')" style="background:#222;border-radius:12px;height:42px;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 20px;cursor:pointer;">
+                <img src="https://www.figma.com/api/mcp/asset/95a623e0-289f-4483-b4cf-56c11e409e9a" style="width:14px;height:14px;">
+                <span style="font-size:14px;font-weight:600;color:white;letter-spacing:-0.8px;line-height:normal;">바로 적용하기</span>
+              </div>
+            </div>
+          </div>
+
+          </div><!-- /point+agent 그룹 -->
+
+          <!-- 포인트 이용내역 카드 -->
+          <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:20px;">
+            <!-- 헤더 -->
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:12px;font-weight:700;color:#1c1c1e;opacity:0.8;letter-spacing:-0.36px;line-height:18px;">포인트 이용내역</span>
+              <div style="display:flex;align-items:center;gap:4px;opacity:0.6;">
+                <span style="font-size:12px;font-weight:500;color:#1c1c1e;letter-spacing:-0.36px;line-height:18px;">최근 3개월</span>
+                <div style="background:#1c1c1e;border-radius:4px;width:15px;height:15px;display:flex;align-items:center;justify-content:center;">
+                  <img src="https://www.figma.com/api/mcp/asset/0c972dc7-2a6d-4fca-b5f3-086feb4a22bb" style="width:7px;height:4px;">
+                </div>
+              </div>
+            </div>
+            <!-- 탭 -->
+            <div style="display:flex;flex-wrap:wrap;gap:6px 4px;padding:4px 0;">
+              <div style="background:#222;border-radius:16px;height:32px;padding:0 12px;display:flex;align-items:center;"><span style="font-size:13px;font-weight:500;color:white;letter-spacing:-0.4px;line-height:16px;white-space:nowrap;">전체</span></div>
+              <div style="background:white;border:1px solid #e5e5e5;border-radius:16px;height:32px;padding:0 12px;display:flex;align-items:center;"><span style="font-size:13px;font-weight:400;color:#444;letter-spacing:-0.4px;line-height:16px;white-space:nowrap;">적립</span></div>
+              <div style="background:white;border:1px solid #e5e5e5;border-radius:16px;height:32px;padding:0 12px;display:flex;align-items:center;"><span style="font-size:13px;font-weight:400;color:#444;letter-spacing:-0.4px;line-height:16px;white-space:nowrap;">사용</span></div>
+              <div style="background:white;border:1px solid #e5e5e5;border-radius:16px;height:32px;padding:0 12px;display:flex;align-items:center;"><span style="font-size:13px;font-weight:400;color:#444;letter-spacing:-0.4px;line-height:16px;white-space:nowrap;">선물</span></div>
+              <div style="background:white;border:1px solid #e5e5e5;border-radius:16px;height:32px;padding:0 12px;display:flex;align-items:center;"><span style="font-size:13px;font-weight:400;color:#444;letter-spacing:-0.4px;line-height:16px;white-space:nowrap;">통합</span></div>
+            </div>
+            <!-- 월 헤딩 -->
+            <div>
+              <span style="font-size:18px;font-weight:600;color:#1c1c1e;letter-spacing:-1px;line-height:22px;">2029. 03</span>
+            </div>
+            <!-- 내역 리스트 -->
+            <div style="display:flex;flex-direction:column;gap:20px;">
+
+              <!-- 항목 1 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">03.10</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">파리바게뜨 혜택 이용 적립</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#3617cd;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+500P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">이용 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 2 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">03.08</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">룰렛이벤트 당첨</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+50P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">쿠폰 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 3 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">03.06</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">파리바게뜨 혜택 이용 적립</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+500P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">이용 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 4 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">01.25</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">파리바게뜨 혜택 이용 적립</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+500P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">이용 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 5 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">03.08</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">룰렛이벤트 당첨</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+50P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">쿠폰 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 6 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">03.06</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">파리바게뜨 혜택 이용 적립</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+500P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">이용 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+              <div style="height:1px;background:#eee;"></div>
+
+              <!-- 항목 7 -->
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.4px;line-height:18px;width:40px;">01.25</span>
+                    <span style="font-size:14px;font-weight:700;color:#1c1c1e;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">파리바게뜨 혜택 이용 적립</span>
+                  </div>
+                  <span style="font-size:14px;font-weight:700;color:#3617cd;letter-spacing:-0.4px;line-height:18px;white-space:nowrap;">+500P</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-left:48px;">
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">이용 적립</span>
+                  <span style="font-size:12px;font-weight:400;color:#8d8d8d;letter-spacing:-0.36px;line-height:18px;">적립</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 완료 페이지 -->
+    <div id="page-complete" class="slide-page" style="background:white;overflow:hidden;">
+      <!-- 헤더 -->
+      <div style="flex-shrink:0;background:linear-gradient(to bottom,#f7f8fa,rgba(247,248,250,0));display:flex;align-items:center;gap:8px;padding:20px 20px 12px;width:100%;">
+        <button onclick="goHome()" style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;background:none;border:none;padding:0;cursor:pointer;">
+          <img src="https://www.figma.com/api/mcp/asset/5e0382d9-75b4-4e1e-b520-d6ed53df71c1" style="width:8px;height:15px;display:block;" alt="">
+        </button>
+        <span style="flex:1;"></span>
+      </div>
+      <!-- 스크롤 영역 -->
+      <div style="flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:120px;">
+        <!-- 체크 이미지 영역 (top:133px 위치를 헤더 제외하고 적절히 배치) -->
+        <div style="width:100%;height:82px;overflow:hidden;margin-top:80px;">
+          <img src="https://www.figma.com/api/mcp/asset/63c8cae3-6cc3-44ef-bd7c-14a265580057"
+               style="width:100%;height:991.62%;margin-top:-228.12%;display:block;max-width:none;">
+        </div>
+        <!-- 타이틀 -->
+        <div style="text-align:center;padding:0 36px;margin-top:20px;">
+          <p style="margin:0;font-size:22px;font-weight:600;color:#1c1c1e;letter-spacing:-0.66px;line-height:30px;">포인트 납부 예약이 완료되었어요.</p>
+          <p style="margin:8px 0 0;font-size:14px;font-weight:500;color:#aeaeb2;letter-spacing:-0.42px;line-height:18px;white-space:nowrap;">29년 3월 청구서부터 매월 자동 적용돼요.</p>
+        </div>
+        <!-- 카드 영역 -->
+        <div style="display:flex;flex-direction:column;gap:8px;padding:24px 20px 0;">
+          <!-- 예약 내역 카드 -->
+          <div style="background:white;border:1px solid #e7e7e7;border-radius:24px;padding:20px;">
+            <p style="margin:0 0 18px;font-size:15px;font-weight:600;color:black;letter-spacing:-0.6px;">예약 내역</p>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:20px;">
+                <span style="flex:1;font-size:14px;font-weight:400;color:#666;letter-spacing:-0.42px;line-height:18px;">납부 방식</span>
+                <span style="font-size:14px;font-weight:700;color:black;letter-spacing:-0.42px;line-height:18px;white-space:nowrap;">자동 납부</span>
+              </div>
+              <div style="height:1px;background:#e7e7e7;"></div>
+              <div style="display:flex;align-items:center;gap:20px;">
+                <span style="flex:1;font-size:14px;font-weight:400;color:#666;letter-spacing:-0.42px;line-height:18px;">납부 예약 포인트</span>
+                <span style="font-size:14px;font-weight:700;color:black;letter-spacing:-0.42px;line-height:18px;white-space:nowrap;">매월 최대 5,000P</span>
+              </div>
+              <div style="height:1px;background:#e7e7e7;"></div>
+              <div style="display:flex;align-items:center;gap:20px;">
+                <span style="flex:1;font-size:14px;font-weight:400;color:#666;letter-spacing:-0.42px;line-height:18px;">자동납부 종료 예정일</span>
+                <span style="font-size:14px;font-weight:700;color:black;letter-spacing:-0.42px;line-height:18px;white-space:nowrap;">2030.  3. 17</span>
+              </div>
+            </div>
+          </div>
+          <!-- AI 카드 -->
+          <div style="background:#ece8ff;border-radius:12px;padding:16px 16px 16px 12px;display:flex;gap:4px;align-items:flex-start;">
+            <img src="https://www.figma.com/api/mcp/asset/205fe45f-1cf0-4d22-9033-672dc0611267" style="width:18px;height:18px;flex-shrink:0;">
+            <p style="margin:0;flex:1;font-size:12px;font-weight:400;color:#5940df;letter-spacing:-0.4px;line-height:18px;">이제 1년이면 최대 60,000원까지 절약할 수 있어요.</p>
+          </div>
+        </div>
+      </div>
+      <!-- 하단 버튼 -->
+      <div style="position:absolute;bottom:0;left:0;width:100%;background:white;border-radius:28px 28px 0 0;padding:16px 20px 32px;box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <!-- T에이전트 버튼 -->
+          <div style="width:52px;height:52px;border-radius:999px;background:rgba(255,255,255,0.1);box-shadow:0 0 20px rgba(0,0,0,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <img src="https://www.figma.com/api/mcp/asset/e79cfe42-9460-4087-8d36-375dbf3ce303" style="width:11.24px;height:10.8px;display:block;">
+          </div>
+          <!-- 메인 버튼 -->
+          <div style="flex:1;background:#222;border-radius:20px;height:52px;display:flex;align-items:center;justify-content:center;gap:16px;padding:0 32px;cursor:pointer;box-shadow:0 8px 8px rgba(106,106,106,0.16);">
+            <span style="flex:1;font-size:16px;font-weight:600;color:white;text-align:center;letter-spacing:-0.64px;line-height:1.3;">납부 내역 보기</span>
+            <div style="width:1px;height:12px;background:rgba(255,255,255,0.2);flex-shrink:0;"></div>
+            <span style="flex:1;font-size:16px;font-weight:600;color:white;text-align:center;letter-spacing:-0.64px;line-height:1.3;">확인</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GNB -->
+    <div style="position:absolute;bottom:0;left:0;width:100%;height:140px;pointer-events:none;">
+      <!-- 그라디언트 페이드 -->
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(236,237,239,0) 0%, #ecedef 50%);"></div>
+      <!-- GNB 바 -->
+      <div style="position:absolute;bottom:28.75px;left:50%;transform:translateX(-50%);width:375px;height:57.25px;pointer-events:auto;">
+        <!-- 오른쪽 필 배경 -->
+        <div style="position:absolute;left:76.34px;top:0;width:279.58px;height:57.25px;background:rgba(255,255,255,0.5);border-radius:9999px;box-shadow:0 0 19px rgba(0,0,0,0.05);"></div>
+        <!-- 탭 컨테이너 -->
+        <div style="position:absolute;left:76.34px;top:0;width:279.58px;height:57.25px;border-radius:9999px;overflow:hidden;">
+          <!-- 마이 탭 활성 배경 -->
+          <div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:calc(50% + 89.72px);width:89.7px;height:49.6px;background:rgba(214,214,214,0.8);border-radius:47.71px;"></div>
+          <!-- 혜택 탭 -->
+          <div style="position:absolute;top:50%;transform:translateY(-50%);left:3.82px;display:flex;flex-direction:column;align-items:center;gap:1.9px;padding:4.77px 33.4px;">
+            <img src="https://www.figma.com/api/mcp/asset/e5d49d77-ec16-4cbe-bc34-96cc60b90bf5" style="width:22.9px;height:22.9px;">
+            <span style="font-size:11.45px;font-weight:500;color:#101010;opacity:0.3;letter-spacing:-0.11px;white-space:nowrap;">혜택</span>
+          </div>
+          <!-- 쇼핑 탭 -->
+          <div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:calc(50% + 0.48px);display:flex;flex-direction:column;align-items:center;gap:1.9px;padding:4.77px 33.4px;">
+            <img src="https://www.figma.com/api/mcp/asset/1de361b7-abff-420f-9b62-7b96e9b46788" style="width:22.9px;height:22.9px;">
+            <span style="font-size:11.45px;font-weight:500;color:#101010;opacity:0.3;letter-spacing:-0.11px;white-space:nowrap;">쇼핑</span>
+          </div>
+          <!-- 마이 탭 (활성) -->
+          <div style="position:absolute;top:50%;transform:translateY(-50%);left:185.12px;display:flex;flex-direction:column;align-items:center;gap:1.9px;padding:4.77px 33.4px;">
+            <img src="https://www.figma.com/api/mcp/asset/17c0871c-3639-4cb9-8c20-1287feb72af6" style="width:22.9px;height:22.9px;">
+            <span style="font-size:11.45px;font-weight:500;color:#101010;letter-spacing:-0.11px;white-space:nowrap;">마이</span>
+          </div>
+        </div>
+        <!-- T홈 왼쪽 원형 버튼 -->
+        <div style="position:absolute;left:19.08px;top:3.82px;width:49.62px;height:49.62px;background:rgba(255,255,255,0.5);border-radius:24.81px;box-shadow:0 0 19px rgba(0,0,0,0.05);overflow:hidden;">
+          <div style="position:absolute;left:13.36px;top:13.36px;width:22.9px;height:22.9px;">
+            <img src="https://www.figma.com/api/mcp/asset/ff84da2e-3b53-4a00-b498-c126de4d7806" style="position:absolute;left:50%;top:2.86px;transform:translateX(calc(-50% - 0.95px));width:17.18px;height:17.18px;">
+            <div style="position:absolute;left:14.31px;top:13.36px;width:6.68px;height:6.68px;">
+              <img src="https://www.figma.com/api/mcp/asset/17161f95-7307-4018-b321-897b64f3b5b8" style="width:100%;height:100%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function openPage(id) {
+      document.getElementById(id).classList.add('active');
+    }
+
+    function goHome() {
+      // page-con2를 page-complete 뒤에서 즉시 닫기 (보이지 않으므로 안전)
+      const con2 = document.getElementById('page-con2');
+      if (con2) {
+        con2.style.transition = 'none';
+        con2.classList.remove('active');
+        // transition 복원 (다음 열기를 위해)
+        requestAnimationFrame(function() { con2.style.transition = ''; });
+      }
+      // 오버레이/베젤/키패드 모두 즉시 초기화
+      closeOverlay('con2');
+      resetDots();
+
+      // 완료 페이지 슬라이드아웃
+      const complete = document.getElementById('page-complete');
+      if (complete) complete.classList.remove('active');
+    }
+    function closePage(id) {
+      const overlay = document.getElementById('overlay-' + id.replace('page-', ''));
+      if (overlay) { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
+      const kp = document.getElementById('ios-keypad');
+      if (kp) { kp.style.transform = 'translateY(100%)'; kp.style.pointerEvents = 'none'; }
+      document.getElementById(id).classList.remove('active');
+    }
+    // 터치 기기 여부 판단
+    const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+    function showOverlay(id) {
+      const overlay = document.getElementById(id);
+      overlay.style.pointerEvents = 'auto';
+      overlay.style.opacity = '1';
+      // X 헤더 + main 영역 표시
+      const xHeader = document.getElementById('overlay-header-' + id.replace('overlay-', ''));
+      if (xHeader) { xHeader.style.opacity = '1'; xHeader.style.pointerEvents = 'auto'; }
+      const mainArea = document.getElementById('overlay-main-' + id.replace('overlay-', ''));
+      if (mainArea) { mainArea.style.opacity = '1'; }
+
+      // 키패드와 동시에 Bezel 슬라이드다운
+      const pageKey2 = id.replace('overlay-', '');
+      const bezel = document.getElementById('bezel-' + pageKey2);
+      if (bezel) {
+        bezel.style.opacity = '1';
+        bezel.style.top = '10px';
+
+        // 1초 후 Face ID → Check 크로스페이드 + 스케일 펄스 + 초록 glow
+        setTimeout(function() {
+          const faceEl  = document.getElementById('bezel-faceid');
+          const checkEl = document.getElementById('bezel-check');
+          if (!faceEl || !checkEl) return;
+
+          // 스케일 펄스 (느리게)
+          bezel.style.transition = 'top 0.52s cubic-bezier(0.32,0.72,0,1), opacity 0.3s ease, transform 0.4s ease';
+          bezel.style.transform = 'translateX(-50%) scale(1.06)';
+          setTimeout(function() {
+            bezel.style.transform = 'translateX(-50%) scale(1)';
+          }, 380);
+
+          // Face ID 페이드아웃
+          faceEl.style.transition = 'opacity 0.4s ease';
+          faceEl.style.opacity = '0';
+
+          // 자동 입력 시작 → 키보드 즉시 내림
+          const mobileInput = document.getElementById('input-con2');
+          if (mobileInput) mobileInput.blur();          // 모바일 순정 키보드
+          const kp = document.getElementById('ios-keypad');
+          if (kp) { kp.style.transform = 'translateY(100%)'; kp.style.pointerEvents = 'none'; } // PC 임시 키보드
+
+          // number field 순차 자동 입력 (색상 페이드인만, 80ms 간격)
+          const allDots = document.querySelectorAll('#pw-dots .dot');
+          allDots.forEach(function(dot, i) {
+            setTimeout(function() { dot.style.background = '#000000'; }, i * 80);
+          });
+          // 마지막 dot(5*80=400ms) + 0.8s 후 완료 페이지 이동
+          setTimeout(function() { openPage('page-complete'); }, 1200);
+
+          // Check 레이어 페이드인
+          checkEl.style.opacity = '1';
+
+          // 원 그리기 (check 등장 후 100ms)
+          const circleSvg = document.getElementById('bezel-circle-svg');
+          setTimeout(function() {
+            if (circleSvg) {
+              circleSvg.style.transition = 'stroke-dashoffset 0.5s ease';
+              circleSvg.style.strokeDashoffset = '0';
+            }
+          }, 100);
+
+          // 체크마크 팝 (원 그려진 후)
+          const checkmarkEl = document.getElementById('bezel-checkmark');
+          setTimeout(function() {
+            if (checkmarkEl) {
+              checkmarkEl.style.opacity = '1';
+              checkmarkEl.style.transform = 'scale(1.15)';
+              setTimeout(function() {
+                checkmarkEl.style.transform = 'scale(1)';
+              }, 160);
+            }
+          }, 650); // 100ms + 500ms 원 그리기 + 여유
+
+          // 내부 글로우: 체크 직후 등장 → 사라짐
+          const glowEl = document.getElementById('bezel-glow');
+          if (glowEl) {
+            setTimeout(function() { glowEl.style.opacity = '1'; }, 650);
+            setTimeout(function() { glowEl.style.opacity = '0'; }, 1100);
+          }
+
+          // 체크 완료 후 1초 뒤 베젤 위로 사라짐 (내려올 때와 동일한 속도)
+          // 체크 완료 ≈ 1000ms → 1000 + 1000 = 2000ms
+          setTimeout(function() {
+            if (bezel) {
+              bezel.style.transition = 'top 0.52s cubic-bezier(0.32,0.72,0,1)';
+              bezel.style.top = '-350px';
+            }
+          }, 2000);
+        }, 1000);
+      }
+
+      if (isTouchDevice) {
+        // 모바일: 네이티브 키패드
+        const input = document.getElementById('input-' + id.replace('overlay-', ''));
+        if (input) input.focus();
+      } else {
+        // PC: iOS 스타일 커스텀 키패드
+        const kp = document.getElementById('ios-keypad');
+        kp.style.transform = 'translateY(0)';
+        kp.style.pointerEvents = 'auto';
+      }
+    }
+
+    // 오버레이 닫기 (X 버튼)
+    function closeOverlay(pageKey) {
+      const overlay = document.getElementById('overlay-' + pageKey);
+      const xHeader = document.getElementById('overlay-header-' + pageKey);
+      const kp = document.getElementById('ios-keypad');
+      const mainArea2 = document.getElementById('overlay-main-' + pageKey);
+      if (overlay)   { overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none'; }
+      if (xHeader)   { xHeader.style.opacity = '0'; xHeader.style.pointerEvents = 'none'; }
+      if (mainArea2) { mainArea2.style.opacity = '0'; }
+      if (kp)       { kp.style.transform = 'translateY(100%)'; kp.style.pointerEvents = 'none'; }
+      const bezel = document.getElementById('bezel-' + pageKey);
+      if (bezel) {
+        bezel.style.top = '-350px';
+        bezel.style.opacity = '0';
+        bezel.style.filter = '';
+        bezel.style.transform = 'translateX(-50%)';
+        const faceEl  = document.getElementById('bezel-faceid');
+        const checkEl = document.getElementById('bezel-check');
+        if (faceEl)  { faceEl.style.opacity  = '1'; faceEl.style.transition = 'opacity 0.35s ease'; }
+        if (checkEl) checkEl.style.opacity = '0';
+        const glowEl = document.getElementById('bezel-glow');
+        if (glowEl) glowEl.style.opacity = '0';
+        const circleSvg = document.getElementById('bezel-circle-svg');
+        if (circleSvg) {
+          circleSvg.style.transition = 'none';
+          circleSvg.style.strokeDashoffset = '194.8';
+          circleSvg.getBoundingClientRect(); // reflow 강제
+        }
+        const checkmarkEl = document.getElementById('bezel-checkmark');
+        if (checkmarkEl) {
+          checkmarkEl.style.transition = 'none';
+          checkmarkEl.style.opacity = '0';
+          checkmarkEl.style.transform = 'scale(0)';
+          checkmarkEl.getBoundingClientRect(); // reflow 강제
+          checkmarkEl.style.transition = 'opacity 0.2s ease, transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275)';
+        }
+      }
+      const input = document.getElementById('input-' + pageKey);
+      if (input) input.blur();
+      resetDots();
+    }
+
+    // 비밀번호 dot 인터랙션
+    let pwValue = '';
+    const PW_MAX = 6;
+
+    function updateDots() {
+      const dots = document.querySelectorAll('#pw-dots .dot');
+      dots.forEach((dot, i) => {
+        if (i < pwValue.length) {
+          dot.style.background = '#000000';
+        } else {
+          dot.style.background = 'rgba(255,255,255,0.35)';
+        }
+      });
+    }
+
+    function resetDots() {
+      pwValue = '';
+      updateDots();
+      const input = document.getElementById('input-con2');
+      if (input) input.value = '';
+    }
+
+    // PC 커스텀 키패드
+    function kpInput(val) {
+      if (pwValue.length >= PW_MAX) return;
+      pwValue += val;
+      updateDots();
+    }
+    function kpDelete() {
+      pwValue = pwValue.slice(0, -1);
+      updateDots();
+    }
+
+    // 모바일 네이티브 키패드 연동
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileInput = document.getElementById('input-con2');
+      if (mobileInput) {
+        mobileInput.addEventListener('input', function() {
+          pwValue = this.value.replace(/\D/g, '').slice(0, PW_MAX);
+          this.value = pwValue;
+          updateDots();
+        });
+      }
+    });
+
+    const frame   = document.getElementById('frame');
+    const inpW    = document.getElementById('inp-w');
+    const inpH    = document.getElementById('inp-h');
+    const presets = document.querySelectorAll('.preset');
+
+    function applySize(w, h) {
+      frame.style.width  = w + 'px';
+      frame.style.height = h + 'px';
+      inpW.value = w;
+      inpH.value = h;
+      presets.forEach(btn => {
+        btn.classList.toggle('active',
+          Number(btn.dataset.w) === w && Number(btn.dataset.h) === h);
+      });
+    }
+
+    presets.forEach(btn => {
+      btn.addEventListener('click', () => applySize(Number(btn.dataset.w), Number(btn.dataset.h)));
+    });
+
+    document.getElementById('apply-btn').addEventListener('click', () => {
+      const w = Math.max(320, Math.min(768, Number(inpW.value) || 375));
+      const h = Math.max(480, Math.min(1200, Number(inpH.value) || 812));
+      applySize(w, h);
+    });
+
+    [inpW, inpH].forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('apply-btn').click();
+      });
+    });
+  </script>
+
+</body>
+</html>
