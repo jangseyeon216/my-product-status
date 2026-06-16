@@ -269,15 +269,15 @@
             <div id="benefit-content" style="
       position:absolute;
       top:0; left:0; right:0; bottom:0;
-      overflow-y:auto; overflow-x:hidden;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
+      overflow:hidden;
       z-index:10;
       opacity:0;
       pointer-events:none;
       transform:translateY(900px);
       transition:transform 0.7s cubic-bezier(0.25,1,0.5,1), opacity 1.4s ease;
     ">
+            <div id="tab-panels" style="display:flex;width:300%;height:100%;transition:transform 0.38s cubic-bezier(0.25,1,0.5,1);">
+            <div id="panel-benefit" style="flex:0 0 33.333%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
                 <div style="padding:79px 0 0 0;">
                     <div style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
                         <div style="width:max-content;display:flex;flex-direction:column;gap:6px;padding:0 19.08px;">
@@ -705,6 +705,14 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            </div>
+            <div id="panel-shopping" style="flex:0 0 33.333%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:flex;align-items:center;justify-content:center;">
+                <p style="color:#999;font-size:16px;">쇼핑 탭 준비 중</p>
+            </div>
+            <div id="panel-my" style="flex:0 0 33.333%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:flex;align-items:center;justify-content:center;">
+                <p style="color:#999;font-size:16px;">마이 탭 준비 중</p>
+            </div>
             </div>
             <!-- 스크롤 영역 -->
             <div id="scroll-main">
@@ -1136,6 +1144,12 @@
                     if (tab)
                         tab.style.color = i === idx ? '#3617CE' : 'rgba(16,16,16,0.3)';
                 }
+                // 수평 슬라이드 전환
+                const panels = document.getElementById('tab-panels');
+                if (panels) {
+                    panels.style.transform = 'translateX(' + (-idx * 33.333) + '%)';
+                }
+                currentTab = idx;
             }
 
             // GNB2 → GNB1 복귀 (forward와 동일한 속도)
@@ -1255,6 +1269,12 @@
             // ── 스크롤 트리거 ──
             let isInBenefitTab = false;
             let isAnimating = false;
+            let currentTab = 0;
+
+            function getActivePanel() {
+                const ids = ['panel-benefit', 'panel-shopping', 'panel-my'];
+                return document.getElementById(ids[currentTab]);
+            }
 
             function setupScrollTriggers() {
                 const fr = document.getElementById('frame');
@@ -1273,17 +1293,16 @@
                 });
 
                 // [Desktop] 혜택 탭 최상단에서 위로 휠 → 메인 화면 복귀
-                if (bc) {
-                    bc.addEventListener('wheel', (e) => {
-                        if (!isInBenefitTab || isAnimating)
-                            return;
-                        if (e.deltaY < -30 && bc.scrollTop === 0)
-                            revertToGnb1();
-                    }
-                    , {
-                        passive: true
-                    });
+                fr.addEventListener('wheel', (e) => {
+                    if (!isInBenefitTab || isAnimating)
+                        return;
+                    const ap = getActivePanel();
+                    if (e.deltaY < -30 && ap && ap.scrollTop === 0)
+                        revertToGnb1();
                 }
+                , {
+                    passive: true
+                });
 
                 // [Mobile] 터치 시작
                 fr.addEventListener('touchstart', (e) => {
@@ -1298,9 +1317,10 @@
                     if (isAnimating)
                         return;
                     const dy = touchStartY - e.changedTouches[0].clientY;
+                    const ap = getActivePanel();
                     if (!isInBenefitTab && dy > 60) {
                         triggerHomeExit();
-                    } else if (isInBenefitTab && dy < -60 && bc && bc.scrollTop === 0) {
+                    } else if (isInBenefitTab && dy < -60 && ap && ap.scrollTop === 0) {
                         revertToGnb1();
                     }
                 }
