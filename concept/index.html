@@ -297,7 +297,7 @@
             <button id="apply-btn">적용</button>
         </div>
         <!-- ── 프레임 ── -->
-        <div id="frame" style="width:375px;height:812px;">
+        <div id="frame" style="width:375px;height:812px;overscroll-behavior:none;touch-action:pan-y;">
             <!-- 배경 이미지 레이어 (트리거 시 위로 슬라이드 아웃) -->
             <div id="bg-layer" style="
       position:absolute; top:0; left:0; right:0; bottom:-10%; z-index:0;
@@ -369,7 +369,7 @@
       transition:transform 0.7s cubic-bezier(0.25,1,0.5,1), opacity 1.4s ease;
     ">
             <div id="tab-panels" style="position:relative;width:100%;height:100%;">
-            <div id="panel-benefit" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:block;">
+            <div id="panel-benefit" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-y:contain;touch-action:pan-y;display:block;">
                 <div style="padding:79px 0 0 0;">
                     <div style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
                         <div style="width:max-content;display:flex;flex-direction:column;gap:6px;padding:0 19.08px;">
@@ -799,7 +799,7 @@
                 </div>
             </div>
             </div>
-            <div id="panel-shopping" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none;">
+            <div id="panel-shopping" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-y:contain;touch-action:pan-y;display:none;">
 
   <!-- 2줄 가로 탭 (피그마 9360:34337) -->
   <!-- 2줄 가로 탭 (피그마 9360:34341) -->
@@ -1154,7 +1154,7 @@
     </div>
   </div><!-- /콘텐츠 카드 -->
 </div>
-            <div id="panel-my" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none;">
+            <div id="panel-my" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-y:contain;touch-action:pan-y;display:none;">
 
   <!-- 카드 컨테이너 (Figma: top:82px, left:20px, width:353px, gap:8px) -->
   <div style="padding:82px 20px 122px;display:flex;flex-direction:column;gap:8px;">
@@ -1475,6 +1475,7 @@
       position:absolute;
       bottom:0; left:0; right:0;
       height:133px;
+      pointer-events:none;
       background: linear-gradient(to bottom, rgba(235,238,246,0) 0%, rgba(235,238,246,1) 50%);
       opacity:0;
       pointer-events:none;
@@ -1487,9 +1488,10 @@
       bottom:32.47px; left:0; right:0;
       height:57.252px;
       z-index:400;
+        pointer-events:none;
     ">
                 <!-- 좌측: search pill → T+ circle -->
-                <div id="gnb-left" style="
+                <div id="gnb-left" style="pointer-events:auto;
         position:absolute;
         left:19.08px; top:3.82px;
         width:279.58px; height:49.618px;
@@ -1538,7 +1540,7 @@
                     </div>
                 </div>
                 <!-- 우측: circle → tab pill (클릭 트리거) -->
-                <div id="gnb-right" onclick="triggerHomeExit()" style="
+                <div id="gnb-right" onclick="triggerHomeExit()" style="pointer-events:auto;
         position:absolute;
         right:19.08px; top:3.82px;
         width:49.618px; height:49.618px;
@@ -1567,7 +1569,7 @@
                     <div id="gnb2-tabs" style="position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity 0.3s ease;">
                         <!-- 슬라이딩 활성 배경 -->
                         <div id="gnb-active-bg" style="position:absolute;left:4.82px;top:3.95px;bottom:3.95px;width:87.695px;background:rgba(226,230,241,0.8);border-radius:47.71px;transition:left 0.35s cubic-bezier(0.4,0,0.2,1);pointer-events:none;z-index:0;"></div>
-                        <div id="gnb-tab-0" onclick="switchGnbTab(0)" style="position:absolute;left:4.82px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:#3617CE;transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
+                        <div id="gnb-tab-0" onclick="switchGnbTab(0)" style="pointer-events:auto;position:absolute;left:4.82px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:#3617CE;transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
                             <div style="width:22.901px;height:22.901px;flex-shrink:0;">
                                 <svg style="width:100%;height:100%;display:block;" viewBox="0 0 22.9008 22.9008" fill="none">
                                     <path d="M10.2851 2.8098C10.9723 2.27901 11.9309 2.27895 12.6181 2.8098L14.0361 3.90453C14.3045 4.11189 14.6234 4.24416 14.9599 4.28734L16.7362 4.51586C17.5975 4.62639 18.2761 5.304 18.3866 6.16527L18.6142 7.94261C18.6574 8.27894 18.7897 8.59809 18.997 8.86644L20.0917 10.2834C20.6226 10.9706 20.6226 11.9302 20.0917 12.6174L18.997 14.0344C18.7896 14.3028 18.6574 14.6218 18.6142 14.9582L18.3866 16.7356C18.276 17.5968 17.5975 18.2745 16.7362 18.385L14.9599 18.6135C14.6234 18.6567 14.3045 18.7889 14.0361 18.9963L12.6181 20.0911C11.931 20.6218 10.9722 20.6217 10.2851 20.0911L8.8671 18.9963C8.59866 18.7889 8.27974 18.6567 7.94328 18.6135L6.16691 18.385C5.3057 18.2745 4.62719 17.5967 4.51652 16.7356L4.28898 14.9582C4.24578 14.6218 4.11352 14.3028 3.90617 14.0344L2.81046 12.6174C2.27958 11.9302 2.27959 10.9706 2.81046 10.2834L3.90617 8.86644C4.11348 8.59808 4.24576 8.27895 4.28898 7.94261L4.51652 6.16527C4.62711 5.30401 5.30563 4.62639 6.16691 4.51586L7.94328 4.28734C8.27974 4.24416 8.59866 4.11191 8.8671 3.90453L10.2851 2.8098ZM14.8202 8.08226C14.5408 7.80278 14.087 7.80278 13.8075 8.08226L8.08293 13.8069C7.80367 14.0864 7.80352 14.5402 8.08293 14.8196C8.36229 15.0985 8.81525 15.0985 9.09464 14.8196L14.8202 9.09398C15.0994 8.81461 15.0993 8.3617 14.8202 8.08226ZM13.8368 12.8821C13.3099 12.8821 12.8827 13.3092 12.8827 13.8362C12.8829 14.363 13.31 14.7902 13.8368 14.7903C14.3637 14.7903 14.7907 14.363 14.7909 13.8362C14.7909 13.3092 14.3638 12.8821 13.8368 12.8821ZM9.06632 8.11058C8.53938 8.11058 8.1123 8.53776 8.11222 9.06468C8.11222 9.59167 8.53933 10.0188 9.06632 10.0188C9.59314 10.0186 10.0204 9.59155 10.0204 9.06468C10.0203 8.53789 9.59309 8.11079 9.06632 8.11058Z" fill="currentColor"/>
@@ -1575,7 +1577,7 @@
                             </div>
                             <p style="margin:0;font-size:11.45px;font-weight:500;letter-spacing:-0.1145px;line-height:1.3;white-space:nowrap;">혜택</p>
                         </div>
-                        <div id="gnb-tab-1" onclick="switchGnbTab(1)" style="position:absolute;left:95.94px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:rgba(16,16,16,0.3);transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
+                        <div id="gnb-tab-1" onclick="switchGnbTab(1)" style="pointer-events:auto;position:absolute;left:95.94px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:rgba(16,16,16,0.3);transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
                             <div style="width:22.901px;height:22.901px;flex-shrink:0;">
                                 <svg style="width:100%;height:100%;display:block;" viewBox="0 0 22.9008 22.9008" fill="none">
                                     <path d="M17.2795 2.86258C18.2923 2.86271 19.1286 3.65411 19.1848 4.66532L19.927 18.0237C19.9878 19.1175 19.1172 20.0382 18.0217 20.0384H4.88013C3.78478 20.0381 2.91412 19.1174 2.97486 18.0237L3.71704 4.66532C3.77322 3.65417 4.60966 2.86281 5.62232 2.86258H17.2795ZM14.7913 5.00907C14.3962 5.00903 14.0757 5.32978 14.0754 5.72489C14.0753 5.98215 14.0861 6.49837 13.802 6.95926C13.558 7.35504 12.9878 7.87132 11.4553 7.87137C9.9233 7.87128 9.34999 7.35539 9.10376 6.95829C8.81774 6.49685 8.82727 5.97849 8.82739 5.72489C8.82735 5.33006 8.50735 5.00961 8.11255 5.00907C7.71734 5.00888 7.39599 5.32968 7.39575 5.72489C7.39561 5.94898 7.36007 6.86207 7.88697 7.71219C8.454 8.62696 9.55308 9.30292 11.4553 9.30301C13.3577 9.30296 14.4559 8.62643 15.0208 7.71024C15.545 6.85951 15.507 5.94477 15.5071 5.72489C15.507 5.32993 15.1862 5.00939 14.7913 5.00907Z" fill="currentColor"/>
@@ -1583,7 +1585,7 @@
                             </div>
                             <p style="margin:0;font-size:11.45px;font-weight:500;letter-spacing:-0.1145px;line-height:1.3;white-space:nowrap;">쇼핑</p>
                         </div>
-                        <div id="gnb-tab-2" onclick="switchGnbTab(2)" style="position:absolute;left:187.07px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:rgba(16,16,16,0.3);transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
+                        <div id="gnb-tab-2" onclick="switchGnbTab(2)" style="pointer-events:auto;position:absolute;left:187.07px;top:3.95px;bottom:3.95px;width:87.695px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.908px;cursor:pointer;color:rgba(16,16,16,0.3);transition:color 0.3s ease;border-radius:47.71px;z-index:1;">
                             <div style="width:22.901px;height:22.901px;flex-shrink:0;">
                                 <svg style="width:100%;height:100%;display:block;" viewBox="0 0 22.9008 22.9008" fill="none">
                                     <circle cx="11.4501" cy="6.67938" r="3.81679" fill="currentColor"/>
@@ -2003,11 +2005,14 @@
             }
 
             setupScrollTriggers();
-            // panel-my height 초기화
+            // panel-my height: frame clientHeight로 강제 보장
             (function() {
                 const fr = document.getElementById('frame');
                 const pm = document.getElementById('panel-my');
-                if (fr && pm) pm.style.height = fr.offsetHeight + 'px';
+                if (fr && pm) {
+                    const h = fr.clientHeight || parseInt(fr.style.height) || 812;
+                    pm.style.height = h + 'px';
+                }
             })();
 
             const frame = document.getElementById('frame');
