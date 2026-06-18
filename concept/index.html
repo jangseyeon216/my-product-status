@@ -1608,6 +1608,24 @@
                 return (c ? c.offsetWidth : 375) - 19.08 - 8 - 49.618 - 19.08;
             }
 
+            // GNB2 탭 레이아웃: pill 너비 기준으로 탭 위치·너비·활성 배경 동적 계산
+            function gnbTabLayout(pillWidth, activeIdx) {
+                var pad = 4.82;
+                var tabW = (pillWidth - pad * 2) / 3;
+                GNB_TAB_POS[0] = pad;
+                GNB_TAB_POS[1] = pad + tabW;
+                GNB_TAB_POS[2] = pad + tabW * 2;
+                for (var i = 0; i < 3; i++) {
+                    var tab = document.getElementById('gnb-tab-' + i);
+                    if (tab) { tab.style.left = GNB_TAB_POS[i] + 'px'; tab.style.width = tabW + 'px'; }
+                }
+                var bg = document.getElementById('gnb-active-bg');
+                if (bg) {
+                    bg.style.width = tabW + 'px';
+                    if (activeIdx !== undefined) bg.style.left = GNB_TAB_POS[activeIdx] + 'px';
+                }
+            }
+
             // 초기 gnb-left 너비를 실제 프레임 기준으로 세팅
             (function() {
                 var gl = document.getElementById('gnb-left');
@@ -1687,12 +1705,14 @@
                 , 300);
 
                 const gnbRight = document.getElementById('gnb-right');
+                var _fw = gnbFlexWidth();
                 if (gnbRight) {
-                    gnbRight.style.width = gnbFlexWidth() + 'px';
+                    gnbRight.style.width = _fw + 'px';
                     gnbRight.style.height = '57.252px';
                     gnbRight.style.top = '0';
                     gnbRight.style.cursor = 'default';
                 }
+                gnbTabLayout(_fw, lastVisitedTab);
                 const gnb1Badge = document.getElementById('gnb1-badge');
                 if (gnb1Badge) {
                     gnb1Badge.style.opacity = '0';
@@ -2036,6 +2056,7 @@
                     var fw = gnbFlexWidth();
                     if (isInBenefitTab) {
                         gr.style.width = fw + 'px';
+                        gnbTabLayout(fw, currentTab);
                     } else {
                         gl.style.width = fw + 'px';
                     }
