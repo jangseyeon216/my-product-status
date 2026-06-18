@@ -2005,15 +2005,6 @@
             }
 
             setupScrollTriggers();
-            // panel-my height: frame clientHeight로 강제 보장
-            (function() {
-                const fr = document.getElementById('frame');
-                const pm = document.getElementById('panel-my');
-                if (fr && pm) {
-                    const h = fr.clientHeight || parseInt(fr.style.height) || 812;
-                    pm.style.height = h + 'px';
-                }
-            })();
 
             const frame = document.getElementById('frame');
             const inpW = document.getElementById('inp-w');
@@ -2023,8 +2014,6 @@
             function applySize(w, h) {
                 frame.style.width = w + 'px';
                 frame.style.height = h + 'px';
-                const pm = document.getElementById('panel-my');
-                if (pm) pm.style.height = h + 'px';
                 inpW.value = w;
                 inpH.value = h;
                 // RIMOWA 배너 gap 체크: money pill과 간격 20px 미만이면 fade out
