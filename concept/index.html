@@ -1494,12 +1494,12 @@
                 <div id="gnb-left" style="pointer-events:auto;
         position:absolute;
         left:19.08px; top:3.82px;
-        width:279.58px; height:49.618px;
+        right:76.698px; height:49.618px;
         border-radius:24.809px;
         background:rgba(255,255,255,0.5);
         box-shadow:0 0 19.084px rgba(0,0,0,0.05);
         overflow:hidden;
-        transition:width 0.5s cubic-bezier(0.25,1,0.5,1), border-radius 0.5s cubic-bezier(0.25,1,0.5,1);
+        transition:width 0.5s cubic-bezier(0.25,1,0.5,1), right 0.5s cubic-bezier(0.25,1,0.5,1), border-radius 0.5s cubic-bezier(0.25,1,0.5,1);
       ">
                     <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:rgba(255,255,255,0.2);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;pointer-events:none;"></div>
                     <!-- GNB1: 검색 입력 필드 -->
@@ -1657,6 +1657,7 @@
                 // GNB 모핑: pill → circle / circle → tab
                 const gnbLeft = document.getElementById('gnb-left');
                 if (gnbLeft) {
+                    gnbLeft.style.right = 'auto';
                     gnbLeft.style.width = '49.618px';
                     gnbLeft.style.borderRadius = '953.244px';
                 }
@@ -1676,7 +1677,8 @@
 
                 const gnbRight = document.getElementById('gnb-right');
                 if (gnbRight) {
-                    gnbRight.style.width = '279.58px';
+                    gnbRight.style.left = '76.698px';
+                    gnbRight.style.width = '';
                     gnbRight.style.height = '57.252px';
                     gnbRight.style.top = '0';
                     gnbRight.style.cursor = 'default';
@@ -1792,7 +1794,8 @@
                 // GNB 복귀 — CSS transition 0.5s cubic-bezier(0.25,1,0.5,1) 그대로
                 const gnbLeft = document.getElementById('gnb-left');
                 if (gnbLeft) {
-                    gnbLeft.style.width = '279.58px';
+                    gnbLeft.style.width = '';
+                    gnbLeft.style.right = '76.698px';
                     gnbLeft.style.borderRadius = '24.809px';
                 }
                 const gnb2Thome = document.getElementById('gnb2-thome');
@@ -1811,6 +1814,7 @@
 
                 const gnbRight = document.getElementById('gnb-right');
                 if (gnbRight) {
+                    gnbRight.style.left = '';
                     gnbRight.style.width = '49.618px';
                     gnbRight.style.height = '49.618px';
                     gnbRight.style.top = '3.82px';
