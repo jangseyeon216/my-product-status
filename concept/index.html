@@ -1494,12 +1494,12 @@
                 <div id="gnb-left" style="pointer-events:auto;
         position:absolute;
         left:19.08px; top:3.82px;
-        right:76.698px; height:49.618px;
+        width:279.22px; height:49.618px;
         border-radius:24.809px;
         background:rgba(255,255,255,0.5);
         box-shadow:0 0 19.084px rgba(0,0,0,0.05);
         overflow:hidden;
-        transition:width 0.5s cubic-bezier(0.25,1,0.5,1), right 0.5s cubic-bezier(0.25,1,0.5,1), border-radius 0.5s cubic-bezier(0.25,1,0.5,1);
+        transition:width 0.5s cubic-bezier(0.25,1,0.5,1), border-radius 0.5s cubic-bezier(0.25,1,0.5,1);
       ">
                     <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:rgba(255,255,255,0.2);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;pointer-events:none;"></div>
                     <!-- GNB1: 검색 입력 필드 -->
@@ -1602,6 +1602,18 @@
         <!-- /frame -->
         <script>
 
+            // GNB 가변 너비 계산: 컨테이너 - 좌우마진(19.08×2) - 원형버튼(49.618) - 간격(8)
+            function gnbFlexWidth() {
+                var c = document.getElementById('gnb-container');
+                return (c ? c.offsetWidth : 375) - 19.08 - 8 - 49.618 - 19.08;
+            }
+
+            // 초기 gnb-left 너비를 실제 프레임 기준으로 세팅
+            (function() {
+                var gl = document.getElementById('gnb-left');
+                if (gl) gl.style.width = gnbFlexWidth() + 'px';
+            })();
+
             // ── 홈 콘텐츠 fadeUp (GNB 우측 버튼 클릭 시) ──
             function triggerHomeExit() {
                 if (isInBenefitTab || isAnimating)
@@ -1657,7 +1669,6 @@
                 // GNB 모핑: pill → circle / circle → tab
                 const gnbLeft = document.getElementById('gnb-left');
                 if (gnbLeft) {
-                    gnbLeft.style.right = 'auto';
                     gnbLeft.style.width = '49.618px';
                     gnbLeft.style.borderRadius = '953.244px';
                 }
@@ -1677,8 +1688,7 @@
 
                 const gnbRight = document.getElementById('gnb-right');
                 if (gnbRight) {
-                    gnbRight.style.left = '76.698px';
-                    gnbRight.style.width = '';
+                    gnbRight.style.width = gnbFlexWidth() + 'px';
                     gnbRight.style.height = '57.252px';
                     gnbRight.style.top = '0';
                     gnbRight.style.cursor = 'default';
@@ -1794,8 +1804,7 @@
                 // GNB 복귀 — CSS transition 0.5s cubic-bezier(0.25,1,0.5,1) 그대로
                 const gnbLeft = document.getElementById('gnb-left');
                 if (gnbLeft) {
-                    gnbLeft.style.width = '';
-                    gnbLeft.style.right = '76.698px';
+                    gnbLeft.style.width = gnbFlexWidth() + 'px';
                     gnbLeft.style.borderRadius = '24.809px';
                 }
                 const gnb2Thome = document.getElementById('gnb2-thome');
@@ -1814,7 +1823,6 @@
 
                 const gnbRight = document.getElementById('gnb-right');
                 if (gnbRight) {
-                    gnbRight.style.left = '';
                     gnbRight.style.width = '49.618px';
                     gnbRight.style.height = '49.618px';
                     gnbRight.style.top = '3.82px';
@@ -2020,6 +2028,18 @@
                 frame.style.height = h + 'px';
                 inpW.value = w;
                 inpH.value = h;
+                // GNB 가변 너비 갱신 (현재 GNB 상태에 따라)
+                requestAnimationFrame(function() {
+                    var gl = document.getElementById('gnb-left');
+                    var gr = document.getElementById('gnb-right');
+                    if (!gl || !gr) return;
+                    var fw = gnbFlexWidth();
+                    if (isInBenefitTab) {
+                        gr.style.width = fw + 'px';
+                    } else {
+                        gl.style.width = fw + 'px';
+                    }
+                });
                 // RIMOWA 배너 gap 체크: money pill과 간격 20px 미만이면 fade out
                 const banner = document.getElementById('rimowa-banner');
                 const pill = document.getElementById('pill-money');
