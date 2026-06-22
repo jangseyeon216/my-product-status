@@ -575,7 +575,7 @@
                         </div>
                     </div>
                     <!-- banner1 -->
-                    <div style="margin-top:20px;background:rgba(253,253,254,0.5);border:0.954px solid white;border-radius:26.718px;overflow:hidden;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <div style="background:rgba(253,253,254,0.5);border:0.954px solid white;border-radius:26.718px;overflow:hidden;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
                         <div style="padding:24.809px 26.718px;flex-shrink:0;max-width:193px;position:relative;z-index:1;">
                             <div style="font-size:15.267px;font-weight:600;color:#101010;letter-spacing:-0.6107px;opacity:0.8;">
                                 <p style="margin:0;line-height:1.3;">이번 주말, 가족 나들이에</p>
@@ -1602,6 +1602,18 @@
                 </div>
             </div>
             <!-- /GNB -->
+
+            <!-- 테스트 완료하기 버튼 -->
+            <div id="btn-test-complete" style="position:absolute;bottom:100px;left:50%;transform:translateX(-50%) translateY(16px);width:250px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(0,0,0,0.8);border-radius:52px;padding:15px 20px;box-sizing:border-box;display:flex;align-items:center;gap:14px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.4s ease, transform 0.4s ease;z-index:390;" onclick="handleTestComplete()">
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;">
+                    <span style="font-size:14.5px;font-weight:700;color:white;letter-spacing:-0.21px;line-height:12.5px;white-space:nowrap;">테스트 완료하기</span>
+                    <span style="font-size:12.5px;font-weight:400;color:white;letter-spacing:-0.21px;line-height:12.5px;white-space:nowrap;">다음 테스트로 넘어가시려면 눌러주세요.</span>
+                </div>
+                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                    <path d="M1 1L6 6L1 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
         </div>
         <!-- /frame -->
         <script>
@@ -1816,12 +1828,41 @@
                 }, 400);
 
                 currentTab = idx;
+
+                // 마이 탭(idx=2) 진입 시 2초 후 테스트 완료 버튼 표시
+                var _tcBtn = document.getElementById('btn-test-complete');
+                if (_tcBtn) {
+                    clearTimeout(_testCompleteTimer);
+                    _tcBtn.style.opacity = '0';
+                    _tcBtn.style.transform = 'translateX(-50%) translateY(16px)';
+                    _tcBtn.style.pointerEvents = 'none';
+                    if (idx === 2) {
+                        _testCompleteTimer = setTimeout(function() {
+                            _tcBtn.style.opacity = '1';
+                            _tcBtn.style.transform = 'translateX(-50%) translateY(0)';
+                            _tcBtn.style.pointerEvents = 'auto';
+                        }, 2000);
+                    }
+                }
+            }
+
+            var _testCompleteTimer = null;
+            function handleTestComplete() {
+                window.location.href = 'https://skt-ut-prototype.vercel.app/scenario-home.html';
             }
 
             // GNB2 → GNB1 복귀 (forward와 동일한 속도)
             function revertToGnb1() {
                 if (!isInBenefitTab || isAnimating)
                     return;
+                // 테스트 완료 버튼 숨김
+                var _tcBtn2 = document.getElementById('btn-test-complete');
+                if (_tcBtn2) {
+                    clearTimeout(_testCompleteTimer);
+                    _tcBtn2.style.opacity = '0';
+                    _tcBtn2.style.transform = 'translateX(-50%) translateY(16px)';
+                    _tcBtn2.style.pointerEvents = 'none';
+                }
                 isInBenefitTab = false;
                 isAnimating = true;
                 setTimeout( () => {
