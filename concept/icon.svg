@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#ffffff" rx="112"/>
+  <!-- T horizontal bar -->
+  <rect x="148" y="148" width="200" height="58" rx="10" fill="#3D2EE8"/>
+  <!-- T vertical stem (left-leaning) -->
+  <path d="M214 206 L214 340 Q214 356 228 356 L258 356 Q274 356 274 340 L274 206 Z" fill="#3D2EE8"/>
+  <!-- Sparkle star -->
+  <path d="M330 272 C330 272 342 268 346 256 C350 268 362 272 362 272 C362 272 350 276 346 288 C342 276 330 272 330 272Z" fill="#3D2EE8"/>
+</svg>

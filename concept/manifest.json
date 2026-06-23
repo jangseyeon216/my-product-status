@@ -1,0 +1,12 @@
+{
+  "name": "T+ Concept",
+  "short_name": "T+",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
